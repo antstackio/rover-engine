@@ -1,10 +1,10 @@
-import inquirer = require('../..');
-import Prompt = require('./base');
 import { Interface as ReadLineInterface } from 'readline';
+import inquirer = require('../..');
 import Paginator = require('../utils/paginator');
+import Prompt = require('./base');
 
 /**
- * The question-options for the `ChoicePrompt<T>`.
+ * The question-options for the {@link CheckboxPrompt `CheckboxPrompt<TQuestion>`}.
  */
 type Question = inquirer.CheckboxQuestionOptions<inquirer.Answers>;
 
@@ -26,7 +26,7 @@ declare class CheckboxPrompt<TQuestion extends Question = Question> extends Prom
     protected paginator: Paginator;
 
     /**
-     * Initializes a new instance of the `CheckboxPrompt<T>` class.
+     * Initializes a new instance of the {@link CheckboxPrompt `CheckboxPrompt<TQuestion>`} class.
      *
      * @param question
      * The question to prompt the user to answer.

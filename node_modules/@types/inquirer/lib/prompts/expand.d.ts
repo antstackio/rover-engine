@@ -1,10 +1,10 @@
+import { Interface as ReadlineInterface } from 'readline';
+import inquirer = require('../..');
 import Paginator = require('../utils/paginator');
 import Prompt = require('./base');
-import inquirer = require('../..');
-import { Interface as ReadlineInterface } from 'readline';
 
 /**
- * The question-options for the `ExpandPrompt<T>`.
+ * The question-options for the {@link ExpandPrompt `ExpandPrompt<TQuestion>`}.
  */
 type Question = inquirer.ExpandQuestionOptions<inquirer.Answers>;
 
@@ -46,7 +46,7 @@ declare class ExpandPrompt<TQuestion extends Question = Question> extends Prompt
     protected answer: string;
 
     /**
-     * Initializes a new instance of the `ExpandPrompt<T>` class.
+     * Initializes a new instance of the {@link ExpandPrompt `ExpandPrompt<TQuestion>`} class.
      *
      * @param question
      * The question to prompt the user to answer.

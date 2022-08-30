@@ -13,6 +13,17 @@ const sub  = new RegExp(/(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAt
 
 let Yaml = require("js-yaml");
 export let npmroot=exec(" npm root -g").toString().trim()
+export let npmrootTest= function(){ 
+    let packages=exec(" npm -g  ls").toString().trim().split(/\r?\n/)
+    packages.shift()
+    packages=packages.filter(ele=>{
+        ele=ele.match("@rover-tools/cli")
+        if(ele!==null){
+            return ele
+        }
+    })
+    return packages.length>0
+}
 export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
@@ -23,6 +34,26 @@ export  function installDependies(path,packages,dependency){
             exec("npm --prefix "+pwd+path+" install "+ele+" --save")
             console.log("npm --prefix "+pwd+path+" install "+ele+"")
         })
+        
+    }
+    
+}
+export function testsetup(path,dependency,appname) {
+    if (dependency=="npm") {
+       
+        exec("npm --prefix "+path+"/ install jest --save")
+        exec("npm --prefix "+pwd+appname+"/ install jest --save")
+        exec("mv "+path+"tests/unit/test-handler.js "+path+"tests/unit/test.test.js")
+        var buffer = fs.readFileSync(path + "/package.json");
+        var buffer2 = fs.readFileSync(pwd+appname + "/package.json");
+        let data=JSON.parse(buffer.toString())
+        let data2=JSON.parse(buffer2.toString())
+        data.scripts= {"test": "jest"}
+        data2.scripts= {"test": "jest"}
+        path=path.replace(pwd,"")
+        path=path+"package.json"
+        writeFile(path,JSON.stringify(data))
+        writeFile(appname+"/package.json",JSON.stringify(data2))
         
     }
     
@@ -188,6 +219,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             }
             copyLambdaLogic(path,path2)
             generateLambdafiles(logic,app_data,resources,StackType,stack_names,j)
+            testsetup(path2,app_data.dependency,app_data.app_name)
             configs["CodeUri"]=resources["resources"][j]["name"]+"/"
             configs["Runtime"]=app_data.language
         }else if(resources["resources"][j]["type"]=="apigateway"){

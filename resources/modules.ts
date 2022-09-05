@@ -7,6 +7,7 @@ const generatecrud= (apiname,config)=>{
   let objects:AnyArray=[]
   let functions:AnyArray=[]
   let tables:AnyArray=[]
+  let iamresources:AnyArray=[]
   Object.keys(config).map(ele=>{
     let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
     obj["name"]=ele
@@ -19,6 +20,8 @@ const generatecrud= (apiname,config)=>{
     let table=components.generatetable(ele,{})
     functions.push(lambdafunc)
     tables.push(table)
+    iamresources.push({ "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name},
+    { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name+"/index/*"})
     
 }) 
 let role:AnyObject={
@@ -46,9 +49,7 @@ let role:AnyObject={
             "dynamodb:DescribeTable",
             "dynamodb:ConditionCheckItem"
         ],
-           "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel"},
-           { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel/index/*"}
-]
+           "Resource":iamresources
        }
    ]
       

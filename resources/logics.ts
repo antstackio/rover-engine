@@ -453,12 +453,12 @@ export let LambdaLogics={
             "crud":`let response;
             const aws = require('aws-sdk');
             const dynamoDB = new aws.DynamoDB.DocumentClient();
-            const Table = process.env.userinfoTable
+            const Table = process.env.Table
             async function getData(id) {
                 try {
                     const params = {
                     TableName: Table,
-                    Key: { email: id },
+                    Key: { id: id },
                     };
                     var { Item } = await dynamoDB.get(params).promise();
                     console.log("[INFO] getData output",Item)
@@ -472,7 +472,7 @@ export let LambdaLogics={
                 try {
                     const params = {
                     TableName: Table,
-                    Key: { email: id },
+                    Key: { id: id },
                     };
                     var { Item } = await dynamoDB.delete(params).promise();
                     console.log("[INFO] getData output",Item)
@@ -500,7 +500,7 @@ export let LambdaLogics={
             exports.lambdaHandler = async (event, context) => {
                 try {
                     let res
-                    console.log("events ",event.pathParameters["email"])
+                    console.log("events ")
                     if (event.httpMethod=="POST"){
                         if(event.body!==undefined){
                         event=JSON.parse(event.body)
@@ -509,7 +509,7 @@ export let LambdaLogics={
                         res={"message":"data updated"}
                     }
                     if (event.httpMethod=="GET"){
-                    res =await getData(event.pathParameters["email"])
+                    res =await getData(event.pathParameters["id"])
                     
                     }
                     if (event.httpMethod=="PUT"){
@@ -520,7 +520,7 @@ export let LambdaLogics={
                         res={"message":"data updated"}
                     }
                     if (event.httpMethod=="DELETE"){
-                    res =await deleteData(event.pathParameters["email"])
+                    res =await deleteData(event.pathParameters["id"])
                     res={"message":"data deleted"}
                     
                     }

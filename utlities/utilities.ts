@@ -24,6 +24,21 @@ export let npmrootTest= function(){
     })
     return packages.length>0
 }
+export  function checkFile(path, type){
+    let response={}
+    response["checkFile"]=false
+    let patharray=path.split("/")
+    if(type=="no"){
+        if (fs.existsSync(path)) {
+            throw(patharray[patharray.length-1]+" file already exists")
+        }
+    }
+    if(type=="yes"){
+        if (!fs.existsSync(path)) {
+            throw(patharray[patharray.length-1]+" file doesn't exists")   
+           }
+    }
+}
 export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }

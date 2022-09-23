@@ -8,14 +8,14 @@ export const generatelambda=(name,config)=>{
         
         "Environment": {
             "Variables": {
-              "Table": { "Ref" : name+"Tabel"}
+              "Table": { "Ref" : name+"Table"}
             }
         },
         "Policies": [
           "AWSLambdaDynamoDBExecutionRole",
           {
             "DynamoDBCrudPolicy": {
-              "TableName": { "Ref" : name+"Tabel"},
+              "TableName": { "Ref" : name+"Table"},
               
             }
           }
@@ -27,19 +27,19 @@ export const generatelambda=(name,config)=>{
 }
 export const generatetable= (name,config)=>{
   return {
-    "name":name+"Tabel",
+    "name":name+"Table",
     "type":"dynamoDB",
     "config":{
         "BillingMode": "PAY_PER_REQUEST",
         "AttributeDefinitions": [
           {
-            "AttributeName": "email",
+            "AttributeName": "id",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "email",
+            "AttributeName": "id",
             "KeyType": "HASH"
           }
         ]
@@ -113,8 +113,8 @@ export let Components={
                 "dynamodb:DescribeTable",
                 "dynamodb:ConditionCheckItem"
             ],
-               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel"},
-               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel/index/*"}
+               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable"},
+               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable/index/*"}
 ]
            }
        ]
@@ -151,14 +151,14 @@ export let Components={
               "Variables": {
                 "UserPoolID": { "Ref" : "AuthUserPools"},
                 "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                "userinfoTable": { "Ref" : "UserTabel"}
+                "userinfoTable": { "Ref" : "UserTable"}
               }
           },
           "Policies": [
             "AWSLambdaDynamoDBExecutionRole",
             {
               "DynamoDBCrudPolicy": {
-                "TableName": { "Ref" : "UserTabel"},
+                "TableName": { "Ref" : "UserTable"},
                 
               }
             }
@@ -167,7 +167,7 @@ export let Components={
       "logic":true
     },
     {
-      "name":"UserTabel",
+      "name":"UserTable",
       "type":"dynamoDB",
       "config":{
           "BillingMode": "PAY_PER_REQUEST",

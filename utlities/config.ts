@@ -1,4 +1,5 @@
-export let SkeletonConfig={}
+import { AnyObject } from "immer/dist/internal"
+export let SkeletonConfig:AnyObject={}
 SkeletonConfig["template_version"]="2010-09-09"
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 export let SAMInitBase="sam init --no-interactive "
@@ -165,7 +166,7 @@ export let LanguageSupport={
 },
 "python":{
     "version":"python3.9",
-    "dependency":"pip3",
+    "dependency":"pip",
     "extension":".py"
 }
 }

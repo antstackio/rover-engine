@@ -6,7 +6,7 @@ const yaml = require("yaml");
 
 
 export  function skeleton(){
-    let template_skeleton= {}
+    let template_skeleton:AnyObject= {}
     template_skeleton["AWSTemplateFormatVersion"]= JSON.parse(JSON.stringify(configs.SkeletonConfig["template_version"]))
     template_skeleton["Transform"]= JSON.parse(JSON.stringify(configs.SkeletonConfig["sam_transform_version"]))
     template_skeleton["Description"]= "SAM Template"
@@ -14,7 +14,7 @@ export  function skeleton(){
     template_skeleton["Resources"]= {}
     return template_skeleton
 }
-function rolePolicyAddition(template,config){
+function rolePolicyAddition(template:AnyObject,config){
     var policies:AnyArray=[]
     let base =template["Properties"]["ManagedPolicyArns"][0]
     for (var j in  config["managedarn"]){

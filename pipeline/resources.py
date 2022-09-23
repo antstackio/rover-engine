@@ -14,7 +14,7 @@ sam_deploy_params={
     }
 def steps(framework,tool):
     steps={
-        "git":{
+        "GitHub":{
             "cdk":{
                 "python":{
                     "install":{
@@ -75,7 +75,7 @@ def steps(framework,tool):
                     }
             }
         },
-        "bit":{
+        "BitBucket":{
             "cdk":{
                 "python":{
                     "install": "python -m pip3 install --upgrade pip3\npip install flake8 pytest\nif [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi\n",
@@ -103,7 +103,7 @@ def steps(framework,tool):
                 "deploy": "sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name stackname --s3-bucket deploymentbucket --capabilities CAPABILITY_IAM --region deploymentregion --parameter-overrides deploymentparameters"                
             }
         },
-        "gitl":{
+        "GitLab":{
             "sam":{
                 "python":{
                     "install": "python -m pip3 install --upgrade pip\npip3 install flake8 pytest\n pip3 install awscli --upgrade\n pip3 install aws-sam-cli --upgrade \n if [ -f requirements.txt ]; then pip install -r requirements.txt; fi\n",
@@ -141,7 +141,7 @@ def steps(framework,tool):
 
 def env(inputs):
     env={
-    "git": {
+    "GitHub": {
         "runs-on": "ubuntu-latest",
         "environment": "dev",
         "steps": [
@@ -160,14 +160,14 @@ def env(inputs):
             }  
         ]
     },
-    "bit":{
+    "BitBucket":{
           "step": {
             "name": "Build and Package",
             "deployment": "PROD",
             "script": []
           }
     },
-    "gitl":{
+    "GitLab":{
             "stage": "deploy",
             "before_script": [
      
@@ -181,7 +181,7 @@ def env(inputs):
 
 def base(tool):
     base={
-    "git":{
+    "GitHub":{
             "name": "AWS CDK Pipeline",
             "on": {
                     "push": {"branches": ["main"]}
@@ -190,7 +190,7 @@ def base(tool):
     
             }
     },
-    "bit":{
+    "BitBucket":{
             "image": "node:12",
             "pipelines": {
             "branches": {
@@ -198,7 +198,7 @@ def base(tool):
             }
             }
     },
-    "gitl":{
+    "GitLab":{
             "image": "python:3.8",
             "stages": [],
     }

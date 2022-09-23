@@ -3,19 +3,20 @@ import { AnyArray, AnyObject } from "immer/dist/internal"
 import * as components from "./components"
 const exec = require("child_process").execSync;
 let  pwd =process.cwd()
-const generatecrud= (apiname,config)=>{
+const generatecrud= (apiname:String,config:AnyObject)=>{
   let objects:AnyArray=[]
   let functions:AnyArray=[]
   let tables:AnyArray=[]
   let iamresources:AnyArray=[]
+  //console.log(apiname,JSON.stringify(config))
   Object.keys(config).map(ele=>{
     let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
     obj["name"]=ele
     obj["role"]=apiname+"Roles",
     obj["resource"]=ele+"Function",
     objects.push(obj)
-    let lambdafunc=components.generatelambda(ele,{})
-    lambdafunc["logicpath"]="crud"
+    let lambdafunc:AnyObject=components.generatelambda(ele,{})
+    lambdafunc["logicpath"]="crud";
     //console.log(lambdafunc)
     let table=components.generatetable(ele,{})
     functions.push(lambdafunc)
@@ -76,7 +77,7 @@ resarray=resarray.concat(tables);
 res[apiname+"CRUDModule"]["resources"]=resarray
   return res
 }
-const generaterds= (name,config)=>{
+const generaterds= (name:String,config:AnyObject)=>{
   // exec("npm   --prefix   "+pwd+"/"+name+"/ install prisma --save-dev")
   // exec("cd "+pwd+"/"+name+"/ && npx  prisma")
   // exec("cd "+pwd+"/"+name+"/ && npx prisma init ")
@@ -942,14 +943,14 @@ export let StackType={
                         "config":{
                             "Environment": {
                                 "Variables": {
-                                "userinfoTable": { "Ref" : "UserTabel"}
+                                "userinfoTable": { "Ref" : "UserTable"}
                                 }
                             },
                             "Policies": [
                               "AWSLambdaDynamoDBExecutionRole",
                               {
                                 "DynamoDBCrudPolicy": {
-                                  "TableName": { "Ref" : "UserTabel"}
+                                  "TableName": { "Ref" : "UserTable"}
                                 }
                               }
                             ]
@@ -963,7 +964,7 @@ export let StackType={
                       "logic":false
                     },
                     {
-                        "name":"UserTabel",
+                        "name":"UserTable",
                         "type":"dynamoDB",
                         "config":{
                             "BillingMode": "PAY_PER_REQUEST",
@@ -1107,14 +1108,14 @@ export let StackType={
                       "config":{
                           "Environment": {
                               "Variables": {
-                              "userinfoTable": { "Ref" : "UserTabel"}
+                              "userinfoTable": { "Ref" : "UserTable"}
                               }
                           },
                           "Policies": [
                             "AWSLambdaDynamoDBExecutionRole",
                             {
                               "DynamoDBCrudPolicy": {
-                                "TableName": { "Ref" : "UserTabel"}
+                                "TableName": { "Ref" : "UserTable"}
                               }
                             }
                           ]
@@ -1135,7 +1136,7 @@ export let StackType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTable"}
                              
                             }
                           }
@@ -1175,14 +1176,14 @@ export let StackType={
                     "config":{
                         "Environment": {
                             "Variables": {
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                            "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
@@ -1196,14 +1197,14 @@ export let StackType={
                     "config":{
                         "Environment": {
                             "Variables": {
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                            "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTable"}
                             }
                           }
                         ]
@@ -1219,14 +1220,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                              "userinfoTable": { "Ref" : "UserTabel"}
+                              "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
@@ -1243,14 +1244,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                            "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"}
                             }
@@ -1268,14 +1269,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                            "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
@@ -1292,14 +1293,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                            "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
@@ -1316,14 +1317,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                              "userinfoTable": { "Ref" : "UserTabel"}
+                              "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               
                             }
                           }
@@ -1340,14 +1341,14 @@ export let StackType={
                             "Variables": {
                               "UserPoolID": { "Ref" : "AuthUserPools"},
                               "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                              "userinfoTable": { "Ref" : "UserTabel"}
+                              "userinfoTable": { "Ref" : "UserTable"}
                             }
                         },
                         "Policies": [
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"},
+                              "TableName": { "Ref" : "UserTable"},
                               
                             }
                           }
@@ -1356,7 +1357,7 @@ export let StackType={
                     "logic":true
                   },
                   {
-                      "name":"UserTabel",
+                      "name":"UserTable",
                       "type":"dynamoDB",
                       "config":{
                           "BillingMode": "PAY_PER_REQUEST",
@@ -1528,8 +1529,8 @@ export let StackType={
                                 "dynamodb:DescribeTable",
                                 "dynamodb:ConditionCheckItem"
                             ],
-                               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel"},
-                               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel/index/*"}
+                               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable"},
+                               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable/index/*"}
             ]
                            }
                        ]
@@ -1726,7 +1727,7 @@ export let ModuleParams={
   "BaseModule":{},
   "TestModule":{},
   "EmailAuthModule":{},
-  "CRUD":{params:[{key:"name",value:"string",message:"API Name :"},{key:"path",value:"string",message:"API Path :"},{key:"resourcetype",value:"choice",message:"Resource for API:"},{key:"methods",value:"multichoice",message:"Methods required for API :"}]},
+  "CRUD":{params:[{key:"name",value:"string",message:"API Name :"},{key:"path",value:"string",message:"API Path(e.g /book) :"},{key:"methods",value:"multichoice",message:"Methods required for API :"}]},
   "Customizable":{}
 
 

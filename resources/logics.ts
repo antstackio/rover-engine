@@ -566,5 +566,6 @@ export let LambdaLogics={
             `
         
     
-}
+},
+"python3.9":{}
 }

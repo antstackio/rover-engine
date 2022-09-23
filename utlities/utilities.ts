@@ -24,8 +24,8 @@ export let npmrootTest= function(){
     })
     return packages.length>0
 }
-export  function checkFile(path, type){
-    let response={}
+export  function checkFile(path:string, type:string){
+    let response:AnyObject={}
     response["checkFile"]=false
     let patharray=path.split("/")
     if(type=="no"){
@@ -39,10 +39,10 @@ export  function checkFile(path, type){
            }
     }
 }
-export  function writeFile(path, data){ 
+export  function writeFile(path:string, data:string){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
-export  function installDependies(path,packages,dependency){ 
+export  function installDependies(path:string,packages:AnyArray,dependency:string){ 
     
     if (dependency=="npm") {
         packages.map(ele=>{
@@ -53,25 +53,13 @@ export  function installDependies(path,packages,dependency){
     }
     
 }
-export function testsetup(path,dependency,appname) {
+export function testsetup(path:string,dependency:string,appname:string) {
     if (dependency=="npm") {
-       
         exec("npm --prefix "+path+"/ install jest --save")
         exec("npm --prefix "+pwd+appname+"/ install jest --save")
+        exec("npm --prefix "+pwd+appname+"/ pkg set scripts.test='npm test' ")
         exec("mv "+path+"tests/unit/test-handler.js "+path+"tests/unit/test.test.js")
-        var buffer = fs.readFileSync(path + "/package.json");
-        var buffer2 = fs.readFileSync(pwd+appname + "/package.json");
-        let data=JSON.parse(buffer.toString())
-        let data2=JSON.parse(buffer2.toString())
-        data.scripts= {"test": "jest"}
-        data2.scripts= {"test": "jest"}
-        path=path.replace(pwd,"")
-        path=path+"package.json"
-        writeFile(path,JSON.stringify(data))
-        writeFile(appname+"/package.json",JSON.stringify(data2))
-        
     }
-    
 }
 export  function addResourceTemplate(resources, name,temp){ 
     let template
@@ -86,8 +74,8 @@ export  function addResourceTemplate(resources, name,temp){
         }
         return template   
 }
-export function replaceYAML(doc){
-    let yamlArray = {
+export function replaceYAML(doc:string){
+    let yamlArray:AnyObject = {
         // "off": "'off'",
         // "on": "'on'",
         // "yes":"'yes'",
@@ -102,26 +90,29 @@ export function replaceYAML(doc){
     });
     return doc
 }
-export function initializeSAM(input){
-    
+export function initializeSAM(input:AnyObject){   
     let app_name=input.app_name
     removeFolder(input.app_name)
     let language= config.LanguageSupport[input.language]["version"]
     let dependency=config.LanguageSupport[input.language]["dependency"]
     let extension=config.LanguageSupport[input.language]["extension"]
-    //console.log(config.SAMInitBase+config.SAMLanguage+language+config.SAMDependency+dependency+config.SAMAppName+app_name+config.SAMAppTemplate)
     exec(config.SAMInitBase+config.SAMLanguage+language+config.SAMDependency+dependency+config.SAMAppName+app_name+config.SAMAppTemplate)
-    moveFolder(pwd+input.app_name+"/hello-world ",pwd+input.app_name+"/"+"lambda_demo")
-    //console.log(input)
-    
+    let source=pwd+input.app_name+"/hello-world"
+    if (dependency=="npm")
+    {
+        exec("npm init -y -w "+input.app_name+"/")
+        exec("npm --prefix "+pwd+input.app_name+"/ pkg set scripts.test='npm test' ")
+    }  
+    if(!fs.existsSync(source))source=pwd+input.app_name+"/hello_world"
+    moveFolder(source+" ",pwd+input.app_name+"/"+"lambda_demo")
 }
-export function copyLambdaLogic(source,desti){
+export function copyLambdaLogic(source:string,desti:string){
     exec("cp -r "+source+desti)
 }
-export function moveFolder(source,desti) {
+export function moveFolder(source:string,desti:string) {
     exec("mv "+source+desti)
 }
-export function removeFolder (path) {
+export function removeFolder (path:string) {
     exec(config.ForceRemove+path)
 }
 export function generateLambdafiles(logic,app_data,resources,stacktype,stackname,j) {
@@ -161,15 +152,16 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
         }
     }     
 }
-export function cliModuletoConfig(input){
+export function cliModuletoConfig(input:AnyObject){
    initializeSAM(input)
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
+        //console.log(JSON.stringify(input))
         Object.keys(input["Stacks"]).map(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
+                //console.log(JSON.stringify(input))
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
-                //console.log(JSON.stringify(res))
                     
             }else if(input["Stacks"][ele]=="RDS"){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,{})
@@ -299,7 +291,6 @@ export function  generationSAM(input){
 }
 export function addComponents(input){
     //console.log(pwd)
-    
     let Data = fs.readFileSync(pwd+"/"+input.file_name.trim(), { encoding: "utf-8" });
     Data=Yaml.load(replaceTempTag(Data))
     if(Data.hasOwnProperty("Resources")){
@@ -349,7 +340,7 @@ export function addComponents(input){
 }
 export function getComponents(component){
     let resources:AnyArray=[]
-    let componentstype:String
+    let componentstype:string
     //console.log(Object.entries(components))
     Object.entries(component).map(ele=>{
         let componentstype:any=ele[1]
@@ -360,11 +351,11 @@ export function getComponents(component){
 )
     return resources
 }
-export function checkNested(template) {
+export function checkNested(template:string) {
     let Data = Yaml.load(replaceTempTag(fs.readFileSync(pwd+"/"+template.trim(), { encoding: "utf-8" })));
     let CompStacks:AnyObject={}
     let checkNested=false
-    let result={}
+    let result:AnyObject={}
     let  resources=Object.keys(Data["Resources"])
     resources.map(ele=>{
         if(Data["Resources"][ele]["Type"]===config.AWSResources.stack.type){
@@ -378,8 +369,8 @@ export function checkNested(template) {
 
 }
 //let basecrud={"Book":{"resource":"lambda","path":"/book","method":["put","get","post"],"database":"dynamodb"}}
-function generateRoverAWSResource(cfjson,base){
-    let result={}
+function generateRoverAWSResource(cfjson:AnyObject,base:AnyArray){
+    let result:AnyObject={}
     let optinal=Object.keys(cfjson["Properties"])
     if(base!==undefined){
         if (base.length>0) {
@@ -398,10 +389,10 @@ function generateRoverAWSResource(cfjson,base){
         }
     }
     result[cfjson["Type"].split("::")[cfjson["Type"].split("::").length-1].toLowerCase()]=basejson
-    console.log(JSON.stringify(result))
+    //console.log(JSON.stringify(result))
 
 }
-function updatevalue(input,data){
+function updatevalue(input:string,data:string){
     let result=input.trim().split(" ")
     let val ={}
     let resvalue= (result.splice(1,result.length)).join(" ")
@@ -415,8 +406,8 @@ function updatevalue(input,data){
     //console.log(result[0])
     return data
   
-  }
-function replaceTempTag(yamlinput){
+}
+export function replaceTempTag(yamlinput:string){
       let jsondata=  yamlinput
       let result
      

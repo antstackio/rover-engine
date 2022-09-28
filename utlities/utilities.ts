@@ -100,8 +100,8 @@ export function initializeSAM(input:AnyObject){
     let source=pwd+input.app_name+"/hello-world"
     if (dependency=="npm")
     {
-        exec("npm init -y -w "+input.app_name+"/")
-        exec("npm --prefix "+pwd+input.app_name+"/ pkg set scripts.test='npm test' ")
+        exec("npm init -y -w "+pwd+input.app_name)
+        exec("npm --prefix "+pwd+input.app_name+" pkg set scripts.test='npm test' ")
     }  
     if(!fs.existsSync(source))source=pwd+input.app_name+"/hello_world"
     moveFolder(source+" ",pwd+input.app_name+"/"+"lambda_demo")

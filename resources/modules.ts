@@ -932,9 +932,6 @@ export let StackType={
             }
     },
     "TestModule":{
-        "no_of_stack":1,
-        "stack_names":["test"],
-        "stack_resources":{
             "test":{
                 "resources":[
                     {
@@ -1097,7 +1094,7 @@ export let StackType={
                 ]
             
             }
-        }
+        
     },
     "EmailAuthModule":{
           "EmailAuthModule":{

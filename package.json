@@ -33,7 +33,6 @@
     "@rover-tools",
     "AWS",
     "AWS-SAM"
-    
   ],
   "bugs": {
     "url": "https://github.com/antstackio/rover-engine/issues"

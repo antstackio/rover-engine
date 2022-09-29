@@ -76,14 +76,9 @@ export  function addResourceTemplate(resources, name,temp){
 }
 export function replaceYAML(doc:string){
     let yamlArray:AnyObject = {
-        // "off": "'off'",
-        // "on": "'on'",
-        // "yes":"'yes'",
-        // "no":"'no'",
+       
         "OFF": "'OFF'",
-        // "ON": "'ON'",
-        // "YES":"'YES'",
-        // "NO":"'NO'",
+
     }
     Object.keys(yamlArray).map((key)=> {
         doc=doc.replace(key, yamlArray[key])
@@ -156,11 +151,9 @@ export function cliModuletoConfig(input:AnyObject){
    initializeSAM(input)
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
-        //console.log(JSON.stringify(input))
         Object.keys(input["Stacks"]).map(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
-                //console.log(JSON.stringify(input))
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
                     
             }else if(input["Stacks"][ele]=="RDS"){
@@ -191,11 +184,9 @@ export function cliModuletoConfig(input:AnyObject){
             app_types[ele]["type"]="components"
         })
     }
-    //console.log(JSON.stringify(app_types))
     return app_types
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
-        //console.log("StackType",StackType)
         let res={}
     for(let j in  resources["resources"]){ 
         let configs=resources["resources"][j]["config"]
@@ -218,7 +209,6 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 }if (comp.desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
                 path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
-                //console.log(path,path2)
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
@@ -240,7 +230,6 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     return res
 }
 export  function createStack(app_data,app_types){
-    //console.log(app_data,JSON.stringify(app_data))
     let stack_names = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
@@ -256,7 +245,6 @@ export  function createStack(app_data,app_types){
             if (resources.hasOwnProperty("parameter")) {
 
                 template1["Parameters"]=resources.parameter
-                //console.log(template1)
                 
             }
             let doc = new yaml.Document();
@@ -286,11 +274,9 @@ export function  generationSAM(input){
     let app_data= getAppdata(input)
     let app_types=cliModuletoConfig(input)
     createStack(app_data,app_types)
-    //console.log(input)
     exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }
 export function addComponents(input){
-    //console.log(pwd)
     let Data = fs.readFileSync(pwd+"/"+input.file_name.trim(), { encoding: "utf-8" });
     Data=Yaml.load(replaceTempTag(Data))
     if(Data.hasOwnProperty("Resources")){
@@ -317,7 +303,6 @@ export function addComponents(input){
                 doc.contents = res1;
                 let temp=replaceYAML(doc.toString())
                 writeFile(input.app_name+"/"+input.nestedComponents[ele]["path"].trim(),temp)  
-                //console.log(res1)
             })
             
         }else{
@@ -341,7 +326,6 @@ export function addComponents(input){
 export function getComponents(component){
     let resources:AnyArray=[]
     let componentstype:string
-    //console.log(Object.entries(components))
     Object.entries(component).map(ele=>{
         let componentstype:any=ele[1]
         JSON.parse(JSON.stringify(components.Components[componentstype])).map(ele=>{
@@ -368,7 +352,7 @@ export function checkNested(template:string) {
     return result
 
 }
-//let basecrud={"Book":{"resource":"lambda","path":"/book","method":["put","get","post"],"database":"dynamodb"}}
+
 function generateRoverAWSResource(cfjson:AnyObject,base:AnyArray){
     let result:AnyObject={}
     let optinal=Object.keys(cfjson["Properties"])
@@ -389,7 +373,6 @@ function generateRoverAWSResource(cfjson:AnyObject,base:AnyArray){
         }
     }
     result[cfjson["Type"].split("::")[cfjson["Type"].split("::").length-1].toLowerCase()]=basejson
-    //console.log(JSON.stringify(result))
 
 }
 function updatevalue(input:string,data:string){
@@ -403,7 +386,6 @@ function updatevalue(input:string,data:string){
   
     val[tag]=resvalue
     data=data.replace(input.trim(),JSON.stringify(val))
-    //console.log(result[0])
     return data
   
 }

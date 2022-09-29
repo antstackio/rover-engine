@@ -8,7 +8,7 @@ const generatecrud= (apiname:String,config:AnyObject)=>{
   let functions:AnyArray=[]
   let tables:AnyArray=[]
   let iamresources:AnyArray=[]
-  //console.log(apiname,JSON.stringify(config))
+  
   Object.keys(config).map(ele=>{
     let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
     obj["name"]=ele
@@ -17,7 +17,7 @@ const generatecrud= (apiname:String,config:AnyObject)=>{
     objects.push(obj)
     let lambdafunc:AnyObject=components.generatelambda(ele,{})
     lambdafunc["logicpath"]="crud";
-    //console.log(lambdafunc)
+   
     let table=components.generatetable(ele,{})
     functions.push(lambdafunc)
     tables.push(table)
@@ -78,9 +78,7 @@ res[apiname+"CRUDModule"]["resources"]=resarray
   return res
 }
 const generaterds= (name:String,config:AnyObject)=>{
-  // exec("npm   --prefix   "+pwd+"/"+name+"/ install prisma --save-dev")
-  // exec("cd "+pwd+"/"+name+"/ && npx  prisma")
-  // exec("cd "+pwd+"/"+name+"/ && npx prisma init ")
+ 
   return {
     "RDS":{
       "parameter":{

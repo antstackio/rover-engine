@@ -26,7 +26,7 @@ function rolePolicyAddition(template:AnyObject,config){
         }
     }
     
-    //console.log("config",JSON.stringify(template["Properties"]["ManagedPolicyArns"]))
+   
     for (let k in config["Policies"]){
         let role:AnyObject=JSON.parse(JSON.stringify(configs.PolicySkeleton))
         role["PolicyName"]=config["Policies"][k]["name"]
@@ -35,7 +35,7 @@ function rolePolicyAddition(template:AnyObject,config){
         policies.push(role)
     }
     template["Properties"]["Policies"]=policies
-    //console.log("rolePolicyAddition",JSON.stringify(template))
+   
     return template
 }
 function policyAddition(template,config){
@@ -45,7 +45,7 @@ function policyAddition(template,config){
         role["PolicyDocument"]["Statement"][k]["Resource"]=config["Statement"][k]["Resource"]
     }
     template["Properties"]["PolicyDocument"]=role["PolicyDocument"]
-    //console.log("policyAddition",JSON.stringify(template))
+   
     return template
 }
 
@@ -123,7 +123,7 @@ export let resourceGeneration=function(resource_name,config){
     for (let j in resource_properties.attributes){
         
         if (resource_properties.attributes[j]=="Type"){
-            // template[resource_properties.attributes[j]]=JSON.parse(JSON.stringify(configs.AWSResourcesTypes[resource_name]))
+           
             template[resource_properties.attributes[j]]=JSON.parse(JSON.stringify(configs.AWSResources[resource_name].type))
         }else if (resource_properties.attributes[j]=="DependsOn"){
             if(config["DependsOn"]!==undefined)template[resource_properties.attributes[j]]=JSON.parse(JSON.stringify(config["DependsOn"]))

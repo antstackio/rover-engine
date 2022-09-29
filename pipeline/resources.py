@@ -1,4 +1,8 @@
 after=["synth","build","deploy"]
+npminstall="npm i"
+cdksynth="cdk synth"
+pythonlang="python:3.8"
+nodelang="node:12"
 sam_deploy_replacements={
     "}":"",
     "{":"",
@@ -26,7 +30,7 @@ def steps(framework,tool):
                 },
                 "js":{
                     "install":{
-                                "run": "npm i"
+                                "run": npminstall
                     },
                     "language_setup":{
                                     "uses": "actions/setup-node@v2",
@@ -37,7 +41,7 @@ def steps(framework,tool):
                 },
                 "synth":{
                     "name": "Synth stack",
-                    "run": "cdk synth"
+                    "run": cdksynth
                     },
                 "deploy":{
                     "name": "Deploy stack",
@@ -56,7 +60,7 @@ def steps(framework,tool):
                 },
                 "js":{
                     "install":{
-                                "run": "npm i"
+                                "run": npminstall
                     },
                     "language_setup":{
                                     "uses": "actions/setup-node@v2",
@@ -79,24 +83,24 @@ def steps(framework,tool):
             "cdk":{
                 "python":{
                     "install": "python -m pip3 install --upgrade pip3\npip install flake8 pytest\nif [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi\n",
-                    "language_setup":"node:12"
+                    "language_setup":nodelang
                 },
                 "js":{
-                    "install":"npm i",
-                    "language_setup":"python:3.8"
+                    "install":npminstall,
+                    "language_setup":pythonlang
                 },
-                "synth":"cdk synth",
+                "synth":cdksynth,
                 "deploy":"cdk deploy stackname --require-approval never"        
             },
             "sam":{
                 "python":{
                     "install": "python -m pip install --upgrade pip\npip install flake8 pytest\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\n",
-                    "language_setup":"python:3.8"
+                    "language_setup":pythonlang
 
                 },
                 "js":{
-                    "install":"npm i",
-                     "language_setup":"node:12"
+                    "install":npminstall,
+                     "language_setup":nodelang
                     
                 },
                 "build":"sam build",
@@ -107,13 +111,13 @@ def steps(framework,tool):
             "sam":{
                 "python":{
                     "install": "python -m pip3 install --upgrade pip\npip3 install flake8 pytest\n pip3 install awscli --upgrade\n pip3 install aws-sam-cli --upgrade \n if [ -f requirements.txt ]; then pip install -r requirements.txt; fi\n",
-                     "language_setup":"python:3.8"
+                     "language_setup":pythonlang
                     
 
                 },
                 "js":{
-                    "install":"npm i",
-                    "language_setup":"node:12"
+                    "install":npminstall,
+                    "language_setup":nodelang
 
                     
                 },
@@ -124,14 +128,14 @@ def steps(framework,tool):
             "cdk":{
                 "python":{
                     "install": "python -m pip3 install --upgrade pip3\npip install flake8 pytest\nif [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi\n",
-                     "language_setup":"python:3.8"
+                     "language_setup":pythonlang
                 },
                 "js":{
-                    "install":"npm i",
-                    "language_setup":"node:12"
+                    "install":npminstall,
+                    "language_setup":nodelang
                    
                 },
-                "synth":"cdk synth",
+                "synth":cdksynth,
                 "deploy":"cdk deploy stackname --require-approval never"  
 
             }
@@ -191,7 +195,7 @@ def base(tool):
             }
     },
     "BitBucket":{
-            "image": "node:12",
+            "image": nodelang,
             "pipelines": {
             "branches": {
                     "main": []
@@ -199,7 +203,7 @@ def base(tool):
             }
     },
     "GitLab":{
-            "image": "python:3.8",
+            "image": pythonlang,
             "stages": [],
     }
     }

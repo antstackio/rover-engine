@@ -12,8 +12,8 @@ const generatecrud= (apiname:String,config:AnyObject)=>{
   Object.keys(config).forEach(ele=>{
     let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
     obj["name"]=ele
-    obj["role"]=apiname+"Roles",
-    obj["resource"]=ele+"Function",
+    obj["role"]=apiname+"Roles"
+    obj["resource"]=ele+"Function"
     objects.push(obj)
     let lambdafunc:AnyObject=components.generatelambda(ele,{})
     lambdafunc["logicpath"]="crud";

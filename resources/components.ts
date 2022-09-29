@@ -1,5 +1,5 @@
-import { AnyArray, AnyObject } from "immer/dist/internal"
-import * as config  from "../utlities/config"
+
+
 export const generatelambda=(name,config)=>{
   return {
     "name":name+"Function",
@@ -48,7 +48,6 @@ export const generatetable= (name,config)=>{
   }
 }
 
-const s3_lambda = (funcname,bucketname)=>{}
 export let Components={
     "s3_lambda":[
       {

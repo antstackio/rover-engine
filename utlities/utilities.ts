@@ -390,7 +390,7 @@ function updatevalue(input:string,data:string){
   
 }
 export function replaceTempTag(yamlinput:string){
-      let jsondata=  yamlinput
+      
       let result
      
       do{

@@ -4,7 +4,7 @@ import * as components from "./components"
 const exec = require("child_process").execSync;
 
 let  pwd =process.cwd()
-const generatecrud= (apiname:String,config:AnyObject)=>{
+const generatecrud= (apiname:string,config:AnyObject)=>{
   let objects:AnyArray=[]
   let functions:AnyArray=[]
   let tables:AnyArray=[]
@@ -78,7 +78,7 @@ resarray=resarray.concat(tables);
 res[apiname+"CRUDModule"]["resources"]=resarray
   return res
 }
-const generaterds= (name:String,config:AnyObject)=>{
+const generaterds= (name:string,config:AnyObject)=>{
  
   return {
     "RDS":{

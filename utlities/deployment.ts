@@ -10,7 +10,7 @@ export function setupRepo(repoconfig:AnyObject){
     let filenamearray=( repoconfig.app_name).split("/")
     repoconfig.name = filenamearray[filenamearray.length-1].replace("\n","");
     let appname=repoconfig.app_name
-    let repoconfigres:String=JSON.stringify(repoconfig)
+    let repoconfigres:string=JSON.stringify(repoconfig)
     if(!fs.existsSync(appname+"/.github")) exec("mkdir "+appname+"/.github") 
     if(!fs.existsSync(appname+"/.github/workflows"))exec("mkdir "+appname+"/.github/workflows") 
     exec("python3 -m pip install pyyaml")     

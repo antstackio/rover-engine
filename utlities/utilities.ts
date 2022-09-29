@@ -80,7 +80,7 @@ export function replaceYAML(doc:string){
         "OFF": "'OFF'",
 
     }
-    Object.keys(yamlArray).map((key)=> {
+    Object.keys(yamlArray).forEach((key)=> {
         doc=doc.replace(key, yamlArray[key])
     });
     return doc
@@ -151,7 +151,7 @@ export function cliModuletoConfig(input:AnyObject){
    initializeSAM(input)
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
-        Object.keys(input["Stacks"]).map(ele =>{
+        Object.keys(input["Stacks"]).forEach(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
@@ -162,7 +162,7 @@ export function cliModuletoConfig(input:AnyObject){
             else{
                 stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
             }
-                Object.keys(stackdata).map(ele1=>{
+                Object.keys(stackdata).forEach(ele1=>{
                 app_types[ele+ele1]=stackdata[ele1]
                 app_types[ele+ele1]["type"]="module"
             })
@@ -171,7 +171,7 @@ export function cliModuletoConfig(input:AnyObject){
         })
     }
     if( Object.keys(input["CustomStacks"]).length>0){
-        Object.keys(input["CustomStacks"]).map(ele =>{
+        Object.keys(input["CustomStacks"]).forEach(ele =>{
             let resources:AnyArray=[]
             input["CustomStacks"][ele].map(ele=>{
                 JSON.parse(JSON.stringify(components.Components[ele])).map(ele=>{
@@ -287,7 +287,7 @@ export function addComponents(input){
         input2.app_name=input.app_name+"_test"
         initializeSAM(input2)
         if (input.nested) {
-            Object.keys(input.nestedComponents).map(ele=>{
+            Object.keys(input.nestedComponents).forEach(ele=>{
                 let comp={}
                 res["resources"]=getComponents(input.nestedComponents[ele]["type"])
 
@@ -341,7 +341,7 @@ export function checkNested(template:string) {
     let checkNested=false
     let result:AnyObject={}
     let  resources=Object.keys(Data["Resources"])
-    resources.map(ele=>{
+    resources.forEach(ele=>{
         if(Data["Resources"][ele]["Type"]===config.AWSResources.stack.type){
             checkNested=true
             CompStacks[ele]=Data["Resources"][ele]["Properties"]["TemplateURL"]

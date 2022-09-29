@@ -809,7 +809,45 @@ export let AWSResources={
             "Base":["Name"],
             "Optional":["Description","GenerateSecretString","KmsKeyId","ReplicaRegions","SecretString","Tags"]
         }
-    }
+    },
+    "codebuildproject": {
+        "name": "Name",
+        "type": "AWS::CodeBuild::Project",
+        "attributes": [
+          "Type",
+          "Properties",
+          "DependsOn"
+        ],
+        "Properties": {
+          "Base": [
+            "Artifacts",
+            "ServiceRole",
+            "Source",
+            "Environment"
+          ],
+          "Optional": [
+            "BadgeEnabled",
+            "BuildBatchConfig",
+            "Cache",
+            "ConcurrentBuildLimit",
+            "Description",
+            "EncryptionKey",
+            "FileSystemLocations",
+            "LogsConfig",
+            "QueuedTimeoutInMinutes",
+            "ResourceAccessRole",
+            "SecondaryArtifacts",
+            "SecondarySources",
+            "SecondarySourceVersions",
+            "SourceVersion",
+            "Tags",
+            "TimeoutInMinutes",
+            "Triggers",
+            "Visibility",
+            "VpcConfig"
+          ]
+        }
+      }
 }
 export let APIGatewayURI={
     "lambda":"lambda:path/2015-03-31/functions/${lambda.Arn}/invocations",

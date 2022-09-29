@@ -1,7 +1,7 @@
 const exec = require("child_process").execSync;
 const {spawn} = require("child_process");
 const process = require('process');
-var fs = require("fs");
+let fs = require("fs");
 import { AnyObject } from "immer/dist/internal";
 import * as rover_utilities  from "../utlities/utilities"
 

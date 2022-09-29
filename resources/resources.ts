@@ -1,4 +1,4 @@
-import { Console } from "console";
+
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as configs  from "../utlities/config"
 import * as utilities from "../utlities/utilities"
@@ -15,13 +15,13 @@ export  function skeleton(){
     return template_skeleton
 }
 function rolePolicyAddition(template:AnyObject,config){
-    var policies:AnyArray=[]
+    let policies:AnyArray=[]
     let base =template["Properties"]["ManagedPolicyArns"][0]
-    for (var j in  config["managedarn"]){
+    for (let j in  config["managedarn"]){
         template["Properties"]["ManagedPolicyArns"][j]=base+config["managedarn"][j]
     }
     if(config.hasOwnProperty(["iamservice"])){
-        for (var j in  config["iamservice"]){
+        for (let j in  config["iamservice"]){
             template["Properties"]["AssumeRolePolicyDocument"]["Statement"][0]["Principal"]["Service"].push(config["iamservice"][j])
         }
     }

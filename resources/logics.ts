@@ -119,7 +119,7 @@ export let LambdaLogics={
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
                     
-                    var params = {
+                    letparams = {
                                     ClientId: UserPoolClientID,
                                     Username: event.emailId
               }
@@ -159,7 +159,7 @@ export let LambdaLogics={
                                         Item: userData
             
                         };
-                        var Items  = await dynamoDB.put(params).promise();
+                        letItems  = await dynamoDB.put(params).promise();
                         console.log("[INFO] addUserData output",Items)
                         return Items
             
@@ -174,14 +174,14 @@ export let LambdaLogics={
                         event=JSON.parse(event.body)
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
-                    var params = {
+                    letparams = {
                                     ClientId: UserPoolClientID,
                                     ConfirmationCode: event.Code,
                                     Username: event.emailId
               }
                    let res=await cognito.confirmSignUp(params).promise();
                     
-                    var params1 = {
+                    letparams1 = {
                                     UserPoolId: UserPoolID,
                                    AttributesToGet: ["email","name","sub"],
                                    
@@ -234,7 +234,7 @@ export let LambdaLogics={
                         event=JSON.parse(event.body)
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
-                    var params = {
+                    letparams = {
                                     ClientId: UserPoolClientID,
                                     ConfirmationCode: event.Code,
                                     Username: event.emailId,
@@ -270,7 +270,7 @@ export let LambdaLogics={
                         event=JSON.parse(event.body)
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
-                    var params = {
+                    letparams = {
                                     ClientId: UserPoolClientID,
                                     Username: event.emailId
                                 }
@@ -374,7 +374,7 @@ export let LambdaLogics={
                     TableName: UserTable,
                     Key: { email: id },
                     };
-                    var { Item } = await dynamoDB.get(params).promise();
+                    let{ Item } = await dynamoDB.get(params).promise();
                     console.log("[INFO] getUserData output",Item)
                     return Item;
                 } 
@@ -388,7 +388,7 @@ export let LambdaLogics={
                     TableName: UserTable,
                     Key: { email: id },
                     };
-                    var { Item } = await dynamoDB.delete(params).promise();
+                    let{ Item } = await dynamoDB.delete(params).promise();
                     console.log("[INFO] getUserData output",Item)
                     return Item;
                 } 
@@ -403,7 +403,7 @@ export let LambdaLogics={
                                         TableName: UserTable,
                                         Item: userData
                         };
-                        var Items  = await dynamoDB.put(params).promise();
+                        letItems  = await dynamoDB.put(params).promise();
                         console.log("[INFO] addUserData output",Items)
                         return Items
                 } 
@@ -460,7 +460,7 @@ export let LambdaLogics={
                     TableName: Table,
                     Key: { id: id },
                     };
-                    var { Item } = await dynamoDB.get(params).promise();
+                    let{ Item } = await dynamoDB.get(params).promise();
                     console.log("[INFO] getData output",Item)
                     return Item;
                 } 
@@ -474,7 +474,7 @@ export let LambdaLogics={
                     TableName: Table,
                     Key: { id: id },
                     };
-                    var { Item } = await dynamoDB.delete(params).promise();
+                    let{ Item } = await dynamoDB.delete(params).promise();
                     console.log("[INFO] getData output",Item)
                     return Item;
                 } 
@@ -489,7 +489,7 @@ export let LambdaLogics={
                                         TableName: Table,
                                         Item: userData
                         };
-                        var Items  = await dynamoDB.put(params).promise();
+                        letItems  = await dynamoDB.put(params).promise();
                         console.log("[INFO] addupdateData output",Items)
                         return Items
                 } 

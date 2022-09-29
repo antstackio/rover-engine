@@ -6,7 +6,7 @@ import * as components  from "../resources/components"
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
 const yaml = require("yaml");
-var fs = require("fs");
+let fs = require("fs");
 export let  pwd =process.cwd()+"/"
 let doc = new yaml.Document();
 const sub  = new RegExp(/(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*\n/g);

@@ -1,6 +1,14 @@
 import { AnyObject } from "immer/dist/internal"
 export let SkeletonConfig:AnyObject={}
 SkeletonConfig["template_version"]="2010-09-09"
+export const vpcip="172.20.0.0/16"
+export const subnet1cidr="172.20.0.0/19"
+export const subnet2cidr="172.20.0.32/19"
+export const subnet3cidr="172.20.64.0/19"
+export const subnet4cidr="172.20.96.0/19"
+export const subnet5cidr="172.20.128.0/19"
+export const subnet6cidr="172.20.160.0/19"
+
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 export let SAMInitBase="sam init --no-interactive "
 export let SAMLanguage=" -r "

@@ -2,6 +2,7 @@ import * as config  from "../utlities/config"
 import { AnyArray, AnyObject } from "immer/dist/internal"
 import * as components from "./components"
 const exec = require("child_process").execSync;
+
 let  pwd =process.cwd()
 const generatecrud= (apiname:String,config:AnyObject)=>{
   let objects:AnyArray=[]
@@ -106,37 +107,37 @@ const generaterds= (name:String,config:AnyObject)=>{
             "VpcCIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for this VPC",
                 "Type": "String",
-                "Default": "172.20.0.0/16"
+                "Default": config.vpcip
             },
             "PublicSubnet1CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone",
                 "Type": "String",
-                "Default": "172.20.0.0/19"
+                "Default": config.subnet1cidr
             },
             "PublicSubnet2CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone",
                 "Type": "String",
-                "Default": "172.20.32.0/19"
+                "Default": config.subnet2cidr
             },
             "PublicSubnet3CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone",
                 "Type": "String",
-                "Default": "172.20.64.0/19"
+                "Default": config.subnet3cidr
             },
             "PrivateSubnet1CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone",
                 "Type": "String",
-                "Default": "172.20.96.0/19"
+                "Default": config.subnet4cidr
             },
             "PrivateSubnet2CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone",
                 "Type": "String",
-                "Default": "172.20.128.0/19"
+                "Default": config.subnet5cidr
             },
             "PrivateSubnet3CIDR": {
                 "Description": "Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone",
                 "Type": "String",
-                "Default": "172.20.160.0/19"
+                "Default": config.subnet6cidr
             }
         
     },

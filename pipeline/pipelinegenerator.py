@@ -1,6 +1,6 @@
 
 
-from pipeline_utilities import *
+from pipeline_utilities import bit , git ,gitl
 import yaml
 import sys
 import json

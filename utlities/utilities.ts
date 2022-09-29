@@ -30,12 +30,12 @@ export  function checkFile(path:string, type:string){
     let patharray=path.split("/")
     if(type=="no"){
         if (fs.existsSync(path)) {
-            throw(patharray[patharray.length-1]+" file already exists")
+            throw new Error(patharray[patharray.length-1]+" file already exists")
         }
     }
     if(type=="yes"){
         if (!fs.existsSync(path)) {
-            throw(patharray[patharray.length-1]+" file doesn't exists")   
+            throw new Error(patharray[patharray.length-1]+" file doesn't exists")   
            }
     }
 }
@@ -90,7 +90,6 @@ export function initializeSAM(input:AnyObject){
     removeFolder(input.app_name)
     let language= config.LanguageSupport[input.language]["version"]
     let dependency=config.LanguageSupport[input.language]["dependency"]
-    let extension=config.LanguageSupport[input.language]["extension"]
     exec(config.SAMInitBase+config.SAMLanguage+language+config.SAMDependency+dependency+config.SAMAppName+app_name+config.SAMAppTemplate)
     let source=pwd+input.app_name+"/hello-world"
     if (dependency=="npm")
@@ -206,9 +205,10 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
                 path2=pwd+app_data.app_name+"/"+resources["resources"][j]["name"]+"/"
                     
-                }if (comp.desti!==undefined) {
+                }
+                if (comp.desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
-                path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
+                    path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "

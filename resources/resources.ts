@@ -54,7 +54,7 @@ function swaggerGenerator(config){
     const swagger=JSON.parse(JSON.stringify(configs.SwaggerSkeleton))
     let swaggerPaths = {}
     if(config.hasOwnProperty("security")){
-        let securities=Object.keys(JSON.parse(JSON.stringify(config["security"])))
+        
        
         swagger["securityDefinitions"]=JSON.parse(JSON.stringify(config["security"]))
     }

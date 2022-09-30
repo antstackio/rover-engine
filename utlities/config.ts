@@ -875,88 +875,39 @@ const swaggerparameter={
         "type": "string"
     }
 }
+const httpresponses={
+    "description": "200 response",
+    "headers": {
+        "Access-Control-Allow-Origin": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Methods": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Headers": {
+            "schema": {
+                "type": "string"
+            }
+        }
+    },
+    "content": {
+        "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Empty"
+            }
+        }
+    }
+    }
+
+ 
 const swaggerresponse = { 
-    "200": {
-    "description": "200 response",
-    "headers": {
-        "Access-Control-Allow-Origin": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Methods": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Headers": {
-            "schema": {
-                "type": "string"
-            }
-        }
-    },
-    "content": {
-        "application/json": {
-            "schema": {
-                "$ref": "#/components/schemas/Empty"
-            }
-        }
-    }
-    },
-    "400": {
-    "description": "200 response",
-    "headers": {
-        "Access-Control-Allow-Origin": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Methods": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Headers": {
-            "schema": {
-                "type": "string"
-            }
-        }
-    },
-    "content": {
-        "application/json": {
-            "schema": {
-                "$ref": "#/components/schemas/Empty"
-            }
-        }
-    }
-    },
-    "500": {
-    "description": "200 response",
-    "headers": {
-        "Access-Control-Allow-Origin": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Methods": {
-            "schema": {
-                "type": "string"
-            }
-        },
-        "Access-Control-Allow-Headers": {
-            "schema": {
-                "type": "string"
-            }
-        }
-    },
-    "content": {
-        "application/json": {
-            "schema": {
-                "$ref": "#/components/schemas/Empty"
-            }
-        }
-    }
-    }
+    "200": httpresponses,
+    "400": httpresponses,
+    "500": httpresponses
 }
 const xamazonapigatewayintegrationresponse={
     "default": {
@@ -980,32 +931,17 @@ const xamazonapigatewayintegration= {
     "contentHandling": "CONVERT_TO_TEXT",
     "type": "aws_proxy"
 }
+const swaggermethods =   {
+    "responses": swaggerresponse,
+    "x-amazon-apigateway-integration": xamazonapigatewayintegration
+}
+const swaggermethodswithparameter =  swaggermethods
+swaggermethodswithparameter["parameters"]=[swaggerparameter]
 export let SwaggerPathSkeleton=  {
-    "get": {
-        "parameters": [
-            swaggerparameter   
-        ],
-        "responses": swaggerresponse,
-        "x-amazon-apigateway-integration": xamazonapigatewayintegration
-    },
-    "post": {
-        "responses": swaggerresponse,
-        "x-amazon-apigateway-integration": xamazonapigatewayintegration
-    },
-    "delete": {
-        "parameters": [
-            swaggerparameter
-        ],
-        "responses": swaggerresponse,
-        "x-amazon-apigateway-integration": xamazonapigatewayintegration
-    },
-    "put": {
-        "parameters": [
-            swaggerparameter
-        ],
-        "responses": swaggerresponse,
-        "x-amazon-apigateway-integration": xamazonapigatewayintegration
-    },
+    "get": swaggermethodswithparameter,
+    "post": swaggermethods,
+    "delete": swaggermethodswithparameter,
+    "put": swaggermethodswithparameter,
     "options": {
         "responses": swaggerresponse,
         "x-amazon-apigateway-integration": {

@@ -185,24 +185,7 @@ export let LanguageSupport={
     "extension":".py"
 }
 }
-export let AWSResourcesTypes={
-    "stack":"AWS::CloudFormation::Stack",
-    "lambda":"AWS::Serverless::Function",
-    "dynamoDB":"AWS::DynamoDB::Table",
-    "cognitoUserPool":"AWS::Cognito::UserPool",
-    "lambdaPermission":"AWS::Lambda::Permission",
-    "userPoolClient":"AWS::Cognito::UserPoolClient",
-    "iamrole":"AWS::IAM::Role",
-    "iampolicy":"AWS::IAM::Policy",
-    "apigateway": "AWS::Serverless::Api",
-    "stepfunction":"AWS::Serverless::StateMachine",
-    "s3bucket":"AWS::S3::Bucket",
-    "apikey": "AWS::ApiGateway::ApiKey",
-    "usageplankey":"AWS::ApiGateway::UsagePlanKey",
-    "usageplan":"AWS::ApiGateway::UsagePlan",
-    "apiauthorizer":"AWS::ApiGateway::Authorizer"
-  
-}
+
 export let AWSResources={
     "stack":{
         "attributes":["Type","Properties","DependsOn"],

@@ -3,7 +3,7 @@ const {spawn} = require("child_process");
 const process = require('process');
 let fs = require("fs");
 import { AnyObject } from "immer/dist/internal";
-import * as rover_utilities  from "../utlities/utilities"
+import * as rover_config  from "../utlities/config"
 
 export function setupRepo(repoconfig:AnyObject){
     repoconfig.app_name=exec("pwd").toString().replace("\n","");
@@ -14,7 +14,7 @@ export function setupRepo(repoconfig:AnyObject){
     if(!fs.existsSync(appname+"/.github")) exec("mkdir "+appname+"/.github") 
     if(!fs.existsSync(appname+"/.github/workflows"))exec("mkdir "+appname+"/.github/workflows") 
     exec("python3 -m pip install pyyaml")     
-    exec("python3 "+rover_utilities.npmroot+"/@rover-tools/cli/node_modules/@rover-tools/engine/pipeline/pipelinegenerator.py "+ appname+"/.github/workflows/main.yml "+appname+"/region.txt "+appname+"/accesskey.txt "+appname+"/secret.txt "+"'"+repoconfigres+"'")         
+    exec("python3 "+rover_config.npmroot+"/@rover-tools/cli/node_modules/@rover-tools/engine/pipeline/pipelinegenerator.py "+ appname+"/.github/workflows/main.yml "+appname+"/region.txt "+appname+"/accesskey.txt "+appname+"/secret.txt "+"'"+repoconfigres+"'")         
     process.chdir(appname);
    
 }

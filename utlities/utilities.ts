@@ -12,7 +12,7 @@ let doc = new yaml.Document();
 const sub  = new RegExp(/(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*\n/g);
 
 let Yaml = require("js-yaml");
-export let npmroot=exec(" npm root -g").toString().trim()
+
 export let npmrootTest= function(){ 
     let packages=exec(" npm -g  ls").toString().trim().split(/\r?\n/)
     packages.shift()

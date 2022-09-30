@@ -1,5 +1,4 @@
 import { AnyObject } from "immer/dist/internal"
-import * as rover_utilities  from "../utlities/utilities"
 export let SkeletonConfig:AnyObject={}
 SkeletonConfig["template_version"]="2010-09-09"
 let ini = require('ini')

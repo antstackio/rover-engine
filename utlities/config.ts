@@ -185,24 +185,7 @@ export let LanguageSupport={
     "extension":".py"
 }
 }
-export let AWSResourcesTypes={
-    "stack":"AWS::CloudFormation::Stack",
-    "lambda":"AWS::Serverless::Function",
-    "dynamoDB":"AWS::DynamoDB::Table",
-    "cognitoUserPool":"AWS::Cognito::UserPool",
-    "lambdaPermission":"AWS::Lambda::Permission",
-    "userPoolClient":"AWS::Cognito::UserPoolClient",
-    "iamrole":"AWS::IAM::Role",
-    "iampolicy":"AWS::IAM::Policy",
-    "apigateway": "AWS::Serverless::Api",
-    "stepfunction":"AWS::Serverless::StateMachine",
-    "s3bucket":"AWS::S3::Bucket",
-    "apikey": "AWS::ApiGateway::ApiKey",
-    "usageplankey":"AWS::ApiGateway::UsagePlanKey",
-    "usageplan":"AWS::ApiGateway::UsagePlan",
-    "apiauthorizer":"AWS::ApiGateway::Authorizer"
-  
-}
+
 export let AWSResources={
     "stack":{
         "attributes":["Type","Properties","DependsOn"],
@@ -884,555 +867,149 @@ export let SwaggerSkeleton={
         }
     }
 }
+const swaggerparameter={
+    "name": "email",
+    "in": "path",
+    "required": true,
+    "schema": {
+        "type": "string"
+    }
+}
+const swaggerresponse = { 
+    "200": {
+    "description": "200 response",
+    "headers": {
+        "Access-Control-Allow-Origin": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Methods": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Headers": {
+            "schema": {
+                "type": "string"
+            }
+        }
+    },
+    "content": {
+        "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Empty"
+            }
+        }
+    }
+    },
+    "400": {
+    "description": "200 response",
+    "headers": {
+        "Access-Control-Allow-Origin": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Methods": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Headers": {
+            "schema": {
+                "type": "string"
+            }
+        }
+    },
+    "content": {
+        "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Empty"
+            }
+        }
+    }
+    },
+    "500": {
+    "description": "200 response",
+    "headers": {
+        "Access-Control-Allow-Origin": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Methods": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "Access-Control-Allow-Headers": {
+            "schema": {
+                "type": "string"
+            }
+        }
+    },
+    "content": {
+        "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Empty"
+            }
+        }
+    }
+    }
+}
+const xamazonapigatewayintegrationresponse={
+    "default": {
+        "statusCode": "200",
+        "responseParameters": {
+            "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+        },
+        "responseTemplates": {
+            "application/json": "{}    \n"
+          }
+    }
+}
+const xamazonapigatewayintegrationuri={"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"}
+const xamazonapigatewayintegration= {
+    "httpMethod": "POST",
+    "uri": xamazonapigatewayintegrationuri,
+    "responses": xamazonapigatewayintegrationresponse,
+    "passthroughBehavior": "when_no_match",
+    "contentHandling": "CONVERT_TO_TEXT",
+    "type": "aws_proxy"
+}
 export let SwaggerPathSkeleton=  {
     "get": {
         "parameters": [
-            {
-                "name": "email",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            }
+            swaggerparameter   
         ],
-        "responses": {
-            "200": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "400": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "500": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            }
-        },
-        "x-amazon-apigateway-integration": {
-            "httpMethod": "POST",
-            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
-            "responses": {
-                "default": {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    },
-                    "responseTemplates": {
-                        "application/json": "{}    \n"
-                      }
-                }
-            },
-            "passthroughBehavior": "when_no_match",
-            "contentHandling": "CONVERT_TO_TEXT",
-            "type": "aws_proxy"
-        }
+        "responses": swaggerresponse,
+        "x-amazon-apigateway-integration": xamazonapigatewayintegration
     },
     "post": {
-        "responses": {
-            "200": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "400": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "500": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            }
-        },
-        "x-amazon-apigateway-integration": {
-            "httpMethod": "POST",
-            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
-            "responses": {
-                "default": {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    },
-                    "responseTemplates": {
-                        "application/json": "{}    \n"
-                      }
-                }
-            },
-            "passthroughBehavior": "when_no_match",
-            "contentHandling": "CONVERT_TO_TEXT",
-            "type": "aws_proxy"
-        }
+        "responses": swaggerresponse,
+        "x-amazon-apigateway-integration": xamazonapigatewayintegration
     },
     "delete": {
         "parameters": [
-            {
-                "name": "email",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            }
+            swaggerparameter
         ],
-        "responses": {
-            "200": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "400": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "500": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            }
-        },
-        "x-amazon-apigateway-integration": {
-            "httpMethod": "POST",
-            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
-            "responses": {
-                "default": {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    },
-                    "responseTemplates": {
-                        "application/json": "{}    \n"
-                      }
-                }
-            },
-            "passthroughBehavior": "when_no_match",
-            "contentHandling": "CONVERT_TO_TEXT",
-            "type": "aws_proxy"
-        }
+        "responses": swaggerresponse,
+        "x-amazon-apigateway-integration": xamazonapigatewayintegration
     },
     "put": {
         "parameters": [
-            {
-                "name": "email",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            }
+            swaggerparameter
         ],
-        "responses": {
-            "200": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "400": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "500": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            }
-        },
-        "x-amazon-apigateway-integration": {
-            "httpMethod": "POST",
-            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
-            "responses": {
-                "default": {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    },
-                    "responseTemplates": {
-                        "application/json": "{}    \n"
-                      }
-                }
-            },
-            "passthroughBehavior": "when_no_match",
-            "contentHandling": "CONVERT_TO_TEXT",
-            "type": "aws_proxy"
-        }
+        "responses": swaggerresponse,
+        "x-amazon-apigateway-integration": xamazonapigatewayintegration
     },
     "options": {
-        "responses": {
-            "200": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "400": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            },
-            "500": {
-                "description": "200 response",
-                "headers": {
-                    "Access-Control-Allow-Origin": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Methods": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "Access-Control-Allow-Headers": {
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Empty"
-                        }
-                    }
-                }
-            }
-        },
+        "responses": swaggerresponse,
         "x-amazon-apigateway-integration": {
-            "responses": {
-                "default": {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    },
-                    "responseTemplates": {
-                        "application/json": "{}    \n"
-                      }
-                }
-            },
+            "responses": xamazonapigatewayintegrationresponse,
             "requestTemplates": {
                 "application/json": "{\"statusCode\": 200}"
             },
@@ -1441,7 +1018,3 @@ export let SwaggerPathSkeleton=  {
         }
     }
 }
-
-    
-
-

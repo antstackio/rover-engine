@@ -342,7 +342,7 @@ export function checkNested(template:string) {
     let result:AnyObject={}
     let  resources=Object.keys(Data["Resources"])
     resources.forEach(ele=>{
-        if(Data["Resources"][ele]["Type"]===config.AWSResources.stack.type){
+        if(Data["Resources"][ele]["Type"]===config.stacktype){
             checkNested=true
             CompStacks[ele]=Data["Resources"][ele]["Properties"]["TemplateURL"]
         }

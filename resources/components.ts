@@ -1,6 +1,6 @@
 
 
-import {rover_component} from "../utlities/config"
+
 export const generatelambda=(name,config)=>{
   let lambda={}
   lambda["name"]=name+"Function"

@@ -1,28 +1,29 @@
 
 
+import {rover_component} from "../utlities/config"
 export const generatelambda=(name,config)=>{
-  return {
-    "name":name+"Function",
-    "type":"lambda",
-    "config":{
+  let lambda={}
+  lambda["name"]=name+"Function"
+  lambda["type"]="lambda"
+  lambda["logic"]=true
+  lambda["config"]={
         
-        "Environment": {
-            "Variables": {
-              "Table": { "Ref" : name+"Table"}
-            }
-        },
-        "Policies": [
-          "AWSLambdaDynamoDBExecutionRole",
-          {
-            "DynamoDBCrudPolicy": {
-              "TableName": { "Ref" : name+"Table"},
-              
-            }
-          }
-        ]
-      },
-    "logic":true
+    "Environment": {
+        "Variables": {
+          "Table": { "Ref" : name+"Table"}
+        }
+    },
+    "Policies": [
+      "AWSLambdaDynamoDBExecutionRole",
+      {
+        "DynamoDBCrudPolicy": {
+          "TableName": { "Ref" : name+"Table"},
+          
+        }
+      }
+    ]
   }
+  return lambda
 
 }
 export const generatetable= (name,config)=>{

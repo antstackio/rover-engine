@@ -3,7 +3,6 @@
 
 
 import { AnyArray, AnyObject } from "immer/dist/internal"
-import * as config  from "../utlities/config"
 
 export const generatelambda=(name,config)=>{
   let lambda={}
@@ -57,7 +56,7 @@ export const generatecrud= (apiname:string,config:AnyObject)=>{
   let functions:AnyArray=[]
   let tables:AnyArray=[]
   let iamresources:AnyArray=[]
-  console.log(config)
+  
   Object.keys(config).forEach(ele=>{
     let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
     obj["name"]=ele
@@ -174,7 +173,7 @@ export let Components={
       
     }
     ],
-    "crud_api":crudcomponent,
+    "crud_api":crudcomponent["UsersCRUDModule"]["resources"],
    
 }
 export let ModuleDescription={

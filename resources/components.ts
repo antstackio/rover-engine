@@ -1,6 +1,10 @@
 
 
 
+
+import { AnyArray, AnyObject } from "immer/dist/internal"
+import * as config  from "../utlities/config"
+
 export const generatelambda=(name,config)=>{
   let lambda={}
   lambda["name"]=name+"Function"
@@ -48,6 +52,89 @@ export const generatetable= (name,config)=>{
     "logic":false
   }
 }
+export const generatecrud= (apiname:string,config:AnyObject)=>{
+  let objects:AnyArray=[]
+  let functions:AnyArray=[]
+  let tables:AnyArray=[]
+  let iamresources:AnyArray=[]
+  console.log(config)
+  Object.keys(config).forEach(ele=>{
+    let obj:AnyObject=JSON.parse(JSON.stringify(config[ele]))
+    obj["name"]=ele
+    obj["role"]=apiname+"Roles"
+    obj["resource"]=ele+"Function"
+    objects.push(obj)
+    let lambdafunc:AnyObject=generatelambda(ele,{})
+    lambdafunc["logicpath"]="crud";
+   
+    let table=generatetable(ele,{})
+    functions.push(lambdafunc)
+    tables.push(table)
+    iamresources.push({ "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name},
+    { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name+"/index/*"})
+    
+}) 
+let role:AnyObject={
+  "name":apiname+"Roles",
+  "type":"iamrole",
+  "config":{
+   "iamservice":["lambda.amazonaws.com","apigateway.amazonaws.com"],
+   "managedarn":["AWSLambdaBasicExecutionRole","AmazonAPIGatewayPushToCloudWatchLogs"],
+   "Path": "/",
+   "Policies":[
+       {  "name":"lambdainvoke",
+           "Action": "lambda:InvokeFunction",
+           "Resource": { "Fn::Sub":"arn:aws:lambda:*:${AWS::AccountId}:function:*"}
+       },
+       {  "name":"dynamodbcrud",
+           "Action":  [
+            "dynamodb:GetItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:PutItem",
+            "dynamodb:Scan",
+            "dynamodb:Query",
+            "dynamodb:UpdateItem",
+            "dynamodb:BatchWriteItem",
+            "dynamodb:BatchGetItem",
+            "dynamodb:DescribeTable",
+            "dynamodb:ConditionCheckItem"
+        ],
+           "Resource":iamresources
+       }
+   ]
+      
+  },
+  "logic":false
+  }
+let apis:AnyObject={
+"name":apiname+"APIs",
+"type":"apigateway",
+"config":{
+  "StageName":"dev",
+  "objects":objects
+  },
+"logic":false
+}
+let res:AnyObject={}
+res[apiname+"CRUDModule"]={}
+res[apiname+"CRUDModule"]={"resources":[]}
+let resarray=res[apiname+"CRUDModule"]["resources"]
+resarray.push(role)
+resarray.push(apis)
+resarray=resarray.concat(functions);
+resarray=resarray.concat(tables);
+res[apiname+"CRUDModule"]["resources"]=resarray
+  return res
+}
+
+let crudcomponentconfig={
+  book: {
+    path: '/book',
+    methods: [ 'put', 'get', 'post', 'delete', 'options' ],
+    resourcetype: 'lambda'
+  }
+}
+let crudcomponent:object=generatecrud("Users",crudcomponentconfig)
 
 export let Components={
     "s3_lambda":[
@@ -87,109 +174,11 @@ export let Components={
       
     }
     ],
-    "crud_api":[
-    {
-      "name":"crudRoles",
-      "type":"iamrole",
-      "config":{
-       "iamservice":["lambda.amazonaws.com","apigateway.amazonaws.com"],
-       "managedarn":["AWSLambdaBasicExecutionRole","AmazonAPIGatewayPushToCloudWatchLogs"],
-       "Path": "/",
-       "Policies":[
-           {  "name":"lambdainvoke",
-               "Action": "lambda:InvokeFunction",
-               "Resource": { "Fn::Sub":"arn:aws:lambda:*:${AWS::AccountId}:function:*"}
-           },
-           {  "name":"dynamodbcrud",
-               "Action":  [
-                "dynamodb:GetItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:PutItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:BatchGetItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:ConditionCheckItem"
-            ],
-               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable"},
-               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable/index/*"}
-]
-           }
-       ]
-          
-      },
-      "logic":false
-    },
-    {
-    "name":"EmailAuthAPIs",
-    "type":"apigateway",
-    "config":{
-      "StageName":"dev",
-      "objects":[
-        {
-          "name":"Users",
-          "methods":["get","put","delete"],
-          "resource":"Users",
-          "role":"crudRoles",
-          "path":"/users",
-          "resourcetype":"lambda"
-        }
-        ]
-        
-       
-      },
-    "logic":false
-    },
-    {
-      "name":"Users",
-      "type":"lambda",
-      "config":{
-          "Role":  {"Fn::GetAtt": [ "crudRoles","Arn"]},
-          "Environment": {
-              "Variables": {
-                "UserPoolID": { "Ref" : "AuthUserPools"},
-                "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
-                "userinfoTable": { "Ref" : "UserTable"}
-              }
-          },
-          "Policies": [
-            "AWSLambdaDynamoDBExecutionRole",
-            {
-              "DynamoDBCrudPolicy": {
-                "TableName": { "Ref" : "UserTable"},
-                
-              }
-            }
-          ]
-        },
-      "logic":true
-    },
-    {
-      "name":"UserTable",
-      "type":"dynamoDB",
-      "config":{
-          "BillingMode": "PAY_PER_REQUEST",
-          "AttributeDefinitions": [
-            {
-              "AttributeName": "email",
-              "AttributeType": "S"
-            }
-          ],
-          "KeySchema": [
-            {
-              "AttributeName": "email",
-              "KeyType": "HASH"
-            }
-          ]
-        },
-      "logic":false
-    },
-    ],
+    "crud_api":crudcomponent,
    
 }
 export let ModuleDescription={
   "s3_lambda":"lambda with S3 as trigger",
+  "crud_api":"basic book CRUD API's "
  
 }

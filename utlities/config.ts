@@ -187,7 +187,7 @@ export let LanguageSupport={
 }
 }
 export function generateAWSResource(name,type,base,optional, defaults){
-    console.log("generateAWSResource")
+    
    let resource:object= {
     "attributes":["Type","Properties","DependsOn"],
     "type":type,

@@ -40,6 +40,7 @@ export  function checkFile(path:string, type:string){
     }
 }
 export  function writeFile(path:string, data:string){ 
+    path=(pwd+path).replace("//","/")
      fs.writeFileSync(pwd+"/"+path,data);
 }
 export  function installDependies(path:string,packages:AnyArray,dependency:string){ 
@@ -47,7 +48,6 @@ export  function installDependies(path:string,packages:AnyArray,dependency:strin
     if (dependency=="npm") {
         packages.map(ele=>{
             exec("npm --prefix "+pwd+path+" install "+ele+" --save")
-            console.log("npm --prefix "+pwd+path+" install "+ele+"")
         })
         
     }
@@ -194,7 +194,6 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
         if(config.AWSResources[resources["resources"][j]["type"]].hasOwnProperty("name")){
             let name=(resources["resources"][j]["name"]).replace(" ","")
             name=name.replace(/[^a-z0-9]/gi, '');
-
             configs[config.AWSResources[resources["resources"][j]["type"]]["name"]]=name
         }
         if(resources["resources"][j]["type"]=="lambda"){ 
@@ -220,9 +219,25 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             configs["CodeUri"]=resources["resources"][j]["name"]+"/"
             configs["Runtime"]=app_data.language
         }else if(resources["resources"][j]["type"]=="apigateway"){
-            exec("mkdir "+pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway")
-            configs["path"]=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
-            configs["filepath"]=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+            let path
+            let configpath
+            let filepath
+            let basepath
+            if (stack_names==undefined) {
+                if (comp.desti!==undefined) {
+                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"
+                    configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                }
+            }else{
+                path=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"
+                configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                filepath=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+            }
+            if (fs.existsSync(path)) throw new Error(path +" file already exists");
+            exec("mkdir "+path)
+            configs["path"]=configpath
+            configs["filepath"]=filepath
         }
         let resources1=rover_resources.resourceGeneration(resources["resources"][j]["type"],configs)
         res[resources["resources"][j]["name"]] = resources1
@@ -230,6 +245,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     return res
 }
 export  function createStack(app_data,app_types){
+
     let stack_names = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
@@ -277,10 +293,10 @@ export function  generationSAM(input){
     exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }
 export function addComponents(input){
+
     let Data = fs.readFileSync(pwd+"/"+input.file_name.trim(), { encoding: "utf-8" });
     Data=Yaml.load(replaceTempTag(Data))
     if(Data.hasOwnProperty("Resources")){
-
         let res={}
         let app_data=getAppdata(input)
         let input2=JSON.parse(JSON.stringify(input))
@@ -328,7 +344,6 @@ export function getComponents(component){
     let componentstype:string
     Object.entries(component).map(ele=>{
         let componentstype:any=ele[1]
-        console.log(componentstype,components.Components[componentstype],typeof componentstype ,typeof components.Components[componentstype])
         JSON.parse(JSON.stringify(components.Components[componentstype])).map(ele=>{
             resources.push(ele)
         })    
@@ -353,7 +368,6 @@ export function checkNested(template:string) {
     return result
 
 }
-
 function generateRoverAWSResource(cfjson:AnyObject,base:AnyArray){
     let result:AnyObject={}
     let optinal=Object.keys(cfjson["Properties"])

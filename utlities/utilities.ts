@@ -328,6 +328,7 @@ export function getComponents(component){
     let componentstype:string
     Object.entries(component).map(ele=>{
         let componentstype:any=ele[1]
+        console.log(componentstype,components.Components[componentstype],typeof componentstype ,typeof components.Components[componentstype])
         JSON.parse(JSON.stringify(components.Components[componentstype])).map(ele=>{
             resources.push(ele)
         })    

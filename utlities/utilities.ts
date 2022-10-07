@@ -5,6 +5,7 @@ import * as modules  from "../resources/modules"
 import * as components  from "../resources/components"
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
+const crypto = require('crypto');
 const yaml = require("yaml");
 let fs = require("fs");
 export let  pwd =process.cwd()+"/"
@@ -40,8 +41,8 @@ export  function checkFile(path:string, type:string){
     }
 }
 export  function writeFile(path:string, data:string){ 
-    path=(pwd+path).replace("//","/")
-     fs.writeFileSync(pwd+"/"+path,data);
+    path=(pwd+"/"+path).replace(/\/\/*/g,"/")
+     fs.writeFileSync(path,data);
 }
 export  function installDependies(path:string,packages:AnyArray,dependency:string){ 
     
@@ -187,7 +188,12 @@ export function cliModuletoConfig(input:AnyObject){
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
         let res={}
+        
     for(let j in  resources["resources"]){ 
+        if(stack_names==undefined){
+                let randomstr:string=(crypto.randomBytes(1).toString("base64url").replace(/\d/g, 'd')).toLowerCase();
+                resources["resources"][j]["name"]=resources["resources"][j]["name"]+randomstr
+        }
         let configs=resources["resources"][j]["config"]
         let logic=resources["resources"][j]["logic"]
         
@@ -199,6 +205,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
         if(resources["resources"][j]["type"]=="lambda"){ 
             let path
             let path2
+            let lambda_stack_names=stack_names
             if (stack_names==undefined) {
                 if (comp.demo_desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
@@ -208,13 +215,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 if (comp.desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
                     path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
+                    lambda_stack_names=(comp.desti.split("/")[1]).replace("_Stack","")
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
                 path2=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
             }
             copyLambdaLogic(path,path2)
-            generateLambdafiles(logic,app_data,resources,StackType,stack_names,j)
+            generateLambdafiles(logic,app_data,resources,StackType,lambda_stack_names,j)
             testsetup(path2,app_data.dependency,app_data.app_name)
             configs["CodeUri"]=resources["resources"][j]["name"]+"/"
             configs["Runtime"]=app_data.language
@@ -222,8 +230,10 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             let path
             let configpath
             let filepath
-            let basepath
+           
+            
             if (stack_names==undefined) {
+                
                 if (comp.desti!==undefined) {
                     path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"
                     configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"

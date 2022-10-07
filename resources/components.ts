@@ -133,7 +133,7 @@ let crudcomponentconfig={
     resourcetype: 'lambda'
   }
 }
-let crudcomponent:object=generatecrud("Users",crudcomponentconfig)
+let crudcomponent:object=generatecrud("book",crudcomponentconfig)
 
 export let Components={
     "s3_lambda":[
@@ -173,7 +173,7 @@ export let Components={
       
     }
     ],
-    "crud_api":crudcomponent["UsersCRUDModule"]["resources"],
+    "crud_api":crudcomponent["bookCRUDModule"]["resources"],
    
 }
 export let ModuleDescription={

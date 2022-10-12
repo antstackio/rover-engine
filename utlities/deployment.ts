@@ -20,7 +20,6 @@ export function setupRepo(repoconfig:AnyObject){
         })
         if (piplibrarieslist.includes("pyyaml")) throw new Error("install yaml library (pip3 install pyyaml)")
         if (piplibrarieslist.includes("sys")) throw new Error("install sys library (pip3 install sys)")
-        
         repoconfig.app_name=exec("pwd").toString().replace("\n","");
         let filenamearray=( repoconfig.app_name).split("/")
         repoconfig.name = filenamearray[filenamearray.length-1].replace("\n","");

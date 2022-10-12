@@ -18,9 +18,6 @@ jobs:
       - name: Install Dependicies
         run : npm install
           
-      - name: Install Dependicies
-        run : npm i typescript
-
       - name: Build
         run: npm run build
 

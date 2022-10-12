@@ -447,7 +447,7 @@ export function NumtoAlpabet (params) {
         res=(params+9).toString(36)
     }
     }while(params>26)
-    
+    res=res+modstr
     return res.toUpperCase()
 
     

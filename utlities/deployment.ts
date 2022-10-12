@@ -15,7 +15,7 @@ export function setupRepo(repoconfig:AnyObject){
         if (piplibraries==="") throw new Error("yaml,sys and json python modules are required.");
         let piplibrarieslist:AnyArray=[]
         piplibraries.split(" ").forEach(ele=>{
-            if (ele!=='') piplibrarieslist.push(ele.replace(/[!@#$%^&\*()_\-={}\[\]:\"<>,\\.?\n]*[0-9]*/g, ''))
+            if (ele!=='') piplibrarieslist.push(ele.replace(/[!@#$%^&\*()_\-={}\[\]:\"<>,\\.?\n]*\d*/g, ''))
 
         })
         if (piplibrarieslist.includes("pyyaml")) throw new Error("install yaml library (pip3 install pyyaml)")

@@ -19,7 +19,7 @@ export const stacktype="AWS::CloudFormation::Stack"
 
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 export let SAMInitBase="sam init --no-interactive "
-export let SAMLanguage=" -r "
+export let SAMLanguage=" -r " 
 export let SAMDependency=" -d "
 export let SAMAppName=" -n "
 export let SAMAppTemplate=" --app-template hello-world"

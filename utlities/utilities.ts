@@ -5,6 +5,7 @@ import * as modules  from "../resources/modules"
 import * as components  from "../resources/components"
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
+const crypto = require('crypto');
 const yaml = require("yaml");
 let fs = require("fs");
 export let  pwd =process.cwd()+"/"
@@ -40,8 +41,8 @@ export  function checkFile(path:string, type:string){
     }
 }
 export  function writeFile(path:string, data:string){ 
-    path=(pwd+path).replace("//","/")
-     fs.writeFileSync(pwd+"/"+path,data);
+    path=(pwd+"/"+path).replace(/\/\/*/g,"/")
+     fs.writeFileSync(path,data);
 }
 export  function installDependies(path:string,packages:AnyArray,dependency:string){ 
     
@@ -49,9 +50,7 @@ export  function installDependies(path:string,packages:AnyArray,dependency:strin
         packages.map(ele=>{
             exec("npm --prefix "+pwd+path+" install "+ele+" --save")
         })
-        
     }
-    
 }
 export function testsetup(path:string,dependency:string,appname:string) {
     if (dependency=="npm") {
@@ -153,7 +152,9 @@ export function cliModuletoConfig(input:AnyObject){
         Object.keys(input["Stacks"]).forEach(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
+                
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
+                
                     
             }else if(input["Stacks"][ele]=="RDS"){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,{})
@@ -162,8 +163,11 @@ export function cliModuletoConfig(input:AnyObject){
                 stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
             }
                 Object.keys(stackdata).forEach(ele1=>{
-                app_types[ele+ele1]=stackdata[ele1]
-                app_types[ele+ele1]["type"]="module"
+                    let stacknamepattern=new RegExp(ele+"*","g") 
+                    if(!stacknamepattern.test(ele1))ele=ele+ele1
+                    else ele=ele1
+                app_types[ele]=stackdata[ele1]
+                app_types[ele]["type"]="module"
             })
             
             
@@ -183,11 +187,18 @@ export function cliModuletoConfig(input:AnyObject){
             app_types[ele]["type"]="components"
         })
     }
+    
+    
     return app_types
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
         let res={}
+        
     for(let j in  resources["resources"]){ 
+        if(stack_names==undefined){
+                let randomstr:string=(crypto.randomBytes(1).toString("base64url").replace(/\d/g, 'd')).toLowerCase();
+                resources["resources"][j]["name"]=resources["resources"][j]["name"]+randomstr
+        }
         let configs=resources["resources"][j]["config"]
         let logic=resources["resources"][j]["logic"]
         
@@ -199,6 +210,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
         if(resources["resources"][j]["type"]=="lambda"){ 
             let path
             let path2
+            let lambda_stack_names=stack_names
             if (stack_names==undefined) {
                 if (comp.demo_desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
@@ -208,13 +220,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 if (comp.desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
                     path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
+                    lambda_stack_names=(comp.desti.split("/")[1]).replace("_Stack","")
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
                 path2=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
             }
             copyLambdaLogic(path,path2)
-            generateLambdafiles(logic,app_data,resources,StackType,stack_names,j)
+            generateLambdafiles(logic,app_data,resources,StackType,lambda_stack_names,j)
             testsetup(path2,app_data.dependency,app_data.app_name)
             configs["CodeUri"]=resources["resources"][j]["name"]+"/"
             configs["Runtime"]=app_data.language
@@ -222,8 +235,10 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             let path
             let configpath
             let filepath
-            let basepath
+           
+            
             if (stack_names==undefined) {
+                
                 if (comp.desti!==undefined) {
                     path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"
                     configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
@@ -247,6 +262,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
 export  function createStack(app_data,app_types){
 
     let stack_names = Object.keys(app_types)
+    
     let resource=app_types
     let StackType = app_data.StackType
     let stackes={}
@@ -289,6 +305,7 @@ export function  generationSAM(input){
     
     let app_data= getAppdata(input)
     let app_types=cliModuletoConfig(input)
+    
     createStack(app_data,app_types)
     exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }
@@ -417,4 +434,22 @@ export function replaceTempTag(yamlinput:string){
       }while(result!==null)
       return yamlinput
 }
-  
+export function NumtoAlpabet (params) {
+    let res=""
+    let modstr=""
+    if(params>26) modstr=NumtoAlpabet(params%26)
+    do {
+    if(params>26){
+        res=res+"z"
+        params=Math.floor(params/26)
+        res=res+NumtoAlpabet(params)
+    }else{
+        res=(params+9).toString(36)
+    }
+    }while(params>26)
+    
+    return res.toUpperCase()
+
+    
+}
+

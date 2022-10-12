@@ -52,6 +52,7 @@ export const generatetable= (name,config)=>{
   }
 }
 export const generatecrud= (apiname:string,config:AnyObject)=>{
+ 
   let objects:AnyArray=[]
   let functions:AnyArray=[]
   let tables:AnyArray=[]
@@ -123,6 +124,7 @@ resarray.push(apis)
 resarray=resarray.concat(functions);
 resarray=resarray.concat(tables);
 res[apiname+"CRUDModule"]["resources"]=resarray
+
   return res
 }
 
@@ -133,7 +135,7 @@ let crudcomponentconfig={
     resourcetype: 'lambda'
   }
 }
-let crudcomponent:object=generatecrud("Users",crudcomponentconfig)
+let crudcomponent:object=generatecrud("book",crudcomponentconfig)
 
 export let Components={
     "s3_lambda":[
@@ -173,7 +175,7 @@ export let Components={
       
     }
     ],
-    "crud_api":crudcomponent["UsersCRUDModule"]["resources"],
+    "crud_api":crudcomponent["bookCRUDModule"]["resources"],
    
 }
 export let ModuleDescription={

@@ -16,7 +16,6 @@ export const subnet5cidr=config.ip.subnet5cidr
 export const subnet6cidr=config.ip.subnet6cidr
 export const stacktype="AWS::CloudFormation::Stack"
 
-
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 export let SAMInitBase="sam init --no-interactive "
 export let SAMLanguage=" -r " 

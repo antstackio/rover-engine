@@ -52,6 +52,7 @@ export const generatetable= (name,config)=>{
   }
 }
 export const generatecrud= (apiname:string,config:AnyObject)=>{
+ 
   let objects:AnyArray=[]
   let functions:AnyArray=[]
   let tables:AnyArray=[]
@@ -123,6 +124,7 @@ resarray.push(apis)
 resarray=resarray.concat(functions);
 resarray=resarray.concat(tables);
 res[apiname+"CRUDModule"]["resources"]=resarray
+
   return res
 }
 

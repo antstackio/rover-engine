@@ -50,9 +50,7 @@ export  function installDependies(path:string,packages:AnyArray,dependency:strin
         packages.map(ele=>{
             exec("npm --prefix "+pwd+path+" install "+ele+" --save")
         })
-        
     }
-    
 }
 export function testsetup(path:string,dependency:string,appname:string) {
     if (dependency=="npm") {
@@ -154,7 +152,9 @@ export function cliModuletoConfig(input:AnyObject){
         Object.keys(input["Stacks"]).forEach(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
+                
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
+                
                     
             }else if(input["Stacks"][ele]=="RDS"){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,{})
@@ -163,8 +163,11 @@ export function cliModuletoConfig(input:AnyObject){
                 stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
             }
                 Object.keys(stackdata).forEach(ele1=>{
-                app_types[ele+ele1]=stackdata[ele1]
-                app_types[ele+ele1]["type"]="module"
+                    let stacknamepattern=new RegExp(ele+"*","g") 
+                    if(!stacknamepattern.test(ele1))ele=ele+ele1
+                    else ele=ele1
+                app_types[ele]=stackdata[ele1]
+                app_types[ele]["type"]="module"
             })
             
             
@@ -184,6 +187,8 @@ export function cliModuletoConfig(input:AnyObject){
             app_types[ele]["type"]="components"
         })
     }
+    
+    
     return app_types
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
@@ -257,6 +262,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
 export  function createStack(app_data,app_types){
 
     let stack_names = Object.keys(app_types)
+    
     let resource=app_types
     let StackType = app_data.StackType
     let stackes={}
@@ -299,6 +305,7 @@ export function  generationSAM(input){
     
     let app_data= getAppdata(input)
     let app_types=cliModuletoConfig(input)
+    
     createStack(app_data,app_types)
     exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }
@@ -427,4 +434,22 @@ export function replaceTempTag(yamlinput:string){
       }while(result!==null)
       return yamlinput
 }
-  
+export function NumtoAlpabet (params) {
+    let res=""
+    let modstr=""
+    if(params>26) modstr=NumtoAlpabet(params%26)
+    do {
+    if(params>26){
+        res=res+"z"
+        params=Math.floor(params/26)
+        res=res+NumtoAlpabet(params)
+    }else{
+        res=(params+9).toString(36)
+    }
+    }while(params>26)
+    
+    return res.toUpperCase()
+
+    
+}
+

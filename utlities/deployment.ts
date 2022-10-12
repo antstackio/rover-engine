@@ -1,7 +1,6 @@
 const exec = require("child_process").execSync;
 const process = require('process');
 let fs = require("fs");
-import { info } from "console";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as rover_config  from "../utlities/config"
 
@@ -19,8 +18,8 @@ export function setupRepo(repoconfig:AnyObject){
             if (ele!=='') piplibrarieslist.push(ele.replace(/[!@#$%^&\*()_\-={}\[\]:\"<>,\\.?\n]*[0-9]*/g, ''))
 
         })
-        if (piplibraries.includes("pyyaml")) throw new Error("install yaml library (pip3 install pyyaml)")
-        if (piplibraries.includes("sys")) throw new Error("install sys library (pip3 install sys)")
+        if (piplibrarieslist.includes("pyyaml")) throw new Error("install yaml library (pip3 install pyyaml)")
+        if (piplibrarieslist.includes("sys")) throw new Error("install sys library (pip3 install sys)")
         
         repoconfig.app_name=exec("pwd").toString().replace("\n","");
         let filenamearray=( repoconfig.app_name).split("/")

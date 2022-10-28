@@ -156,7 +156,7 @@ export function cliModuletoConfig(input:AnyObject){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
                 
                     
-            }else if(input["Stacks"][ele]=="RDS"){
+            }else if(input["Stacks"][ele]=="RDS"||input["Stacks"][ele]=="RDSa"){
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,{})
             }
             else{

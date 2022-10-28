@@ -12,6 +12,8 @@ export const generateRoverResource=(name,type,config,logic)=>{
   resource["logic"]=logic
   if (config.length!==0||config!==undefined) {
     resource["config"]=config
+    if (config.hasOwnProperty("logicpath")) resource["logicpath"]=config["logicpath"]
+    if (config.hasOwnProperty("package")) resource["package"]=config["package"]
   }
   return resource
 

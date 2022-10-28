@@ -811,6 +811,343 @@ export const generaterds= (name:string,config:AnyObject)=>{
     }
   }
 }
+export const generateLambdaconfig =(env,policy,role)=>{
+  let response:AnyObject={}
+  if (env!==undefined)response["Environment"]=env
+  if (env!==undefined)response["Policies"]=policy
+  if (env!==undefined)response["Role"]=role
+  return response
+
+}
+export const generateEmailauth=()=>{
+  let response:AnyObject={}
+  let tableaccesspolicy=[
+      "AWSLambdaDynamoDBExecutionRole",
+      {
+        "DynamoDBCrudPolicy": {
+          "TableName": { "Ref" : "UserTable"}
+        }
+      }
+    ]
+  let lambdauserenv=components.generateLambdaEnv({"UserPoolID": "AuthUserPools","UserPoolClientID": "AuthUserPoolsClient","userinfoTable":"UserTable"})
+  let lambdatabenv=components.generateLambdaEnv({"userinfoTable":"UserTable"})
+  let signupiam={"Fn::GetAtt": [ "SignUpRoles","Arn"]}
+  let lambdaconfigtab= generateLambdaconfig(lambdatabenv,tableaccesspolicy,undefined)
+  let lambdaconfiguser=generateLambdaconfig(lambdauserenv,tableaccesspolicy,signupiam)
+  response={
+    "EmailAuthModule":{
+        "resources":[
+            components.generateRoverResource("DefineAuthChallenge","lambda",lambdaconfigtab,true),  
+            components.generateRoverResource("AuthorizerFunction","lambda",generateLambdaconfig(lambdauserenv,tableaccesspolicy,undefined),true),
+            components.generateRoverResource("CreateAuthChallenge","lambda",
+              {
+                "Environment":components.generateLambdaEnv({"SES_FROM_ADDRESS":  "VerifyAuthChallengeResponse"}),
+                "Policies": [
+                  {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "ses:SendEmail"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                ]
+              },
+              true
+            ),
+            components.generateRoverResource("VerifyAuthChallengeResponse","lambda",lambdaconfigtab,true),
+            components.generateRoverResource("PreSignUp","lambda",lambdaconfigtab,true),
+            components.generateRoverResource("SignUpFunctions","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("ResendCode","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("ConfirmForgotPassword","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("ForgotPassword","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("ConfirmUser","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("Users","lambda",lambdaconfiguser,true),
+            components.generateRoverResource("UserTable","dynamoDB",
+              {
+                    "BillingMode": "PAY_PER_REQUEST",
+                    "AttributeDefinitions": [
+                      {
+                        "AttributeName": "email",
+                        "AttributeType": "S"
+                      }
+                    ],
+                    "KeySchema": [
+                      {
+                        "AttributeName": "email",
+                        "KeyType": "HASH"
+                      }
+                    ]
+              },
+              false
+            ),
+            components.generateRoverResource("CreateAuthChallengeInvocationPermission",
+                "lambdaPermission",
+               {
+                   
+                  "Action": "lambda:InvokeFunction",
+                  "FunctionName":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
+                  "Principal": "cognito-idp.amazonaws.com",
+                  "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
+                },
+                false
+            ),
+            components.generateRoverResource("DefineAuthChallengeInvocationPermission",
+              "lambdaPermission",
+             {
+                "Action": "lambda:InvokeFunction",
+                "FunctionName":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
+                "Principal": "cognito-idp.amazonaws.com",
+                "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
+              },
+              false
+            ),
+            components.generateRoverResource("VerifyAuthChallengeResponseInvocationPermission",
+            "lambdaPermission",
+           {
+              "Action": "lambda:InvokeFunction",
+              "FunctionName":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
+              "Principal": "cognito-idp.amazonaws.com",
+              "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
+            },
+            false
+            ),
+            components.generateRoverResource("SignUpInvocationPermission",
+            "lambdaPermission",
+            {
+                  "Principal": "cognito-idp.amazonaws.com",
+                  "Action": "lambda:InvokeFunction",
+                  "FunctionName": {"Fn::GetAtt": ["SignUpFunctions","Arn"]},
+                  "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
+              },
+            false
+            ),
+            components.generateRoverResource("PreSignUpInvocationPermission",
+        "lambdaPermission",
+       {
+          "Action": "lambda:InvokeFunction",
+          "FunctionName":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
+          "Principal": "cognito-idp.amazonaws.com",
+          "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
+        },
+        false
+            ),
+            components.generateRoverResource("AuthUserPools",
+                "cognitoUserPool",
+               {
+                    UserPoolName: "Auth-User-Pool",
+                    MfaConfiguration: "OFF",
+                    AutoVerifiedAttributes:[
+                      "email"
+                    ],
+                    EmailVerificationSubject: "Your verification code",
+                    EmailVerificationMessage: "Your verification code is {####}",
+                    EmailConfiguration:{EmailSendingAccount: "COGNITO_DEFAULT"},
+                    UsernameAttributes: [
+                      "email"
+                    ],
+                    Schema: [
+                      {
+                        "Name": "name",
+                        "AttributeDataType": "String",
+                        "Mutable": true,
+                        "Required": true
+                      },
+                      {
+                        "Name": "email",
+                        "AttributeDataType": "String",
+                        "Mutable": true,
+                        "Required": true
+                      }
+                    ],
+                    Policies: {
+                      "PasswordPolicy": {
+                        "MinimumLength": 8,
+                        "RequireUppercase": true,
+                        "RequireLowercase": true,
+                        "RequireNumbers": true,
+                        "RequireSymbols": true
+                      }
+                    },
+                    LambdaConfig: {
+                      "CreateAuthChallenge":          {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
+                      "DefineAuthChallenge":          {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
+                      "PreSignUp":                    {"Fn::GetAtt": [ "PreSignUp","Arn"]},
+                      "VerifyAuthChallengeResponse":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
+                      
+                    }
+                  },
+                false
+            ),
+            components.generateRoverResource("AuthUserPoolsClient",
+                "userPoolClient",
+               {
+                    "UserPoolId": { "Ref" : "AuthUserPools"},
+                    "ClientName": "email-auth-client",
+                    "GenerateSecret": false,
+                    
+                    "ExplicitAuthFlows": [
+                      "CUSTOM_AUTH_FLOW_ONLY"
+                    ]
+                    
+                  },
+                false
+            ),
+            components.generateRoverResource("SignUpRoles",
+                "iamrole",
+               {
+                 "iamservice":["lambda.amazonaws.com","apigateway.amazonaws.com"],
+                 "managedarn":["AWSLambdaBasicExecutionRole","AmazonAPIGatewayPushToCloudWatchLogs"],
+                 "Path": "/",
+                 "Policies":[
+                     {  "name":"lambdainvoke",
+                         "Action": "lambda:InvokeFunction",
+                         "Resource": { "Fn::Sub":"arn:aws:lambda:*:${AWS::AccountId}:function:*"}
+                     },
+                     {  "name":"cognito",
+                         "Action": "cognito-idp:ListUsers",
+                         "Resource": { "Fn::Sub":"arn:aws:cognito-idp:*:${AWS::AccountId}:userpool/*"}
+                     },
+                     {  "name":"dynamodbcrud",
+                         "Action":  [
+                          "dynamodb:GetItem",
+                          "dynamodb:DeleteItem",
+                          "dynamodb:PutItem",
+                          "dynamodb:Scan",
+                          "dynamodb:Query",
+                          "dynamodb:UpdateItem",
+                          "dynamodb:BatchWriteItem",
+                          "dynamodb:BatchGetItem",
+                          "dynamodb:DescribeTable",
+                          "dynamodb:ConditionCheckItem"
+                      ],
+                         "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable"},
+                         { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable/index/*"} ]
+                     }
+                 ]
+                },
+                false
+            ),
+            components.generateRoverResource("AllowSetUserAttributes",
+              "iampolicy",
+             {
+                  
+                  "Statement":[
+                      {
+                          "Action": "cognito-idp:AdminUpdateUserAttributes",
+                          "Resource":   {"Fn::GetAtt": [ "AuthUserPools","Arn"]},
+                          "Effect": "Allow"
+                      }
+                 
+                  ],
+                  "Roles": [{"Ref" : "SignUpRoles"}],
+                  "PolicyName": "AllowSetUserAttributespolicy"
+              },
+              false
+            ),
+            components.generateRoverResource("EmailAuthAPIs",
+              "apigateway",
+                  {
+                "StageName":"dev",
+                  "objects":components.generateAPIGatewayObject(
+                    [
+                        ["SignUpFunctions",["post"],"SignUpFunctions","SignUpRoles","/signup","lambda"],
+                        ["SignIn",["post"],"SignUpFunctions","SignUpRoles","/signin","lambda"],  
+                        ["ConfirmUser",["post"],"ConfirmUser","SignUpRoles","/confirmuser","lambda"  ],  
+                        ["ResendCode",["post"],"ResendCode","SignUpRoles","/resendcode","lambda"  ],  
+                        ["ConfirmForgotPassword",["post"],"ConfirmForgotPassword","SignUpRoles","/confirmforgotPassword","lambda"  ],  
+                        ["ForgotPassword",["post"],"ForgotPassword","SignUpRoles","/forgotpassword","lambda"  ],  
+                        ["Users",["get","put","delete"],"Users","SignUpRoles","/users","lambda"  ]
+                    ]),
+                  "security":{
+                    api_key:{
+                      "apikeyName":"user_apikey",
+                      "type":"apiKey",
+                      "name": "x-api-key",
+                      "in": "header",
+                  },
+                    authorizer:{
+                      "authorizerName":"user_authorizer",
+                      "type":"oauth2",
+                      "x-amazon-apigateway-authorizer": {
+                        "type": "jwt",
+                        "jwtConfiguration": {
+                           "issuer": "https://cognito-idp.region.amazonaws.com/UserPoolId",
+                           "audience": [
+                             "audience1",
+                             "audience2"
+                           ]
+                         },
+                         "identitySource": "$request.header.Authorization"
+                    }}
+                  }
+                 
+                  },
+              false
+            ),
+            components.generateRoverResource("ClientApiKey",
+                "apikey",
+                {
+                  "DependsOn":["EmailAuthAPIs","EmailAuthAPIsdevStage"],
+                  "Enabled": true,
+                  "StageKeys": [
+                    {
+                      "RestApiId": {"Ref":  "EmailAuthAPIs"},
+                      "StageName": "dev"
+                    },
+                  ],
+                  
+                }
+              ,false
+            ),
+            components.generateRoverResource("ClientOrderUsagePlan",
+                 "usageplan",
+                {
+                  "DependsOn":["ClientApiKey"],
+                  "ApiStages": [
+                    {
+                      "ApiId": {"Ref" :"EmailAuthAPIs"},
+                      "Stage": "dev"
+                    }
+                  ],
+                  "Description": "Client Orders's usage plan",
+                  "Throttle": {
+                    "BurstLimit": 5,
+                    "RateLimit": 5
+                  }
+                }
+                ,false
+            ),
+            components.generateRoverResource("ClientOrderUsagePlanKey",
+               "usageplankey",
+              {
+                "DependsOn":["ClientOrderUsagePlan"],
+                "KeyId": {"Ref" :"ClientApiKey"},
+                "KeyType": "API_KEY",
+                "UsagePlanId": {"Ref" :"ClientOrderUsagePlan"}
+              }
+              ,false
+            ),
+            components.generateRoverResource("CognitoAuthorizer",
+                 "apiauthorizer",
+                {
+                  "IdentitySource": "method.request.header.authorization",
+                  "Name": "CognitoAuthorizer",
+                  "ProviderARNs": [{"Fn::GetAtt": [ "AuthUserPools","Arn"]},],
+                  "RestApiId":{"Ref" :"EmailAuthAPIs"},
+                  "Type": "COGNITO_USER_POOLS"
+                }
+                ,false
+            )
+        ]
+    }
+  }
+  return response
+}
 export let StackType={
     "BaseModule":{
             "lone":{
@@ -964,482 +1301,10 @@ export let StackType={
                 false
               ),
           ]
-      
       }
   
     },
-    "EmailAuthModule":{
-      "EmailAuthModule":{
-          "resources":[
-              components.generateRoverResource("DefineAuthChallenge",
-                  "lambda",
-                 {
-                      "Environment":components.generateLambdaEnv({"userinfoTable":"UserTable"}),
-                      "Policies": [
-                        "AWSLambdaDynamoDBExecutionRole",
-                        {
-                          "DynamoDBCrudPolicy": {
-                            "TableName": { "Ref" : "UserTable"}
-                          }
-                        }
-                      ]
-                    },
-                  true
-              ),  
-              components.generateRoverResource("AuthorizerFunction",
-                "lambda",
-               {
-                    "Environment":components.generateLambdaEnv({"UserPoolID": "AuthUserPools","UserPoolClientID": "AuthUserPoolsClient"}),
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"}
-                         
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("CreateAuthChallenge",
-                "lambda",
-               {
-                  "Environment":components.generateLambdaEnv({"SES_FROM_ADDRESS":  "VerifyAuthChallengeResponse"}),
-                  "Policies": [
-                    {
-                      "Version": "2012-10-17",
-                      "Statement": [
-                        {
-                          "Effect": "Allow",
-                          "Action": [
-                            "ses:SendEmail"
-                          ],
-                          "Resource": "*"
-                        }
-                      ]
-                    }
-                  ]
-                  },
-                true
-              ),
-              components.generateRoverResource("VerifyAuthChallengeResponse",
-                "lambda",
-               {
-                    "Environment":components.generateLambdaEnv({"userinfoTable":"UserTable"}),
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                          "USERPOOLID": { "Ref" : "AuthUserPools"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("PreSignUp",
-                "lambda",
-               {
-                "Environment":components.generateLambdaEnv({"userinfoTable":"UserTable"}),
-                "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("SignUpFunctions",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":  "AuthUserPools","UserPoolClientID": "AuthUserPoolsClient","userinfoTable":"UserTable"}),
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                          "USERPOOLID": { "Ref" : "AuthUserPools"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("ResendCode",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":  "AuthUserPools","UserPoolClientID": "AuthUserPoolsClient","userinfoTable":"UserTable"}),
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                          "UserPoolID": { "Ref" : "AuthUserPools"},
-                          "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("ConfirmForgotPassword",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":"AuthUserPools","UserPoolClientID":"AuthUserPoolsClient","userinfoTable":  "UserTable"}),
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                          "USERPOOLID": { "Ref" : "AuthUserPools"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("ForgotPassword",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":"AuthUserPools","UserPoolClientID":"AuthUserPoolsClient","userinfoTable":  "UserTable"}),
-                    
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                          "USERPOOLID": { "Ref" : "AuthUserPools"}
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("ConfirmUser",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":"AuthUserPools","UserPoolClientID":"AuthUserPoolsClient","userinfoTable":  "UserTable"}),
-
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("Users",
-                "lambda",
-               {
-                    "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
-                    "Environment":components.generateLambdaEnv({"UserPoolID":"AuthUserPools","UserPoolClientID":"AuthUserPoolsClient","userinfoTable":  "UserTable"}),
-
-                    "Policies": [
-                      "AWSLambdaDynamoDBExecutionRole",
-                      {
-                        "DynamoDBCrudPolicy": {
-                          "TableName": { "Ref" : "UserTable"},
-                        }
-                      }
-                    ]
-                  },
-                true
-              ),
-              components.generateRoverResource("UserTable",
-                  "dynamoDB",
-                 {
-                      "BillingMode": "PAY_PER_REQUEST",
-                      "AttributeDefinitions": [
-                        {
-                          "AttributeName": "email",
-                          "AttributeType": "S"
-                        }
-                      ],
-                      "KeySchema": [
-                        {
-                          "AttributeName": "email",
-                          "KeyType": "HASH"
-                        }
-                      ]
-                    },
-                  false
-              ),
-              components.generateRoverResource("CreateAuthChallengeInvocationPermission",
-                  "lambdaPermission",
-                 {
-                     
-                    "Action": "lambda:InvokeFunction",
-                    "FunctionName":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
-                    "Principal": "cognito-idp.amazonaws.com",
-                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
-                  },
-                  false
-              ),
-              components.generateRoverResource("DefineAuthChallengeInvocationPermission",
-                "lambdaPermission",
-               {
-                  "Action": "lambda:InvokeFunction",
-                  "FunctionName":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
-                  "Principal": "cognito-idp.amazonaws.com",
-                  "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
-                },
-                false
-              ),
-              components.generateRoverResource("VerifyAuthChallengeResponseInvocationPermission",
-              "lambdaPermission",
-             {
-                "Action": "lambda:InvokeFunction",
-                "FunctionName":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
-                "Principal": "cognito-idp.amazonaws.com",
-                "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
-              },
-              false
-              ),
-              components.generateRoverResource("SignUpInvocationPermission",
-              "lambdaPermission",
-              {
-                    "Principal": "cognito-idp.amazonaws.com",
-                    "Action": "lambda:InvokeFunction",
-                    "FunctionName": {"Fn::GetAtt": ["SignUpFunctions","Arn"]},
-                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
-                },
-              false
-              ),
-              components.generateRoverResource("PreSignUpInvocationPermission",
-          "lambdaPermission",
-         {
-            "Action": "lambda:InvokeFunction",
-            "FunctionName":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
-            "Principal": "cognito-idp.amazonaws.com",
-            "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
-          },
-          false
-              ),
-              components.generateRoverResource("AuthUserPools",
-                  "cognitoUserPool",
-                 {
-                      UserPoolName: "Auth-User-Pool",
-                      MfaConfiguration: "OFF",
-                      AutoVerifiedAttributes:[
-                        "email"
-                      ],
-                      EmailVerificationSubject: "Your verification code",
-                      EmailVerificationMessage: "Your verification code is {####}",
-                      EmailConfiguration:{EmailSendingAccount: "COGNITO_DEFAULT"},
-                      UsernameAttributes: [
-                        "email"
-                      ],
-                      Schema: [
-                        {
-                          "Name": "name",
-                          "AttributeDataType": "String",
-                          "Mutable": true,
-                          "Required": true
-                        },
-                        {
-                          "Name": "email",
-                          "AttributeDataType": "String",
-                          "Mutable": true,
-                          "Required": true
-                        }
-                      ],
-                      Policies: {
-                        "PasswordPolicy": {
-                          "MinimumLength": 8,
-                          "RequireUppercase": true,
-                          "RequireLowercase": true,
-                          "RequireNumbers": true,
-                          "RequireSymbols": true
-                        }
-                      },
-                      LambdaConfig: {
-                        "CreateAuthChallenge":          {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
-                        "DefineAuthChallenge":          {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
-                        "PreSignUp":                    {"Fn::GetAtt": [ "PreSignUp","Arn"]},
-                        "VerifyAuthChallengeResponse":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
-                        
-                      }
-                    },
-                  false
-              ),
-              components.generateRoverResource("AuthUserPoolsClient",
-                  "userPoolClient",
-                 {
-                      "UserPoolId": { "Ref" : "AuthUserPools"},
-                      "ClientName": "email-auth-client",
-                      "GenerateSecret": false,
-                      
-                      "ExplicitAuthFlows": [
-                        "CUSTOM_AUTH_FLOW_ONLY"
-                      ]
-                      
-                    },
-                  false
-              ),
-              components.generateRoverResource("SignUpRoles",
-                  "iamrole",
-                 {
-                   "iamservice":["lambda.amazonaws.com","apigateway.amazonaws.com"],
-                   "managedarn":["AWSLambdaBasicExecutionRole","AmazonAPIGatewayPushToCloudWatchLogs"],
-                   "Path": "/",
-                   "Policies":[
-                       {  "name":"lambdainvoke",
-                           "Action": "lambda:InvokeFunction",
-                           "Resource": { "Fn::Sub":"arn:aws:lambda:*:${AWS::AccountId}:function:*"}
-                       },
-                       {  "name":"cognito",
-                           "Action": "cognito-idp:ListUsers",
-                           "Resource": { "Fn::Sub":"arn:aws:cognito-idp:*:${AWS::AccountId}:userpool/*"}
-                       },
-                       {  "name":"dynamodbcrud",
-                           "Action":  [
-                            "dynamodb:GetItem",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:PutItem",
-                            "dynamodb:Scan",
-                            "dynamodb:Query",
-                            "dynamodb:UpdateItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:DescribeTable",
-                            "dynamodb:ConditionCheckItem"
-                        ],
-                           "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable"},
-                           { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTable/index/*"} ]
-                       }
-                   ]
-                  },
-                  false
-              ),
-              components.generateRoverResource("AllowSetUserAttributes",
-                "iampolicy",
-               {
-                    
-                    "Statement":[
-                        {
-                            "Action": "cognito-idp:AdminUpdateUserAttributes",
-                            "Resource":   {"Fn::GetAtt": [ "AuthUserPools","Arn"]},
-                            "Effect": "Allow"
-                        }
-                   
-                    ],
-                    "Roles": [{"Ref" : "SignUpRoles"}],
-                    "PolicyName": "AllowSetUserAttributespolicy"
-                },
-                false
-              ),
-              components.generateRoverResource("EmailAuthAPIs",
-                "apigateway",
-               {
-                  "StageName":"dev",
-                    "objects":components.generateAPIGatewayObject(
-                      [
-                          ["SignUpFunctions",["post"],"SignUpFunctions","SignUpRoles","/signup","lambda"],
-                          ["SignIn",["post"],"SignUpFunctions","SignUpRoles","/signin","lambda"],  
-                          ["ConfirmUser",["post"],"ConfirmUser","SignUpRoles","/confirmuser","lambda"  ],  
-                          ["ResendCode",["post"],"ResendCode","SignUpRoles","/resendcode","lambda"  ],  
-                          ["ConfirmForgotPassword",["post"],"ConfirmForgotPassword","SignUpRoles","/confirmforgotPassword","lambda"  ],  
-                          ["ForgotPassword",["post"],"ForgotPassword","SignUpRoles","/forgotpassword","lambda"  ],  
-                          ["Users",["get","put","delete"],"Users","SignUpRoles","/users","lambda"  ]
-                      ]),
-                    "security":{
-                      api_key:{
-                        "apikeyName":"user_apikey",
-                        "type":"apiKey",
-                        "name": "x-api-key",
-                        "in": "header",
-                    },
-                      authorizer:{
-                        "authorizerName":"user_authorizer",
-                        "type":"oauth2",
-                        "x-amazon-apigateway-authorizer": {
-                          "type": "jwt",
-                          "jwtConfiguration": {
-                             "issuer": "https://cognito-idp.region.amazonaws.com/UserPoolId",
-                             "audience": [
-                               "audience1",
-                               "audience2"
-                             ]
-                           },
-                           "identitySource": "$request.header.Authorization"
-                      }}
-                    }
-                   
-                  },
-                false
-              ),
-              components.generateRoverResource("ClientApiKey",
-                  "apikey",
-                  {
-                    "DependsOn":["EmailAuthAPIs","EmailAuthAPIsdevStage"],
-                    "Enabled": true,
-                    "StageKeys": [
-                      {
-                        "RestApiId": {"Ref":  "EmailAuthAPIs"},
-                        "StageName": "dev"
-                      },
-                    ],
-                    
-                  }
-                ,false
-              ),
-              components.generateRoverResource("ClientOrderUsagePlan",
-                   "usageplan",
-                  {
-                    "DependsOn":["ClientApiKey"],
-                    "ApiStages": [
-                      {
-                        "ApiId": {"Ref" :"EmailAuthAPIs"},
-                        "Stage": "dev"
-                      }
-                    ],
-                    "Description": "Client Orders's usage plan",
-                    "Throttle": {
-                      "BurstLimit": 5,
-                      "RateLimit": 5
-                    }
-                  }
-                  ,false
-              ),
-              components.generateRoverResource("ClientOrderUsagePlanKey",
-                 "usageplankey",
-                {
-                  "DependsOn":["ClientOrderUsagePlan"],
-                  "KeyId": {"Ref" :"ClientApiKey"},
-                  "KeyType": "API_KEY",
-                  "UsagePlanId": {"Ref" :"ClientOrderUsagePlan"}
-                }
-                ,false
-              ),
-              components.generateRoverResource("CognitoAuthorizer",
-                   "apiauthorizer",
-                  {
-                    "IdentitySource": "method.request.header.authorization",
-                    "Name": "CognitoAuthorizer",
-                    "ProviderARNs": [
-                      {"Fn::GetAtt": [ "AuthUserPools","Arn"]},
-                    ],
-                    "RestApiId":{"Ref" :"EmailAuthAPIs"},
-                    "Type": "COGNITO_USER_POOLS"
-                  }
-                  ,false
-              )
-          ]
-      }
-    },
+    "EmailAuthModule":generateEmailauth(),
     "CRUD":components.generatecrud,
     "RDS":generaterds,
     "Customizable":{}

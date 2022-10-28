@@ -1166,7 +1166,7 @@ export let StackType={
     "TestModule":{
       "test":{
           "resources":[
-              components.generateRoverResource("PostSignup","lambda",
+              components.generateRoverResource("Samplelambda","lambda",
               {
                 "Environment":components.generateLambdaEnv({"userinfoTable":"UserTable"}),
                 "Policies": [
@@ -1302,7 +1302,6 @@ export let StackType={
               ),
           ]
       }
-  
     },
     "EmailAuthModule":generateEmailauth(),
     "CRUD":components.generatecrud,

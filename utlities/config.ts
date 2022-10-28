@@ -15,7 +15,7 @@ export const subnet4cidr=config.ip.subnet4cidr
 export const subnet5cidr=config.ip.subnet5cidr
 export const subnet6cidr=config.ip.subnet6cidr
 export const stacktype="AWS::CloudFormation::Stack"
-
+export const samabstract=["apigateway","lambda","stepfunction"]
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 export let SAMInitBase="sam init --no-interactive "
 export let SAMLanguage=" -r " 
@@ -211,7 +211,7 @@ let stackOptional=["NotificationARNs","Parameters" ,"Tags"  ,"TemplateURL" ,"Tim
 let stackResource= generateAWSResource(undefined,stacktype,stackBase,stackOptional, undefined)
 
 let lambdaBase=["FunctionName","CodeUri","Runtime"]
-let lambdaOptional=["Events","Environment","Policies","Role"]
+let lambdaOptional=["Events","Environment","Policies","Role","Tags","Description"]
 let lambdaDefault={"Handler":{"Key":"Handler","Value":"app.lambdaHandler"}}
 let lambdaResource= generateAWSResource("FunctionName","AWS::Serverless::Function",lambdaBase,lambdaOptional, lambdaDefault)
 

@@ -193,7 +193,21 @@ export function cliModuletoConfig(input:AnyObject){
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
         let res={}
-        
+       
+        resources["resources"].forEach(element => {
+            element.config["Description"]=`Rover-tools created ${element.name}  named ${element.type} resource`
+            if(config.samabstract.includes(element.type)){
+                element.config["Tags"]={}
+                element.config["Tags"]["createdBy"]="rover"
+                element.config["Tags"]["applicationName"]=app_data.app_name
+            }else{
+                element.config["Tags"]=[]
+                element.config["Tags"].push({"Key":"createdBy","Value":"rover"})
+                element.config["Tags"].push({"Key":"applicationName","Value":app_data.app_name})
+            }
+            //console.log("createStackResources",element.config,app_data)  
+        });
+    
     for(let j in  resources["resources"]){ 
         if(stack_names==undefined){
                 let randomstr:string=(crypto.randomBytes(1).toString("base64url").replace(/\d/g, 'd')).toLowerCase();

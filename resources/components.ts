@@ -3,51 +3,24 @@
 
 
 import { AnyArray, AnyObject } from "immer/dist/internal"
+export const generateRoverResource=(name,type,config,logic)=>{
 
-export const generatelambda=(name,config)=>{
-  let lambda={}
-  lambda["name"]=name+"Function"
-  lambda["type"]="lambda"
-  lambda["logic"]=true
-  lambda["config"]={
-        
-    "Environment": {
-        "Variables": {
-          "Table": { "Ref" : name+"Table"}
-        }
-    },
-    "Policies": [
-      "AWSLambdaDynamoDBExecutionRole",
-      {
-        "DynamoDBCrudPolicy": {
-          "TableName": { "Ref" : name+"Table"},
-          
-        }
-      }
-    ]
+  let resource:AnyObject={}
+  resource["name"]=name
+  resource["type"]=type
+  
+  resource["logic"]=logic
+  if (config.length!==0||config!==undefined) {
+    resource["config"]=config
   }
-  return lambda
+  return resource
 
 }
 export const generatetable= (name,config)=>{
   return {
     "name":name+"Table",
     "type":"dynamoDB",
-    "config":{
-        "BillingMode": "PAY_PER_REQUEST",
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "id",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "id",
-            "KeyType": "HASH"
-          }
-        ]
-      },
+    
     "logic":false
   }
 }
@@ -64,14 +37,46 @@ export const generatecrud= (apiname:string,config:AnyObject)=>{
     obj["role"]=apiname+"Roles"
     obj["resource"]=ele+"Function"
     objects.push(obj)
-    let lambdafunc:AnyObject=generatelambda(ele,{})
+    let tableaccess={
+        
+      "Environment": {
+          "Variables": {
+            "Table": { "Ref" : ele+"Table"}
+          }
+      },
+      "Policies": [
+        "AWSLambdaDynamoDBExecutionRole",
+        {
+          "DynamoDBCrudPolicy": {
+            "TableName": { "Ref" : ele+"Table"},
+            
+          }
+        }
+      ]
+    }
+    let lambdafunc:AnyObject=generateRoverResource(ele+"Function","lambda",tableaccess,true)
     lambdafunc["logicpath"]="crud";
+    let tableconfig={
+      "BillingMode": "PAY_PER_REQUEST",
+      "AttributeDefinitions": [
+        {
+          "AttributeName": "id",
+          "AttributeType": "S"
+        }
+      ],
+      "KeySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ]
+    }
    
-    let table=generatetable(ele,{})
+    let table=generateRoverResource(ele+"Table","dynamoDB",tableconfig,false)
     functions.push(lambdafunc)
     tables.push(table)
-    iamresources.push({ "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name},
-    { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table.name+"/index/*"})
+    iamresources.push({ "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table["name"]},
+    { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/"+table["name"]+"/index/*"})
     
 }) 
 let role:AnyObject={
@@ -127,7 +132,31 @@ res[apiname+"CRUDModule"]["resources"]=resarray
 
   return res
 }
+export const generateLambdaEnv=(input:AnyObject)=>{
+  let response:AnyObject={}
+  response["Variables"]={}
+  Object.keys(input).forEach(ele=>{
+    let refval={}
+    refval["Ref"]=input[ele]
+    response["Variables"][ele]=refval
 
+  })
+  return response
+}
+export const generateAPIGatewayObject=(input:AnyArray) =>{
+  let response:AnyArray=[]
+  input.forEach(ele=>{
+    let obj:AnyObject={}
+    obj["name"]         = ele[0]
+    obj["methods"]      = ele[1]
+    obj["resource"]     = ele[2]
+    obj["role"]         = ele[3]
+    obj["path"]         = ele[4]
+    obj["resourcetype"] = ele[5]
+    response.push(obj)
+  })
+  return response
+}
 let crudcomponentconfig={
   book: {
     path: '/book',

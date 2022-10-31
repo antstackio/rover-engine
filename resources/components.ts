@@ -18,14 +18,7 @@ export const generateRoverResource=(name,type,config,logic)=>{
   return resource
 
 }
-export const generatetable= (name,config)=>{
-  return {
-    "name":name+"Table",
-    "type":"dynamoDB",
-    
-    "logic":false
-  }
-}
+
 export const generatecrud= (apiname:string,config:AnyObject)=>{
  
   let objects:AnyArray=[]

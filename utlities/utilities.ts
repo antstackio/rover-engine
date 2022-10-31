@@ -152,12 +152,7 @@ export function cliModuletoConfig(input:AnyObject){
         Object.keys(input["Stacks"]).forEach(ele =>{
             let stackdata:AnyObject={}
             if(input["Stacks"][ele]=="CRUD"){
-                
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
-                
-                    
-            }else if(input["Stacks"][ele]=="RDS"||input["Stacks"][ele]=="RDSa"){
-                stackdata=modules.StackType[input["Stacks"][ele]](ele,{})
             }
             else{
                 stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
@@ -169,8 +164,6 @@ export function cliModuletoConfig(input:AnyObject){
                 app_types[ele]=stackdata[ele1]
                 app_types[ele]["type"]="module"
             })
-            
-            
         })
     }
     if( Object.keys(input["CustomStacks"]).length>0){
@@ -466,4 +459,3 @@ export function NumtoAlpabet (params) {
 
     
 }
-

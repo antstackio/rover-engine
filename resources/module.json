@@ -1,5 +1,5 @@
 {
-    "BaseModule":{
+"BaseModule":{
         "lone":{
             "resources":[
                 {
@@ -647,7 +647,7 @@
               ]
           
           }
-    },
+},
 "RDS":{
     "RDS":{
       "parameter":{
@@ -719,29 +719,14 @@
               "Ref": "VpcCIDR"
             },
             "EnableDnsSupport": true,
-            "EnableDnsHostnames": true,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-VPC-${Environment}"
-                }
-              }
-            ]
+            "EnableDnsHostnames": true
+            
           }
         },
         {
           "name": "InternetGateway",
           "type": "internetgateway",
           "config": {
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-Gateway-${Environment}"
-                }
-              }
-            ]
           }
         },
         {
@@ -769,15 +754,8 @@
             "CidrBlock": {
               "Ref": "PublicSubnet1CIDR"
             },
-            "MapPublicIpOnLaunch": true,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-public-subnet-1-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": true
+            
           }
         },
         {
@@ -793,15 +771,7 @@
             "CidrBlock": {
               "Ref": "PublicSubnet2CIDR"
             },
-            "MapPublicIpOnLaunch": true,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-public-subnet-2-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": true
           }
         },
         {
@@ -817,15 +787,8 @@
             "CidrBlock": {
               "Ref": "PublicSubnet3CIDR"
             },
-            "MapPublicIpOnLaunch": true,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-public-subnet-3-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": true
+            
           }
         },
         {
@@ -841,15 +804,7 @@
             "CidrBlock": {
               "Ref": "PrivateSubnet1CIDR"
             },
-            "MapPublicIpOnLaunch": false,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-private-subnet-1-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": false
           }
         },
         {
@@ -865,15 +820,7 @@
             "CidrBlock": {
               "Ref": "PrivateSubnet2CIDR"
             },
-            "MapPublicIpOnLaunch": false,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-private-subnet-2-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": false
           }
         },
         {
@@ -889,15 +836,8 @@
             "CidrBlock": {
               "Ref": "PrivateSubnet3CIDR"
             },
-            "MapPublicIpOnLaunch": false,
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-private-subnet-1-${Environment}"
-                }
-              }
-            ]
+            "MapPublicIpOnLaunch": false
+
           }
         },
         {
@@ -906,15 +846,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PublicRouteTable1-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -923,15 +855,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PublicRouteTable2-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -940,15 +864,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PublicRouteTable3-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1032,15 +948,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PrivateRouteTable1-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1049,15 +957,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PrivateRouteTable2-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1066,15 +966,7 @@
           "config": {
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-PrivateRouteTable3-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1117,45 +1009,21 @@
           "name": "EIP1",
           "type": "eip",
           "config": {
-            "Domain": "vpc",
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-ElasticIP1-${Environment}"
-                }
-              }
-            ]
+            "Domain": "vpc"
           }
         },
         {
           "name": "EIP2",
           "type": "eip",
           "config": {
-            "Domain": "vpc",
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-ElasticIP2-${Environment}"
-                }
-              }
-            ]
+            "Domain": "vpc"
           }
         },
         {
           "name": "EIP3",
           "type": "eip",
           "config": {
-            "Domain": "vpc",
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-ElasticIP3-${Environment}"
-                }
-              }
-            ]
+            "Domain": "vpc"
           }
         },
         {
@@ -1167,15 +1035,7 @@
             },
             "SubnetId": {
               "Ref": "PublicSubnet1"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-NatGateway1-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1187,15 +1047,7 @@
             },
             "SubnetId": {
               "Ref": "PublicSubnet2"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-NatGateway2-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1207,15 +1059,7 @@
             },
             "SubnetId": {
               "Ref": "PublicSubnet3"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-NatGateway3-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1264,15 +1108,7 @@
             "GroupDescription": "Security group for NAT Gateway Lambda",
             "VpcId": {
               "Ref": "VPC"
-            },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-Lambda-Securitygroup-${Environment}"
-                }
-              }
-            ]
+            }
           }
         },
         {
@@ -1283,14 +1119,6 @@
             "VpcId": {
               "Ref": "VPC"
             },
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-RDS-Securitygroup-${Environment}"
-                }
-              }
-            ],
             "SecurityGroupIngress": [
               {
                 "IpProtocol": "tcp",
@@ -1325,14 +1153,6 @@
               },
               {
                 "Ref": "PrivateSubnet3"
-              }
-            ],
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": {
-                  "Fn::Sub": "HRMS-RDS-Subnetgroup-${Environment}"
-                }
               }
             ]
           }
@@ -1439,8 +1259,6 @@
                 { "Ref" :  "PrivateSubnet3"}
               ]
           }
-               
-          
           },
           "package":["typeorm","typeorm-aurora-data-api-driver"],
           "logic":true,
@@ -1459,4 +1277,3 @@
     }
 }
 }
-

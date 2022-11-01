@@ -38,6 +38,7 @@ def git(input):
         output["jobs"][i]=k
         step=steps(input["framework"],input["tool"])
         k["steps"].append(step[input["language"]]["language_setup"])
+        k["steps"].append(step[input["language"]]["install"])
         for j in input["steps"][i]:
             if j=="deploy" and input["framework"]=="sam":
                 step[j]["run"]=append_deployment_options(input,i,step[j]["run"])
@@ -55,10 +56,12 @@ def bit(input):
                 k["step"]["name"]=i
                 k["step"]["deployment"]=i
                 step=steps(input["framework"],input["tool"])
+                k["step"]["script"].append(steps(input["framework"],input["tool"])[input["language"]]["install"])
                 for j in input["steps"][i]:
                     if j=="deploy" and input["framework"]=="sam":
                         step[j]=append_deployment_options(input,i,step[j])
                     k["step"]["script"].append(step[j])
+                  
                 output["pipelines"]["branches"][b].append(k)
     return (yaml.safe_dump(output))
 
@@ -70,6 +73,7 @@ def gitl(input):
         output["stages"].append(i)
         output[i]=env(input["tool"])
         step=steps(input["framework"],input["tool"])
+        output[i]["script"].append(steps(input["framework"],input["tool"])[input["language"]]["install"])
         for j in input["steps"][i]:
             if(j in after):
                 if j=="deploy" and input["framework"]=="sam":

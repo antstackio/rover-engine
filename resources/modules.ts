@@ -131,7 +131,7 @@ export let StackType={
               components.generateRoverResource("loginapi",
                "apigateway",
                 {
-                    
+                    "StageName":"dev",
                     "objects":components.generateAPIGatewayObject([
                       ["Books",["get","post"],"PostSignup","emailAuthRole","/books","lambda"],
                       ["Authors",["get","post","put","delete"],"PostSignup","emailAuthRole","/authors","lambda"

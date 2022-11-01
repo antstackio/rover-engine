@@ -6,7 +6,7 @@ import sys
 import json
 
 
-inputs=json.loads(sys.argv[5])
+inputs=json.loads(sys.argv[len(sys.argv)-1])
 
 def pipelinegenerator(inputs):
     if(inputs["tool"]=="BitBucket"):

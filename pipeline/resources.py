@@ -51,6 +51,7 @@ def steps(framework,tool):
             "sam":{
                 "python":{
                     "install":{
+                        "name": "install dependencies",
                         "run": "python -m pip install --upgrade pip\npip install flake8 pytest\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\n"
                     },
                     "language_setup":{
@@ -60,6 +61,7 @@ def steps(framework,tool):
                 },
                 "js":{
                     "install":{
+                                "name": "install dependencies",
                                 "run": npminstall
                     },
                     "language_setup":{

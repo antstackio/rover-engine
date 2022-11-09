@@ -372,18 +372,18 @@ export function addComponents(input){
     }
     
 }
-export async function addModules(input) {
+export  function addModules(input) {
     try {
         let input2=JSON.parse(JSON.stringify(input))
     input2.app_name=input.app_name+"_test"
-    await initializeSAM(input2)
+    initializeSAM(input2)
     exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
-    await moveFolder(pwd + input2.app_name + "/" + "lambda_demo" + " ", pwd + input.app_name + "/" + "lambda_demo")
+    moveFolder(pwd + input2.app_name + "/" + "lambda_demo" + " ", pwd + input.app_name + "/" + "lambda_demo")
     exec("rm -rf " + pwd + input2.app_name)
 
     let app_types = cliModuletoConfig(input,true)
     let app_data = getAppdata(input)
-    await createStack(app_data,app_types,input.file_name)
+    createStack(app_data,app_types,input.file_name)
     exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
     } catch (error) {
         throw new Error(error.message);
@@ -490,10 +490,10 @@ export function NumtoAlpabet (params) {
     
 }
 export function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
+    let result           = '';
+    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;

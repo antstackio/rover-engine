@@ -525,10 +525,14 @@ export let langValue=async function () {
 }
 
 export let samValidate=async function(filename){
-  try {
-    filename = pwd + filename
-    let path=filename+"/"
-    if (filename === undefined) {
+    try {
+      let path
+    if (filename !== undefined) {
+        filename = pwd + filename
+        path=filename+"/"
+    }
+    
+    else {
       filename = exec("pwd").toString().replace("\n", "")
       path=""
     }

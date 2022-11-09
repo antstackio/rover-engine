@@ -11,9 +11,11 @@ let fs = require("fs");
 export let  pwd =process.cwd()+"/"
 let doc = new yaml.Document();
 const sub  = new RegExp(/(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*\n/g);
-
+let pythonpattern=new RegExp(/python[1-9]*\.[1-9]*/g)
+let jspattern=new RegExp(/nodejs[1-9]*\.[a-zA-Z]*/g)
+let yamlpattern=new RegExp(/(\.yaml$)/g)
 let Yaml = require("js-yaml");
-
+const TOML = require('@iarna/toml')
 export let npmrootTest= function(){ 
     let packages=exec(" npm -g  ls").toString().trim().split(/\r?\n/)
     packages.shift()
@@ -144,8 +146,11 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
         }
     }     
 }
-export function cliModuletoConfig(input:AnyObject){
-   initializeSAM(input)
+export function cliModuletoConfig(input: AnyObject, modify: boolean) {
+    if (!modify) {
+         initializeSAM(input)
+    }
+  
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
         Object.keys(input["Stacks"]).forEach(ele =>{
@@ -265,13 +270,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     }
     return res
 }
-export  function createStack(app_data,app_types){
+export  function createStack(app_data,app_types,filename){
 
     let stack_names = Object.keys(app_types)
     
     let resource=app_types
     let StackType = app_data.StackType
-    let stackes={}
+    let stackes = {}
+    let data=undefined
     for( let i=0;i< stack_names.length;i++){ 
         let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"_Stack"+"/template.yaml"})
         stackes[stack_names[i]]=stacks
@@ -290,7 +296,13 @@ export  function createStack(app_data,app_types){
             let temp=replaceYAML(doc.toString())
             writeFile(app_data.app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",temp)   
     }
-    let template= addResourceTemplate(stackes,stack_names,undefined)
+    if (filename) {
+        data= fs.readFileSync(pwd+"/"+filename.trim(), { encoding: "utf-8" });
+        data=Yaml.load(replaceTempTag(data))
+        if(!data.hasOwnProperty("Resources"))throw new Error("Improper SAM template file in "+filename);
+    
+    }
+    let template= addResourceTemplate(stackes,stack_names,data)
     let doc = new yaml.Document();
     doc.contents = template;
     writeFile(app_data.app_name+"/template.yaml",doc.toString())
@@ -307,12 +319,10 @@ export  function getAppdata(input) {
     
     return app_data
 }
-export function  generationSAM(input){
-    
+export function  generateSAM(input){
     let app_data= getAppdata(input)
-    let app_types=cliModuletoConfig(input)
-    
-    createStack(app_data,app_types)
+    let app_types=cliModuletoConfig(input,false)
+    createStack(app_data,app_types,undefined)
     exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }
 export function addComponents(input){
@@ -328,7 +338,7 @@ export function addComponents(input){
         if (input.nested) {
             Object.keys(input.nestedComponents).forEach(ele=>{
                 let comp={}
-                res["resources"]=getComponents(input.nestedComponents[ele]["type"])
+                res["resources"]=getComponents(input.nestedComponents[ele]["components"])
 
                 Data = Yaml.load(replaceTempTag(fs.readFileSync(pwd+"/"+input.app_name+"/"+input.nestedComponents[ele]["path"].trim(), { encoding: "utf-8" })));
                 let path:AnyArray =(input.app_name+"/"+input.nestedComponents[ele]["path"]).split("/")
@@ -360,6 +370,27 @@ export function addComponents(input){
     }else{
         console.log("wrong template structure");
     }
+    
+}
+export async function addModules(input) {
+    try {
+        let input2=JSON.parse(JSON.stringify(input))
+    input2.app_name=input.app_name+"_test"
+    await initializeSAM(input2)
+    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+    await moveFolder(pwd + input2.app_name + "/" + "lambda_demo" + " ", pwd + input.app_name + "/" + "lambda_demo")
+    exec("rm -rf " + pwd + input2.app_name)
+
+    let app_types = cliModuletoConfig(input,true)
+    let app_data = getAppdata(input)
+    await createStack(app_data,app_types,input.file_name)
+    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+    } catch (error) {
+        throw new Error(error.message);
+        
+    }
+    
+    
     
 }
 export function getComponents(component){
@@ -458,3 +489,72 @@ export function NumtoAlpabet (params) {
 
     
 }
+export function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+export let langValue=async function () {
+  
+  let pwd =(process.cwd()+"/").trim()
+  if(!fs.existsSync(pwd+".aws-sam/build.toml"))exec("sam build")
+  let data=fs.readFileSync(pwd+".aws-sam/build.toml", { encoding: "utf-8" })
+  data=TOML.parse(data)
+  let langarray:AnyArray=[]
+  let jsresult:AnyArray=[]
+  let pyresult:AnyArray=[]
+  Object.keys(data).forEach(ele=>{
+    Object.keys(data[ele]).forEach(obj=>{
+      if(data[ele][obj].hasOwnProperty("runtime"))langarray.push(data[ele][obj]["runtime"])})
+    }
+    )
+  langarray.forEach(ele=>{
+      if (ele.match(jspattern)!==null)jsresult.push(...ele.match(jspattern))
+      if (ele.match(pythonpattern)!==null)pyresult.push(...ele.match(pythonpattern))
+  
+  })
+  if(jsresult.length>pyresult.length) return "js"
+  else if(pyresult.length>jsresult.length) return "python"
+  else return "js"
+  
+}
+
+export let samValidate=async function(filename){
+    try {
+      let path
+    if (filename !== undefined) {
+        filename = pwd + filename
+        path=filename+"/"
+    }
+    
+    else {
+      filename = exec("pwd").toString().replace("\n", "")
+      path=""
+    }
+    let files:AnyArray=fs.readdirSync(filename)
+    let yamlfiles:AnyArray=[]
+    let response:AnyArray=[]
+    files.map(ele => { if (ele.match(yamlpattern) !== null) yamlfiles.push(path+ele) })
+    yamlfiles.map(ele=>{
+      let data=fs.readFileSync(ele,{ encoding: "utf-8" })
+      data=Yaml.load(replaceTempTag(data))
+      if(data.hasOwnProperty("AWSTemplateFormatVersion")
+      &&data.hasOwnProperty("Transform")
+      &&data.hasOwnProperty("Description")
+      &&data.hasOwnProperty("Resources")){response.push(true)
+    }
+    })
+    if (!response.includes(true)) {
+      throw new Error("SAM Template error \n")
+    }
+  } catch (error) {
+    throw new Error("Not a SAM file or "+error.message)
+  }
+  
+}
+

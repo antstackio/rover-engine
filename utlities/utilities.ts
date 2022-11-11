@@ -323,7 +323,8 @@ export function  generateSAM(input){
     let app_data= getAppdata(input)
     let app_types=cliModuletoConfig(input,false)
     createStack(app_data,app_types,undefined)
-    exec(config.ForceRemove+input.app_name+config.LambdaDemo)
+    exec(config.ForceRemove + input.app_name + config.LambdaDemo)
+    generateRoverConfig(input.app_name,input,"rover_create_project")
 }
 export function addComponents(input){
 
@@ -367,6 +368,7 @@ export function addComponents(input){
             writeFile(input.file_name.trim(),temp) 
         }
         removeFolder(input2.app_name)
+        generateRoverConfig(input.app_name,input ,"rover_add_component")
     }else{
         console.log("wrong template structure");
     }
@@ -384,7 +386,8 @@ export  function addModules(input) {
     let app_types = cliModuletoConfig(input,true)
     let app_data = getAppdata(input)
     createStack(app_data,app_types,input.file_name)
-    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+        exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+        generateRoverConfig(input.app_name,input ,"rover_add_module")
     } catch (error) {
         throw new Error(error.message);
         
@@ -558,3 +561,36 @@ export let samValidate=async function(filename){
   
 }
 
+export let generateRoverConfig = function (filename:string, data:AnyObject, type:string) { 
+    let response: AnyObject = {}
+    if (filename === "") filename = (pwd.split("/"))[pwd.split("/").length - 1]
+    let originalfilename=filename
+    filename = filename + "/roverconfig.json"
+    if (fs.existsSync(pwd + filename)) {
+        let filedata = fs.readFileSync(pwd + filename, { encoding: "utf-8" })
+        
+        let dataobject = JSON.parse(filedata)
+        let types=Object.keys(dataobject)
+        let typesarray=[types.includes("rover_add_module"),types.includes("rover_add_component"),types.includes("rover_create_project"),types.includes("rover_deploy_cli"),types.includes("rover_generate_pipeline"),types.includes("rover_deploy_repo")]
+        if (!typesarray.includes(true)) {
+            console.log(`improper rover config file (to fix ,delete roverconfig.json in ${pwd+filename} )`)
+            return 0
+        }
+        if (!dataobject.hasOwnProperty(type))  dataobject[type] = []
+        console.log()
+        if( dataobject.app_name==data.app_name)delete data.app_name
+        if( dataobject.language==data.language)delete data.language
+        dataobject[type].push(data)
+        data=dataobject
+    } else { 
+        if(!fs.existsSync(pwd + originalfilename)) throw new Error(`Wrong file path ${pwd+originalfilename} `);
+        response["app_name"]=data.app_name
+        response["language"]=data.language
+        delete data.app_name
+        delete data.language
+        response[type] = []
+        response[type].push(data)
+        data=response
+    }
+    writeFile(filename,JSON.stringify(data))
+}

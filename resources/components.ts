@@ -199,11 +199,18 @@ export let Components={
       
     }
     ],
-    "crud_api":crudcomponent["bookCRUDModule"]["resources"],
+  "crud_api": crudcomponent["bookCRUDModule"]["resources"],
+  "s3 bucket": [generateRoverResource("bucket", "s3bucket", {},false)],
+  "lambda": [generateRoverResource("lambda", "lambda", {},true)],
+  "dynamoDB": [generateRoverResource("dynamodb", "dynamoDB", {},false)]
    
 }
 export let ModuleDescription={
   "s3_lambda":"lambda with S3 as trigger",
-  "crud_api":"basic book CRUD API's "
+  "crud_api": "basic book CRUD API's ",
+  "s3 bucket": "Simple Storage Service Bucket ",
+  "lambda": "one Lambda function",
+  "dynamoDB": "One DynamoDB table"
+
  
 }

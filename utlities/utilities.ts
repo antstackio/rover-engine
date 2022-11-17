@@ -568,7 +568,6 @@ export let generateRoverConfig = function (filename:string, data:AnyObject, type
     filename = filename + "/roverconfig.json"
     if (fs.existsSync(pwd + filename)) {
         let filedata = fs.readFileSync(pwd + filename, { encoding: "utf-8" })
-        
         let dataobject = JSON.parse(filedata)
         let types=Object.keys(dataobject)
         let typesarray=[types.includes("rover_add_module"),types.includes("rover_add_component"),types.includes("rover_create_project"),types.includes("rover_deploy_cli"),types.includes("rover_generate_pipeline"),types.includes("rover_deploy_repo")]
@@ -577,7 +576,6 @@ export let generateRoverConfig = function (filename:string, data:AnyObject, type
             return 0
         }
         if (!dataobject.hasOwnProperty(type))  dataobject[type] = []
-        console.log()
         if( dataobject.app_name==data.app_name)delete data.app_name
         if( dataobject.language==data.language)delete data.language
         dataobject[type].push(data)

@@ -136,7 +136,7 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
                 path=path+"app"+app_data.extension
                 
             }else{
-                path=app_data.app_name+"/"+stackname+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
+                path=app_data.app_name+"/"+stackname+"/"+resources["resources"][j]["name"]+"/"
                 if (resources["resources"][j].hasOwnProperty("package")) {
                     installDependies(path,resources["resources"][j]["package"],app_data.dependency)
                 }
@@ -235,7 +235,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
-                path2=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
+                path2=pwd+app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]+"/"
             }
             copyLambdaLogic(path,path2)
             generateLambdafiles(logic,app_data,resources,StackType,lambda_stack_names,j)
@@ -251,14 +251,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             if (stack_names==undefined) {
                 
                 if (comp.desti!==undefined) {
-                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_APIGateway"
-                    configpath=resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
-                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
+                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]
+                    configpath=resources["resources"][j]["name"]+"/swagger.yaml"
+                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"/swagger.yaml"
                 }
             }else{
-                path=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_APIGateway"
-                configpath=resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
-                filepath=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
+                path=pwd+app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]
+                configpath=resources["resources"][j]["name"]+"/swagger.yaml"
+                filepath=app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]+"/swagger.yaml"
             }
             if (fs.existsSync(path)) throw new Error(path +" file already exists");
             exec("mkdir "+path)
@@ -279,9 +279,9 @@ export  function createStack(app_data,app_types,filename){
     let stackes = {}
     let data=undefined
     for( let i=0;i< stack_names.length;i++){ 
-        let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"_Stack"+"/template.yaml"})
+        let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"/template.yaml"})
         stackes[stack_names[i]]=stacks
-        exec("mkdir "+pwd+app_data.app_name+"/"+stack_names[i]+"_Stack")
+        exec("mkdir "+pwd+app_data.app_name+"/"+stack_names[i])
             let resources=resource[stack_names[i]] 
             let comp={}
             let res=createStackResources(resources,app_data,StackType[i],stack_names[i],comp)
@@ -294,7 +294,7 @@ export  function createStack(app_data,app_types,filename){
             let doc = new yaml.Document();
             doc.contents = template1;
             let temp=replaceYAML(doc.toString())
-            writeFile(app_data.app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",temp)   
+            writeFile(app_data.app_name+"/"+stack_names[i]+"/template.yaml",temp)   
     }
     if (filename) {
         data= fs.readFileSync(pwd+"/"+filename.trim(), { encoding: "utf-8" });

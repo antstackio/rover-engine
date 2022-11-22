@@ -155,7 +155,7 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     if( Object.keys(input["Stacks"]).length>0){
         Object.keys(input["Stacks"]).forEach(ele =>{
             let stackdata:AnyObject={}
-            if(input["Stacks"][ele]=="CRUD"){
+            if (input["Stacks"][ele] == "CRUD") {
                 stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
             }
             else{
@@ -190,7 +190,7 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
         let res={}
-       
+       console.log("createStackResources",JSON.stringify(resources))
         resources["resources"].forEach(element => {
             element.config["Description"]=`Rover-tools created ${element.name}  named ${element.type} resource`
             if(config.samabstract.includes(element.type)){
@@ -251,14 +251,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             if (stack_names==undefined) {
                 
                 if (comp.desti!==undefined) {
-                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"
-                    configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
-                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_APIGateway"
+                    configpath=resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
+                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
                 }
             }else{
-                path=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"
-                configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
-                filepath=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                path=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_APIGateway"
+                configpath=resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
+                filepath=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_APIGateway"+"/swagger.yaml"
             }
             if (fs.existsSync(path)) throw new Error(path +" file already exists");
             exec("mkdir "+path)
@@ -494,7 +494,7 @@ export function NumtoAlpabet (params) {
 }
 export function makeid(length) {
     let result           = '';
-    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let characters       = 'abcdefghijklmnopqrstuvwxyz';
     let charactersLength = characters.length;
     for ( let i = 0; i < length; i++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));

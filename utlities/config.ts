@@ -350,7 +350,6 @@ let iamroleDefault={
 let iamroleResource=generateAWSResource("RoleName","AWS::IAM::Role",iamroleBase,iamroleOptional,iamroleDefault)
 export let AWSResources={
     "stack":stackResource,
-    
     "lambda":lambdaResource,
     "dynamoDB":dynamoDBResource,
     "cognitoUserPool":cognitoUserPoolResource,

@@ -162,7 +162,7 @@ let crudcomponentconfig={
 let crudcomponent:object=generatecrud("book",crudcomponentconfig)
 
 export let Components={
-    "s3_lambda":[
+    "S3 Lambda":[
       {
         "name":"lambdas",
         "type":"lambda",
@@ -199,18 +199,18 @@ export let Components={
       
     }
     ],
-  "crud_api": crudcomponent["bookCRUDModule"]["resources"],
-  "s3 bucket": [generateRoverResource("bucket", "s3bucket", {},false)],
-  "lambda": [generateRoverResource("lambda", "lambda", {},true)],
-  "dynamoDB": [generateRoverResource("dynamodb", "dynamoDB", {},false)]
+  "CRUD API": crudcomponent["bookCRUDModule"]["resources"],
+  "S3 Bucket": [generateRoverResource("bucket", "s3bucket", {},false)],
+  "Lambda": [generateRoverResource("lambda", "lambda", {},true)],
+  "DynamoDB": [generateRoverResource("dynamodb", "dynamoDB", {},false)]
    
 }
 export let ModuleDescription={
-  "s3_lambda":"lambda with S3 as trigger",
-  "crud_api": "basic book CRUD API's ",
-  "s3 bucket": "Simple Storage Service Bucket ",
-  "lambda": "one Lambda function",
-  "dynamoDB": "One DynamoDB table"
+  "S3 Lambda":"lambda with S3 as trigger",
+  "CRUD API": "basic book CRUD API's ",
+  "S3 Bucket": "Simple Storage Service Bucket ",
+  "Lambda": "one Lambda function",
+  "DynamoDB": "One DynamoDB table"
 
  
 }

@@ -116,7 +116,6 @@ let apis:AnyObject={
 "logic":false
 }
 let res:AnyObject={}
-res[apiname]={}
 res[apiname]={"resources":[]}
 let resarray=res[apiname]["resources"]
 resarray.push(role)

@@ -144,22 +144,23 @@ export let StackType={
       }
     },
     "EmailAuthModule":EmailAuthModule,
-    "CRUD":components.generatecrud,
-    "RDS":RDS,
-    "Customizable":{}
+    "CRUDModule":components.generatecrud,
+    "RDSModule":RDS,
+    "CustomizableModule":{}
 }
 export let ModuleDescription=[
   {key:"BaseModule",value:"Base Module : It’s a module with 2 stacks and 2 lambdas in each stack "},
   {key:"TestModule",value:"Test Module : Module with all AWS services supported by rover"},
   {key:"EmailAuthModule",value:"Email Auth Module : Authentication module using Cognito"},
-  {key:"CRUD",value:"CRUD : CRUD APIs"},
-  {key:"RDS",value:"RDS : RDS Data base"},
-  {key:"Customizable",value:"Customizable : Create your own Module"}
+  {key:"CRUDModule",value:"CRUD Module : CRUD APIs"},
+  {key:"RDSModule",value:"RDS Module : RDS Data base"},
+  {key:"CustomizableModule",value:"Customizable Module : Create your own Module"}
 ]
 export let ModuleParams={
   "BaseModule":{},
   "TestModule":{},
-  "EmailAuthModule":{},
-  "CRUD":{params:[{key:"name",value:"string",message:"API Name :"},{key:"path",value:"string",message:"API Path(e.g /book) :"},{key:"methods",value:"multichoice",message:"Methods required for API :"}]},
-  "Customizable":{}
+  "EmailAuthModule": {},
+  "RDSModule": {},
+  "CRUDModule":{params:[{key:"name",value:"string",message:"API Name :"},{key:"path",value:"string",message:"API Path(e.g /book) :"},{key:"methods",value:"multichoice",message:"Methods required for API :"}]},
+  "CustomizableModule":{}
 }

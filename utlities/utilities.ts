@@ -150,21 +150,17 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     if (!modify) {
          initializeSAM(input)
     }
-  
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
-        Object.keys(input["Stacks"]).forEach(ele =>{
+        Object.keys(input["Stacks"]).forEach(ele => {
             let stackdata:AnyObject={}
-            if (input["Stacks"][ele] == "CRUD") {
-                stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
+            if (input["Stacks"][ele] == "CRUDModule") {
+                stackdata = modules.StackType[input["Stacks"][ele]](ele, input["StackParams"][ele])
             }
             else{
-                stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
+                stackdata = JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))   
             }
-                Object.keys(stackdata).forEach(ele1=>{
-                    let stacknamepattern=new RegExp(ele+"*","g") 
-                    if(!stacknamepattern.test(ele1))ele=ele+ele1
-                    else ele=ele1
+            Object.keys(stackdata).forEach(ele1 => {
                 app_types[ele]=stackdata[ele1]
                 app_types[ele]["type"]="module"
             })
@@ -185,12 +181,11 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
         })
     }
     
-    
     return app_types
 }
 export function createStackResources(resources,app_data,StackType,stack_names,comp){
         let res={}
-       console.log("createStackResources",JSON.stringify(resources))
+       
         resources["resources"].forEach(element => {
             element.config["Description"]=`Rover-tools created ${element.name}  named ${element.type} resource`
             if(config.samabstract.includes(element.type)){
@@ -271,9 +266,8 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     return res
 }
 export  function createStack(app_data,app_types,filename){
-
-    let stack_names = Object.keys(app_types)
     
+    let stack_names = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
     let stackes = {}
@@ -320,7 +314,7 @@ export  function getAppdata(input) {
     return app_data
 }
 export function  generateSAM(input){
-    let app_data= getAppdata(input)
+    let app_data = getAppdata(input)
     let app_types=cliModuletoConfig(input,false)
     createStack(app_data,app_types,undefined)
     exec(config.ForceRemove + input.app_name + config.LambdaDemo)

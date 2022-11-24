@@ -1,4 +1,6 @@
-export let LambdaLogics={
+import { AnyObject } from "immer/dist/internal";
+
+export let LambdaLogics:AnyObject={
     "nodejs14.x":{
             
             "EmailAuthModule_PreSignUp":`exports.lambdaHandler = async event => {

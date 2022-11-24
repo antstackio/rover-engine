@@ -35,6 +35,6 @@ export function setupRepo(repoconfig:AnyObject){
         exec("python3 "+rover_config.npmroot+"/@rover-tools/cli/node_modules/@rover-tools/engine/pipeline/pipelinegenerator.py "+ pipelinepath +"'"+repoconfigres+"'")         
         process.chdir(appname);   
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error((error as Error).message)
     }
 }

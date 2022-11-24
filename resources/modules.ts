@@ -1,7 +1,8 @@
+import { AnyArray, AnyObject } from "immer/dist/internal"
 import * as config  from "../utlities/config"
 import * as components from "./components"
 import {  RDS,BaseModule,EmailAuthModule } from "./module.json"
-export let StackType={
+export let StackType:AnyObject={
     "BaseModule":BaseModule,
     "TestModule":{
       "test":{
@@ -148,7 +149,7 @@ export let StackType={
     "RDSModule":RDS,
     "CustomizableModule":{}
 }
-export let ModuleDescription=[
+export let ModuleDescription:AnyArray=[
   {key:"BaseModule",value:"Base Module : It’s a module with 2 stacks and 2 lambdas in each stack "},
   {key:"TestModule",value:"Test Module : Module with all AWS services supported by rover"},
   {key:"EmailAuthModule",value:"Email Auth Module : Authentication module using Cognito"},
@@ -156,7 +157,7 @@ export let ModuleDescription=[
   {key:"RDSModule",value:"RDS Module : RDS Data base"},
   {key:"CustomizableModule",value:"Customizable Module : Create your own Module"}
 ]
-export let ModuleParams={
+export let ModuleParams:AnyObject={
   "BaseModule":{},
   "TestModule":{},
   "EmailAuthModule": {},

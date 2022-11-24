@@ -17,7 +17,7 @@ let yamlpattern=new RegExp(/(\.yaml$)/g)
 let Yaml = require("js-yaml");
 const TOML = require('@iarna/toml')
 export let npmrootTest= function(){ 
-    let packages=exec(" npm -g  ls").toString().trim().split(/\r?\n/)
+    let packages:AnyArray=exec(" npm -g  ls").toString().trim().split(/\r?\n/)
     packages.shift()
     packages=packages.filter(ele=>{
         ele=ele.match("@rover-tools/cli")
@@ -62,9 +62,9 @@ export function testsetup(path:string,dependency:string,appname:string) {
         exec("mv "+path+"tests/unit/test-handler.js "+path+"tests/unit/test.test.js")
     }
 }
-export  function addResourceTemplate(resources, name,temp){ 
+export  function addResourceTemplate(resources:AnyObject, name:AnyArray,temp:AnyObject){ 
     let template
-    if (temp==undefined) {
+    if (Object.keys(temp).length==0) {
         template=rover_resources.skeleton()
     }else{
         template=temp
@@ -109,7 +109,7 @@ export function moveFolder(source:string,desti:string) {
 export function removeFolder (path:string) {
     exec(config.ForceRemove+path)
 }
-export function generateLambdafiles(logic,app_data,resources,stacktype,stackname,j) {
+export function generateLambdafiles(logic:boolean,app_data:AnyObject,resources:AnyObject,stacktype:string,stackname:string,j:string) {
     let code
     
     if(logic){
@@ -118,7 +118,7 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
             code =logics.LambdaLogics[app_data.language][resources["resources"][j]["logicpath"]]
             
         }else{
-            if(resources["type"]=="components"|| stacktype==undefined ){
+            if(resources["type"]=="components"|| stacktype=="" ){
                 code =logics.LambdaLogics[app_data.language][resources["resources"][j]["name"]]
             }else{
                 code =logics.LambdaLogics[app_data.language][stacktype+"_"+resources["resources"][j]["name"]]
@@ -128,7 +128,7 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
         
         if (code!==undefined){
             let path
-            if (stackname==undefined) {
+            if (stackname=="") {
                 path=app_data.app_name+"/"+resources["resources"][j]["name"]+"/"
                 if (resources["resources"][j].hasOwnProperty("package")) {
                     installDependies(path,resources["resources"][j]["package"],app_data.dependency)
@@ -168,9 +168,11 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     }
     if( Object.keys(input["CustomStacks"]).length>0){
         Object.keys(input["CustomStacks"]).forEach(ele =>{
-            let resources:AnyArray=[]
-            input["CustomStacks"][ele].map(ele=>{
-                JSON.parse(JSON.stringify(components.Components[ele])).map(ele=>{
+            let resources: AnyArray = []
+            let customstackarray: AnyArray=input["CustomStacks"][ele]
+            customstackarray.map(ele=>{
+                let componentarray:AnyArray= JSON.parse(JSON.stringify(components.Components[ele]))
+                    componentarray.map(ele => {
                     resources.push(ele)
                 })
                 }
@@ -183,10 +185,11 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     
     return app_types
 }
-export function createStackResources(resources,app_data,StackType,stack_names,comp){
-        let res={}
-       
-        resources["resources"].forEach(element => {
+export function createStackResources(resources: AnyObject, app_data: AnyObject, StackType:string, stack_names:string, comp: AnyObject) {
+    
+        let res:AnyObject={}
+        let resourceobject:AnyObject=resources["resources"]
+        resourceobject.forEach(function(element:AnyObject) {
             element.config["Description"]=`Rover-tools created ${element.name}  named ${element.type} resource`
             if(config.samabstract.includes(element.type)){
                 element.config["Tags"]={}
@@ -197,7 +200,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 element.config["Tags"].push({"Key":"createdBy","Value":"rover"})
                 element.config["Tags"].push({"Key":"applicationName","Value":app_data.app_name})
             }
-            //console.log("createStackResources",element.config,app_data)  
+     
         });
     
     for(let j in  resources["resources"]){ 
@@ -214,8 +217,8 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             configs[config.AWSResources[resources["resources"][j]["type"]]["name"]]=name
         }
         if(resources["resources"][j]["type"]=="lambda"){ 
-            let path
-            let path2
+            let path:string=""
+            let path2:string=""
             let lambda_stack_names=stack_names
             if (stack_names==undefined) {
                 if (comp.demo_desti!==undefined) {
@@ -265,13 +268,13 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     }
     return res
 }
-export  function createStack(app_data,app_types,filename){
-    
-    let stack_names = Object.keys(app_types)
+export  function createStack(app_data:AnyObject,app_types:AnyObject,filename:string){
+    console.log(filename)
+    let stack_names:AnyArray = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
-    let stackes = {}
-    let data=undefined
+    let stackes:AnyObject = {}
+    let data = {}
     for( let i=0;i< stack_names.length;i++){ 
         let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"/template.yaml"})
         stackes[stack_names[i]]=stacks
@@ -279,7 +282,7 @@ export  function createStack(app_data,app_types,filename){
             let resources=resource[stack_names[i]] 
             let comp={}
             let res=createStackResources(resources,app_data,StackType[i],stack_names[i],comp)
-            let template1= addResourceTemplate(res,Object.keys(res),undefined)
+        let template1 = addResourceTemplate(res, Object.keys(res), {})
             if (resources.hasOwnProperty("parameter")) {
 
                 template1["Parameters"]=resources.parameter
@@ -290,19 +293,20 @@ export  function createStack(app_data,app_types,filename){
             let temp=replaceYAML(doc.toString())
             writeFile(app_data.app_name+"/"+stack_names[i]+"/template.yaml",temp)   
     }
-    if (filename) {
-        data= fs.readFileSync(pwd+"/"+filename.trim(), { encoding: "utf-8" });
-        data=Yaml.load(replaceTempTag(data))
+    if (filename!=="") {
+        let datas:string = fs.readFileSync(pwd + "/" + filename.trim(), { encoding: "utf-8" });
+        data=Yaml.load(replaceTempTag(datas))
         if(!data.hasOwnProperty("Resources"))throw new Error("Improper SAM template file in "+filename);
     
     }
+    
     let template= addResourceTemplate(stackes,stack_names,data)
     let doc = new yaml.Document();
     doc.contents = template;
     writeFile(app_data.app_name+"/template.yaml",doc.toString())
 }
-export  function getAppdata(input) { 
-    let app_data={}
+export  function getAppdata(input:AnyObject) { 
+    let app_data:AnyObject={}
     app_data["app_name"]=input.app_name
     app_data["language"]= config.LanguageSupport[input.language]["version"]
     app_data["dependency"]=config.LanguageSupport[input.language]["dependency"]
@@ -313,26 +317,26 @@ export  function getAppdata(input) {
     
     return app_data
 }
-export function  generateSAM(input){
+export function  generateSAM(input:AnyObject){
     let app_data = getAppdata(input)
     let app_types=cliModuletoConfig(input,false)
-    createStack(app_data,app_types,undefined)
+    createStack(app_data,app_types,"")
     exec(config.ForceRemove + input.app_name + config.LambdaDemo)
     generateRoverConfig(input.app_name,input,"rover_create_project")
 }
-export function addComponents(input){
+export function addComponents(input:AnyObject){
 
     let Data = fs.readFileSync(pwd+"/"+input.file_name.trim(), { encoding: "utf-8" });
     Data=Yaml.load(replaceTempTag(Data))
     if(Data.hasOwnProperty("Resources")){
-        let res={}
+        let res:AnyObject={}
         let app_data=getAppdata(input)
         let input2=JSON.parse(JSON.stringify(input))
         input2.app_name=input.app_name+"_test"
         initializeSAM(input2)
         if (input.nested) {
             Object.keys(input.nestedComponents).forEach(ele=>{
-                let comp={}
+                let comp:AnyObject={}
                 res["resources"]=getComponents(input.nestedComponents[ele]["components"])
 
                 Data = Yaml.load(replaceTempTag(fs.readFileSync(pwd+"/"+input.app_name+"/"+input.nestedComponents[ele]["path"].trim(), { encoding: "utf-8" })));
@@ -341,7 +345,7 @@ export function addComponents(input){
                 comp["desti"]=path.join("/");
 
                 comp["demo_desti"]=input2.app_name
-                let res1=createStackResources(res,app_data,undefined,undefined,comp)
+                let res1=createStackResources(res,app_data,"","",comp)
                 res1= addResourceTemplate(res1,Object.keys(res1),Data)
                 let doc = new yaml.Document();
                 doc.contents = res1;
@@ -350,11 +354,11 @@ export function addComponents(input){
             })
             
         }else{
-            let comp={}
+            let comp:AnyObject={}
             res["resources"]=getComponents(input.components)
             
             comp["demo_desti"]=input2.app_name
-            let res1=createStackResources(res,app_data,undefined,undefined,comp)
+            let res1=createStackResources(res,app_data,"","",comp)
             res1= addResourceTemplate(res1,Object.keys(res1),Data)
             let doc = new yaml.Document();
             doc.contents = res1;
@@ -368,7 +372,7 @@ export function addComponents(input){
     }
     
 }
-export  function addModules(input) {
+export  function addModules(input:AnyObject) {
     try {
         let input2=JSON.parse(JSON.stringify(input))
     input2.app_name=input.app_name+"_test"
@@ -383,19 +387,17 @@ export  function addModules(input) {
         exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
         generateRoverConfig(input.app_name,input ,"rover_add_module")
     } catch (error) {
-        throw new Error(error.message);
-        
+        throw new Error((error as Error).message);   
     }
-    
-    
-    
 }
-export function getComponents(component){
+export function getComponents(component:AnyObject){
     let resources:AnyArray=[]
     let componentstype:string
     Object.entries(component).map(ele=>{
-        let componentstype:any=ele[1]
-        JSON.parse(JSON.stringify(components.Components[componentstype])).map(ele=>{
+        let componentstype:string=ele[1]
+        let componentstypeobj: AnyObject = JSON.parse(JSON.stringify(components.Components[componentstype]))
+        
+            componentstypeobj.map(function(ele:AnyObject){
             resources.push(ele)
         })    
     }
@@ -443,7 +445,7 @@ function generateRoverAWSResource(cfjson:AnyObject,base:AnyArray){
 }
 function updatevalue(input:string,data:string){
     let result=input.trim().split(" ")
-    let val ={}
+    let val:AnyObject ={}
     let resvalue= (result.splice(1,result.length)).join(" ")
     let tag=result[0].replace("!","")
     if (tag!=="Ref") {
@@ -456,9 +458,7 @@ function updatevalue(input:string,data:string){
   
 }
 export function replaceTempTag(yamlinput:string){
-      
       let result
-     
       do{
         result=sub.exec(yamlinput)
         if (result!==null) {
@@ -468,7 +468,7 @@ export function replaceTempTag(yamlinput:string){
       }while(result!==null)
       return yamlinput
 }
-export function NumtoAlpabet (params) {
+export function NumtoAlpabet (params:number) {
     let res=""
     let modstr=""
     if(params>26) modstr=NumtoAlpabet(params%26)
@@ -486,7 +486,7 @@ export function NumtoAlpabet (params) {
 
     
 }
-export function makeid(length) {
+export function makeid(length:number) {
     let result           = '';
     let characters       = 'abcdefghijklmnopqrstuvwxyz';
     let charactersLength = characters.length;
@@ -522,10 +522,10 @@ export let langValue=async function () {
   
 }
 
-export let samValidate=async function(filename){
+export let samValidate=async function(filename:string){
     try {
-      let path
-    if (filename !== undefined) {
+      let path:string
+    if (filename !== "") {
         filename = pwd + filename
         path=filename+"/"
     }
@@ -550,8 +550,9 @@ export let samValidate=async function(filename){
     if (!response.includes(true)) {
       throw new Error("SAM Template error \n")
     }
-  } catch (error) {
-    throw new Error("Not a SAM file or "+error.message)
+    } catch (error) {
+        let errormessage=(error as Error).message
+    throw new Error("Not a SAM file or "+errormessage)
   }
   
 }

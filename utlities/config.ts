@@ -1,14 +1,17 @@
-import { AnyObject } from "immer/dist/internal"
+import { AnyArray, AnyObject } from "immer/dist/internal"
 export let SkeletonConfig:AnyObject={}
-SkeletonConfig["template_version"]="2010-09-09"
+SkeletonConfig["template_version"] = "2010-09-09"
+SkeletonConfig["sam_transform_version"] = "AWS::Serverless-2016-10-31"
+
 let ini = require('ini')
 let fs = require("fs");
+
 const exec = require("child_process").execSync;
 export let npmroot = exec(" npm root -g").toString().trim()
  
 export const stacktype="AWS::CloudFormation::Stack"
 export const samabstract=["apigateway","lambda","stepfunction"]
-SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
+
 export let SAMInitBase="sam init --no-interactive "
 export let SAMLanguage=" -r " 
 export let SAMDependency=" -d "
@@ -132,7 +135,7 @@ export let CognitoAliasAttributes=[
     "phone_number",
     "preferred_username"
 ]
-let  IAMRoleSkeleton= {
+export let  IAMRoleSkeleton= {
           "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/"
           ],
@@ -155,7 +158,7 @@ let  IAMRoleSkeleton= {
           "Path": "/",
           "Policies": []
 }
-export {IAMRoleSkeleton}
+
 
 export let APIGatewaySkeleton={
     "Fn::Transform": {
@@ -165,7 +168,7 @@ export let APIGatewaySkeleton={
       }
     }
 }
-export let LanguageSupport={
+export let LanguageSupport:AnyObject={
 "node":{
     "version":"nodejs14.x",
     "dependency":"npm",
@@ -177,9 +180,9 @@ export let LanguageSupport={
     "extension":".py"
 }
 }
-export function generateAWSResource(name,type,base,optional, defaults){
+export function generateAWSResource(name:string,type:string,base:AnyArray,optional:AnyArray, defaults:AnyObject){
     
-   let resource:object= {
+   let resource:AnyObject= {
     "attributes":["Type","Properties","DependsOn"],
     "type":type,
     "Properties":{
@@ -188,10 +191,10 @@ export function generateAWSResource(name,type,base,optional, defaults){
 
     }
 }
-    if (name!==undefined) {
+    if (name!=="undefined") {
         resource["name"]=name  
     }
-    if (defaults!==undefined) {
+    if (Object.keys(defaults).length !==0 ) {
         resource["Properties"]["Default"]=defaults  
     }
     return resource
@@ -200,7 +203,7 @@ export function generateAWSResource(name,type,base,optional, defaults){
 
 let stackBase=["TemplateURL"]
 let stackOptional=["NotificationARNs","Parameters" ,"Tags"  ,"TemplateURL" ,"TimeoutInMinutes"]
-let stackResource= generateAWSResource(undefined,stacktype,stackBase,stackOptional, undefined)
+let stackResource = generateAWSResource("undefined", stacktype, stackBase, stackOptional, {} )
 
 let lambdaBase=["FunctionName","CodeUri","Runtime"]
 let lambdaOptional=["Events","Environment","Policies","Role","Tags","Description"]
@@ -222,15 +225,15 @@ let dynamoDBOptional=[
     "TableClass",
     "Tags",
     "TimeToLiveSpecification"]
-let dynamoDBResource= generateAWSResource("TableName","AWS::DynamoDB::Table",dynamoDBBase,dynamoDBOptional, undefined)
+let dynamoDBResource = generateAWSResource("TableName", "AWS::DynamoDB::Table", dynamoDBBase, dynamoDBOptional, {} )
 
 let cognitoUserPoolBase=["UserPoolName",]
 let cognitoUserPoolOptional=["AccountRecoverySetting","AdminCreateUserConfig","AliasAttributes","AutoVerifiedAttributes","DeviceConfiguration","EmailConfiguration","EmailVerificationMessage","EmailVerificationSubject","EnabledMfas","LambdaConfig","MfaConfiguration","Policies","Schema","SmsAuthenticationMessage","SmsConfiguration","SmsVerificationMessage","UsernameAttributes","UsernameConfiguration","UserPoolAddOns","UserPoolTags","VerificationMessageTemplate",] 
-let cognitoUserPoolResource = generateAWSResource('UserPoolName','AWS::Cognito::UserPool',cognitoUserPoolBase,cognitoUserPoolOptional,undefined)
+let cognitoUserPoolResource = generateAWSResource('UserPoolName','AWS::Cognito::UserPool',cognitoUserPoolBase,cognitoUserPoolOptional,{})
 
 let userPoolClientBase=["UserPoolId",]
 let userPoolClientOptional=["AccessTokenValidity","AllowedOAuthFlows","AllowedOAuthFlowsUserPoolClient","AllowedOAuthScopes","AnalyticsConfiguration","CallbackURLs","ClientName","DefaultRedirectURI","EnableTokenRevocation","ExplicitAuthFlows","GenerateSecret","IdTokenValidity","LogoutURLs","PreventUserExistenceErrors","ReadAttributes","RefreshTokenValidity","SupportedIdentityProviders","TokenValidityUnits","WriteAttributes",] 
-let userPoolClientResource = generateAWSResource('ClientName','AWS::Cognito::UserPoolClient',userPoolClientBase,userPoolClientOptional,undefined)
+let userPoolClientResource = generateAWSResource('ClientName','AWS::Cognito::UserPoolClient',userPoolClientBase,userPoolClientOptional,{})
 
 let lambdaPermissionBase=["FunctionName","Principal",]
 let lambdaPermissionOptional=["EventSourceToken","SourceAccount","SourceArn",] 
@@ -268,7 +271,7 @@ let usageplanDefault={}
 let usageplanResource = generateAWSResource('UsagePlanName','AWS::ApiGateway::UsagePlan',usageplanBase,usageplanOptional,usageplanDefault)
 
 let usageplankeyBase=["KeyId","KeyType","UsagePlanId",]
-let usageplankeyOptional=[] 
+let usageplankeyOptional:AnyArray=[] 
 let usageplankeyDefault={}
 let usageplankeyResource = generateAWSResource('undefined','AWS::ApiGateway::UsagePlanKey',usageplankeyBase,usageplankeyOptional,usageplankeyDefault)
 
@@ -277,65 +280,65 @@ let apiauthorizerOptional=["AuthorizerCredentials","AuthorizerResultTtlInSeconds
 let apiauthorizerDefault={}
 let apiauthorizerResource = generateAWSResource('Name','AWS::ApiGateway::Authorizer',apiauthorizerBase,apiauthorizerOptional,apiauthorizerDefault)
 
-let vpcBase=[]
+let vpcBase:AnyArray=[]
 let vpcOptional=["CidrBlock","EnableDnsHostnames","EnableDnsSupport","InstanceTenancy","Ipv4IpamPoolId","Ipv4NetmaskLength","Tags",] 
-let vpcResource = generateAWSResource('','AWS::EC2::VPC',vpcBase,vpcOptional,undefined)
+let vpcResource = generateAWSResource('', 'AWS::EC2::VPC', vpcBase, vpcOptional, {})
 
-let internetgatewayBase=[]
+let internetgatewayBase:AnyArray=[]
 let internetgatewayOptional=["Tags",] 
-let internetgatewayResource = generateAWSResource('','AWS::EC2::InternetGateway',internetgatewayBase,internetgatewayOptional,undefined)
+let internetgatewayResource = generateAWSResource('','AWS::EC2::InternetGateway',internetgatewayBase,internetgatewayOptional,{})
 
 let vpcgatewayattachmentBase=["VpcId",]
 let vpcgatewayattachmentOptional=["InternetGatewayId","VpnGatewayId",] 
-let vpcgatewayattachmentResource = generateAWSResource('','AWS::EC2::VPCGatewayAttachment',vpcgatewayattachmentBase,vpcgatewayattachmentOptional,undefined)
+let vpcgatewayattachmentResource = generateAWSResource('','AWS::EC2::VPCGatewayAttachment',vpcgatewayattachmentBase,vpcgatewayattachmentOptional,{})
 
 let subnetBase=["VpcId",]
 let subnetOptional=["AssignIpv6AddressOnCreation","AvailabilityZone","AvailabilityZoneId","CidrBlock","EnableDns64","Ipv6CidrBlock","Ipv6Native","MapPublicIpOnLaunch","OutpostArn","PrivateDnsNameOptionsOnLaunch","Tags",] 
-let subnetResource = generateAWSResource('','AWS::EC2::Subnet',subnetBase,subnetOptional,undefined)
+let subnetResource = generateAWSResource('','AWS::EC2::Subnet',subnetBase,subnetOptional,{})
 
 let routetableBase=["VpcId",]
 let routetableOptional=["Tags",] 
-let routetableResource = generateAWSResource('','AWS::EC2::RouteTable',routetableBase,routetableOptional,undefined)
+let routetableResource = generateAWSResource('','AWS::EC2::RouteTable',routetableBase,routetableOptional,{})
 
 let routeBase=["RouteTableId",]
 let routeOptional=["CarrierGatewayId","DestinationCidrBlock","DestinationIpv6CidrBlock","EgressOnlyInternetGatewayId","GatewayId","InstanceId","LocalGatewayId","NatGatewayId","NetworkInterfaceId","TransitGatewayId","VpcEndpointId","VpcPeeringConnectionId",] 
-let routeResource = generateAWSResource('','AWS::EC2::Route',routeBase,routeOptional,undefined)
+let routeResource = generateAWSResource('', 'AWS::EC2::Route', routeBase, routeOptional, {} )
 
 let subnetroutetableassociationBase=["RouteTableId","SubnetId",]
-let subnetroutetableassociationOptional=[] 
-let subnetroutetableassociationResource = generateAWSResource('','AWS::EC2::SubnetRouteTableAssociation',subnetroutetableassociationBase,subnetroutetableassociationOptional,undefined)
+let subnetroutetableassociationOptional:AnyArray=[] 
+let subnetroutetableassociationResource = generateAWSResource('','AWS::EC2::SubnetRouteTableAssociation',subnetroutetableassociationBase,subnetroutetableassociationOptional,{})
 
-let eipBase=[]
+let eipBase:AnyArray=[]
 let eipOptional=["Domain","InstanceId","NetworkBorderGroup","PublicIpv4Pool","Tags",] 
-let eipResource = generateAWSResource('','AWS::EC2::EIP',eipBase,eipOptional,undefined)
+let eipResource = generateAWSResource('', 'AWS::EC2::EIP', eipBase, eipOptional, {} )
 
 let natgatewayBase=["SubnetId",]
 let natgatewayOptional=["AllocationId","ConnectivityType","Tags",] 
-let natgatewayResource = generateAWSResource('','AWS::EC2::NatGateway',natgatewayBase,natgatewayOptional,undefined)
+let natgatewayResource = generateAWSResource('','AWS::EC2::NatGateway',natgatewayBase,natgatewayOptional,{})
 
 let securitygroupBase=["GroupDescription",]
 let securitygroupOptional=["GroupName","SecurityGroupEgress","SecurityGroupIngress","Tags","VpcId",] 
-let securitygroupResource = generateAWSResource('','AWS::EC2::SecurityGroup',securitygroupBase,securitygroupOptional,undefined)
+let securitygroupResource = generateAWSResource('','AWS::EC2::SecurityGroup',securitygroupBase,securitygroupOptional,{})
 
 let dbsubnetgroupBase=["SubnetIds","DBSubnetGroupDescription",]
 let dbsubnetgroupOptional=["DBSubnetGroupName","Tags",] 
-let dbsubnetgroupResource = generateAWSResource('','AWS::RDS::DBSubnetGroup',dbsubnetgroupBase,dbsubnetgroupOptional,undefined)
+let dbsubnetgroupResource = generateAWSResource('','AWS::RDS::DBSubnetGroup',dbsubnetgroupBase,dbsubnetgroupOptional,{})
 
 let dbclusterBase=["Engine",]
 let dbclusterOptional=["AssociatedRoles","AvailabilityZones","BacktrackWindow","BackupRetentionPeriod","CopyTagsToSnapshot","DatabaseName","DBClusterIdentifier","DBClusterParameterGroupName","DBSubnetGroupName","DeletionProtection","EnableCloudwatchLogsExports","EnableHttpEndpoint","EnableIAMDatabaseAuthentication","EngineMode","EngineVersion","GlobalClusterIdentifier","KmsKeyId","MasterUsername","MasterUserPassword","Port","PreferredBackupWindow","PreferredMaintenanceWindow","ReplicationSourceIdentifier","RestoreType","ScalingConfiguration","SnapshotIdentifier","SourceDBClusterIdentifier","SourceRegion","StorageEncrypted","Tags","UseLatestRestorableTime","VpcSecurityGroupIds",] 
-let dbclusterResource = generateAWSResource('','AWS::RDS::DBCluster',dbclusterBase,dbclusterOptional,undefined)
+let dbclusterResource = generateAWSResource('','AWS::RDS::DBCluster',dbclusterBase,dbclusterOptional,{})
 
 let dbinstanceBase=["DBInstanceClass",]
 let dbinstanceOptional=["AllocatedStorage","AllowMajorVersionUpgrade","AssociatedRoles","AutoMinorVersionUpgrade","AvailabilityZone","BackupRetentionPeriod","CACertificateIdentifier","CharacterSetName","CopyTagsToSnapshot","DBClusterIdentifier","DBInstanceIdentifier","DBName","DBParameterGroupName","DBSecurityGroups","DBSnapshotIdentifier","DBSubnetGroupName","DeleteAutomatedBackups","DeletionProtection","Domain","DomainIAMRoleName","EnableCloudwatchLogsExports","EnableIAMDatabaseAuthentication","EnablePerformanceInsights","Engine","EngineVersion","Iops","KmsKeyId","LicenseModel","MasterUsername","MasterUserPassword","MaxAllocatedStorage","MonitoringInterval","MonitoringRoleArn","MultiAZ","OptionGroupName","PerformanceInsightsKMSKeyId","PerformanceInsightsRetentionPeriod","Port","PreferredBackupWindow","PreferredMaintenanceWindow","ProcessorFeatures","PromotionTier","PubliclyAccessible","SourceDBInstanceIdentifier","SourceRegion","StorageEncrypted","StorageType","Tags","Timezone","UseDefaultProcessorFeatures","VPCSecurityGroups",] 
-let dbinstanceResource = generateAWSResource('DBName','AWS::RDS::DBInstance',dbinstanceBase,dbinstanceOptional,undefined)
+let dbinstanceResource = generateAWSResource('DBName','AWS::RDS::DBInstance',dbinstanceBase,dbinstanceOptional,{})
 
 let secretBase=["Name",]
 let secretOptional=["Description","GenerateSecretString","KmsKeyId","ReplicaRegions","SecretString","Tags",] 
-let secretResource = generateAWSResource('Name','AWS::SecretsManager::Secret',secretBase,secretOptional,undefined)
+let secretResource = generateAWSResource('Name','AWS::SecretsManager::Secret',secretBase,secretOptional,{})
 
 let codebuildprojectBase=["Artifacts","ServiceRole","Source","Environment",]
 let codebuildprojectOptional=["BadgeEnabled","BuildBatchConfig","Cache","ConcurrentBuildLimit","Description","EncryptionKey","FileSystemLocations","LogsConfig","QueuedTimeoutInMinutes","ResourceAccessRole","SecondaryArtifacts","SecondarySources","SecondarySourceVersions","SourceVersion","Tags","TimeoutInMinutes","Triggers","Visibility","VpcConfig",] 
-let codebuildprojectResource = generateAWSResource('Name','AWS::CodeBuild::Project',codebuildprojectBase,codebuildprojectOptional,undefined)
+let codebuildprojectResource = generateAWSResource('Name','AWS::CodeBuild::Project',codebuildprojectBase,codebuildprojectOptional,{})
 
 let iamroleBase=["AssumeRolePolicyDocument"]
 let iamroleOptional=["Description" ,"ManagedPolicyArns","MaxSessionDuration" ,"Path" ,"PermissionsBoundary" ,"Policies" ,"RoleName" ,"Tags"]
@@ -349,7 +352,7 @@ let iamroleDefault={
     }
 }
 let iamroleResource=generateAWSResource("RoleName","AWS::IAM::Role",iamroleBase,iamroleOptional,iamroleDefault)
-export let AWSResources={
+export let AWSResources:AnyObject={
     "stack":stackResource,
     "lambda":lambdaResource,
     "dynamoDB":dynamoDBResource,
@@ -381,7 +384,7 @@ export let AWSResources={
     "secret":secretResource,
     "codebuildproject": codebuildprojectResource
 }
-export let APIGatewayURI={
+export let APIGatewayURI:AnyObject={
     "lambda":"lambda:path/2015-03-31/functions/${lambda.Arn}/invocations",
     "stepfunction":"states:action/StartSyncExecution"
 }
@@ -469,9 +472,9 @@ const swaggermethods =   {
     "responses": swaggerresponse,
     "x-amazon-apigateway-integration": xamazonapigatewayintegration
 }
-const swaggermethodswithparameter =  swaggermethods
-swaggermethodswithparameter["parameters"]=[swaggerparameter]
-export let SwaggerPathSkeleton=  {
+const swaggermethodswithparameter:AnyObject =  swaggermethods
+swaggermethodswithparameter["parameters"] =[swaggerparameter]
+export let SwaggerPathSkeleton:AnyObject=  {
     "get": swaggermethodswithparameter,
     "post": swaggermethods,
     "delete": swaggermethodswithparameter,

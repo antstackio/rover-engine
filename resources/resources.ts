@@ -14,13 +14,14 @@ export  function skeleton(){
     template_skeleton["Resources"]= {}
     return template_skeleton
 }
-function rolePolicyAddition(template:AnyObject,config){
-    let policies:AnyArray=[]
+function rolePolicyAddition(template:AnyObject,config:AnyObject){
+    let policies: AnyArray = []
+    
     let base =template["Properties"]["ManagedPolicyArns"][0]
     for (let j in  config["managedarn"]){
         template["Properties"]["ManagedPolicyArns"][j]=base+config["managedarn"][j]
     }
-    if(config.hasOwnProperty(["iamservice"])){
+    if(config.hasOwnProperty("iamservice")){
         for (let j in  config["iamservice"]){
             template["Properties"]["AssumeRolePolicyDocument"]["Statement"][0]["Principal"]["Service"].push(config["iamservice"][j])
         }
@@ -38,7 +39,7 @@ function rolePolicyAddition(template:AnyObject,config){
    
     return template
 }
-function policyAddition(template,config){
+function policyAddition(template:AnyObject,config:AnyObject){
     let role=JSON.parse(JSON.stringify(configs.PolicySkeleton))
     for (let k in config["Statement"]){
         role["PolicyDocument"]["Statement"][k]["Action"]=config["Statement"][k]["Action"]
@@ -49,10 +50,10 @@ function policyAddition(template,config){
     return template
 }
 
-function swaggerGenerator(config){
+function swaggerGenerator(config:AnyObject){
 
     const swagger=JSON.parse(JSON.stringify(configs.SwaggerSkeleton))
-    let swaggerPaths = {}
+    let swaggerPaths:AnyObject = {}
     if(config.hasOwnProperty("security")){
         
        
@@ -72,7 +73,7 @@ function swaggerGenerator(config){
             security.push(authorizer)
         }
     }
-    config.objects.map((data,i) => {
+    config.objects.map((data:AnyObject,i:number) => {
         const pathName = data["path"]
         swaggerPaths[pathName] = attachMethods(data["methods"],data,security)
         return null
@@ -84,11 +85,11 @@ function swaggerGenerator(config){
     utilities.writeFile(config["filepath"],doc.toString())
 }
 
-const attachMethods = (methodArray,data,security) => {
+const attachMethods = (methodArray:AnyArray,data:AnyObject,security:AnyObject) => {
     
-    let result = {}
+    let result:AnyObject = {}
     if(methodArray.length) {
-        methodArray.map((item) => {
+        methodArray.map((item:string) => {
             result[item]= JSON.parse(JSON.stringify(configs.SwaggerPathSkeleton[item]))
             if(item!=="options"){
                 let uri=result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]+configs.APIGatewayURI[data["resourcetype"]]
@@ -111,15 +112,15 @@ const attachMethods = (methodArray,data,security) => {
     return result
 }
 
-export function apigatewaypath(template,path){
+export function apigatewaypath(template:AnyObject,path:string){
     let definationbody= JSON.parse(JSON.stringify(configs.APIGatewaySkeleton))
     definationbody["Fn::Transform"]["Parameters"]["Location"]=path
       template["Properties"]["DefinitionBody"]=definationbody
       return template
 }
-export let resourceGeneration=function(resource_name,config){
+export let resourceGeneration=function(resource_name:string,config:AnyObject){
     let resource_properties=JSON.parse(JSON.stringify(configs.AWSResources[resource_name]))
-    let template={}
+    let template:AnyObject={}
     for (let j in resource_properties.attributes){
         
         if (resource_properties.attributes[j]=="Type"){

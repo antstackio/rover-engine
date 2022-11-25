@@ -3,7 +3,7 @@
 
 
 import { AnyArray, AnyObject } from "immer/dist/internal"
-export const generateRoverResource=(name,type,config,logic)=>{
+export const generateRoverResource=(name:string,type:string,config:AnyObject,logic:boolean)=>{
 
   let resource:AnyObject={}
   resource["name"]=name
@@ -130,7 +130,7 @@ export const generateLambdaEnv=(input:AnyObject)=>{
   let response:AnyObject={}
   response["Variables"]={}
   Object.keys(input).forEach(ele=>{
-    let refval={}
+    let refval:AnyObject={}
     refval["Ref"]=input[ele]
     response["Variables"][ele]=refval
 
@@ -158,9 +158,9 @@ let crudcomponentconfig={
     resourcetype: 'lambda'
   }
 }
-let crudcomponent:object=generatecrud("Book",crudcomponentconfig)
+let crudcomponent:AnyObject=generatecrud("Book",crudcomponentconfig)
 
-export let Components={
+export let Components:AnyObject={
     "S3 Lambda":[
       {
         "name":"Lambdas",

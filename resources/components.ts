@@ -116,14 +116,13 @@ let apis:AnyObject={
 "logic":false
 }
 let res:AnyObject={}
-res[apiname+"CRUDModule"]={}
-res[apiname+"CRUDModule"]={"resources":[]}
-let resarray=res[apiname+"CRUDModule"]["resources"]
+res[apiname]={"resources":[]}
+let resarray=res[apiname]["resources"]
 resarray.push(role)
 resarray.push(apis)
 resarray=resarray.concat(functions);
 resarray=resarray.concat(tables);
-res[apiname+"CRUDModule"]["resources"]=resarray
+res[apiname]["resources"]=resarray
 
   return res
 }
@@ -159,12 +158,12 @@ let crudcomponentconfig={
     resourcetype: 'lambda'
   }
 }
-let crudcomponent:object=generatecrud("book",crudcomponentconfig)
+let crudcomponent:object=generatecrud("Book",crudcomponentconfig)
 
 export let Components={
-    "s3_lambda":[
+    "S3 Lambda":[
       {
-        "name":"lambdas",
+        "name":"Lambdas",
         "type":"lambda",
         "config":{
             "Policies": [
@@ -199,11 +198,18 @@ export let Components={
       
     }
     ],
-    "crud_api":crudcomponent["bookCRUDModule"]["resources"],
+  "CRUD API": crudcomponent["Book"]["resources"],
+  "S3 Bucket": [generateRoverResource("Bucket", "s3bucket", {},false)],
+  "Lambda": [generateRoverResource("Lambda", "lambda", {},true)],
+  "DynamoDB": [generateRoverResource("Dynamodb", "dynamoDB", {},false)]
    
 }
 export let ModuleDescription={
-  "s3_lambda":"lambda with S3 as trigger",
-  "crud_api":"basic book CRUD API's "
+  "S3 Lambda":"lambda with S3 as trigger",
+  "CRUD API": "basic book CRUD API's ",
+  "S3 Bucket": "Simple Storage Service Bucket ",
+  "Lambda": "one Lambda function",
+  "DynamoDB": "One DynamoDB table"
+
  
 }

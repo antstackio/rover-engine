@@ -136,7 +136,7 @@ export function generateLambdafiles(logic,app_data,resources,stacktype,stackname
                 path=path+"app"+app_data.extension
                 
             }else{
-                path=app_data.app_name+"/"+stackname+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
+                path=app_data.app_name+"/"+stackname+"/"+resources["resources"][j]["name"]+"/"
                 if (resources["resources"][j].hasOwnProperty("package")) {
                     installDependies(path,resources["resources"][j]["package"],app_data.dependency)
                 }
@@ -150,21 +150,17 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     if (!modify) {
          initializeSAM(input)
     }
-  
     let app_types:AnyObject={}
     if( Object.keys(input["Stacks"]).length>0){
-        Object.keys(input["Stacks"]).forEach(ele =>{
+        Object.keys(input["Stacks"]).forEach(ele => {
             let stackdata:AnyObject={}
-            if(input["Stacks"][ele]=="CRUD"){
-                stackdata=modules.StackType[input["Stacks"][ele]](ele,input["StackParams"][ele])
+            if (input["Stacks"][ele] == "CRUDModule") {
+                stackdata = modules.StackType[input["Stacks"][ele]](ele, input["StackParams"][ele])
             }
             else{
-                stackdata=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
+                stackdata = JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))   
             }
-                Object.keys(stackdata).forEach(ele1=>{
-                    let stacknamepattern=new RegExp(ele+"*","g") 
-                    if(!stacknamepattern.test(ele1))ele=ele+ele1
-                    else ele=ele1
+            Object.keys(stackdata).forEach(ele1 => {
                 app_types[ele]=stackdata[ele1]
                 app_types[ele]["type"]="module"
             })
@@ -184,7 +180,6 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
             app_types[ele]["type"]="components"
         })
     }
-    
     
     return app_types
 }
@@ -235,7 +230,7 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
-                path2=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"/"
+                path2=pwd+app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]+"/"
             }
             copyLambdaLogic(path,path2)
             generateLambdafiles(logic,app_data,resources,StackType,lambda_stack_names,j)
@@ -251,14 +246,14 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
             if (stack_names==undefined) {
                 
                 if (comp.desti!==undefined) {
-                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"
-                    configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
-                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                    path=pwd+comp.desti+"/"+resources["resources"][j]["name"]
+                    configpath=resources["resources"][j]["name"]+"/swagger.yaml"
+                    filepath=comp.desti+"/"+resources["resources"][j]["name"]+"/swagger.yaml"
                 }
             }else{
-                path=pwd+app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"
-                configpath=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
-                filepath=app_data.app_name+"/"+stack_names+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                path=pwd+app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]
+                configpath=resources["resources"][j]["name"]+"/swagger.yaml"
+                filepath=app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]+"/swagger.yaml"
             }
             if (fs.existsSync(path)) throw new Error(path +" file already exists");
             exec("mkdir "+path)
@@ -271,17 +266,16 @@ export function createStackResources(resources,app_data,StackType,stack_names,co
     return res
 }
 export  function createStack(app_data,app_types,filename){
-
-    let stack_names = Object.keys(app_types)
     
+    let stack_names = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
     let stackes = {}
     let data=undefined
     for( let i=0;i< stack_names.length;i++){ 
-        let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"_Stack"+"/template.yaml"})
+        let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"/template.yaml"})
         stackes[stack_names[i]]=stacks
-        exec("mkdir "+pwd+app_data.app_name+"/"+stack_names[i]+"_Stack")
+        exec("mkdir "+pwd+app_data.app_name+"/"+stack_names[i])
             let resources=resource[stack_names[i]] 
             let comp={}
             let res=createStackResources(resources,app_data,StackType[i],stack_names[i],comp)
@@ -294,7 +288,7 @@ export  function createStack(app_data,app_types,filename){
             let doc = new yaml.Document();
             doc.contents = template1;
             let temp=replaceYAML(doc.toString())
-            writeFile(app_data.app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",temp)   
+            writeFile(app_data.app_name+"/"+stack_names[i]+"/template.yaml",temp)   
     }
     if (filename) {
         data= fs.readFileSync(pwd+"/"+filename.trim(), { encoding: "utf-8" });
@@ -320,10 +314,11 @@ export  function getAppdata(input) {
     return app_data
 }
 export function  generateSAM(input){
-    let app_data= getAppdata(input)
+    let app_data = getAppdata(input)
     let app_types=cliModuletoConfig(input,false)
     createStack(app_data,app_types,undefined)
-    exec(config.ForceRemove+input.app_name+config.LambdaDemo)
+    exec(config.ForceRemove + input.app_name + config.LambdaDemo)
+    generateRoverConfig(input.app_name,input,"rover_create_project")
 }
 export function addComponents(input){
 
@@ -367,6 +362,7 @@ export function addComponents(input){
             writeFile(input.file_name.trim(),temp) 
         }
         removeFolder(input2.app_name)
+        generateRoverConfig(input.app_name,input ,"rover_add_component")
     }else{
         console.log("wrong template structure");
     }
@@ -384,7 +380,8 @@ export  function addModules(input) {
     let app_types = cliModuletoConfig(input,true)
     let app_data = getAppdata(input)
     createStack(app_data,app_types,input.file_name)
-    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+        exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo")
+        generateRoverConfig(input.app_name,input ,"rover_add_module")
     } catch (error) {
         throw new Error(error.message);
         
@@ -491,10 +488,11 @@ export function NumtoAlpabet (params) {
 }
 export function makeid(length) {
     let result           = '';
-    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let characters       = 'abcdefghijklmnopqrstuvwxyz';
     let charactersLength = characters.length;
     for ( let i = 0; i < length; i++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        if (i==0) result=result.toUpperCase()
     }
     return result;
 }
@@ -558,3 +556,34 @@ export let samValidate=async function(filename){
   
 }
 
+export let generateRoverConfig = function (filename:string, data:AnyObject, type:string) { 
+    let response: AnyObject = {}
+    if (filename === "") filename = (pwd.split("/"))[pwd.split("/").length - 1]
+    let originalfilename=filename
+    filename = filename + "/roverconfig.json"
+    if (fs.existsSync(pwd + filename)) {
+        let filedata = fs.readFileSync(pwd + filename, { encoding: "utf-8" })
+        let dataobject = JSON.parse(filedata)
+        let types=Object.keys(dataobject)
+        let typesarray=[types.includes("rover_add_module"),types.includes("rover_add_component"),types.includes("rover_create_project"),types.includes("rover_deploy_cli"),types.includes("rover_generate_pipeline"),types.includes("rover_deploy_repo")]
+        if (!typesarray.includes(true)) {
+            console.log(`improper rover config file (to fix ,delete roverconfig.json in ${pwd+filename} )`)
+            return 0
+        }
+        if (!dataobject.hasOwnProperty(type))  dataobject[type] = []
+        if( dataobject.app_name==data.app_name)delete data.app_name
+        if( dataobject.language==data.language)delete data.language
+        dataobject[type].push(data)
+        data=dataobject
+    } else { 
+        if(!fs.existsSync(pwd + originalfilename)) throw new Error(`Wrong file path ${pwd+originalfilename} `);
+        response["app_name"]=data.app_name
+        response["language"]=data.language
+        delete data.app_name
+        delete data.language
+        response[type] = []
+        response[type].push(data)
+        data=response
+    }
+    writeFile(filename,JSON.stringify(data))
+}

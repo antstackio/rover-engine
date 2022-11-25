@@ -4,7 +4,8 @@ SkeletonConfig["template_version"]="2010-09-09"
 let ini = require('ini')
 let fs = require("fs");
 const exec = require("child_process").execSync;
-export let npmroot=exec(" npm root -g").toString().trim()
+export let npmroot = exec(" npm root -g").toString().trim()
+ 
 export const stacktype="AWS::CloudFormation::Stack"
 export const samabstract=["apigateway","lambda","stepfunction"]
 SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
@@ -350,7 +351,6 @@ let iamroleDefault={
 let iamroleResource=generateAWSResource("RoleName","AWS::IAM::Role",iamroleBase,iamroleOptional,iamroleDefault)
 export let AWSResources={
     "stack":stackResource,
-    
     "lambda":lambdaResource,
     "dynamoDB":dynamoDBResource,
     "cognitoUserPool":cognitoUserPoolResource,

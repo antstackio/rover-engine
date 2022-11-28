@@ -401,8 +401,7 @@ export function getComponents(component:AnyObject){
             componentstypeobj.map(function(ele:AnyObject){
             resources.push(ele)
         })    
-    }
-)
+    })
     return resources
 }
 export function checkNested(template:string) {

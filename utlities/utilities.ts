@@ -62,7 +62,8 @@ export function testsetup(path:string,dependency:string,appname:string) {
         exec("mv "+path+"tests/unit/test-handler.js "+path+"tests/unit/test.test.js")
     }
 }
-export  function addResourceTemplate(resources:AnyObject, name:AnyArray,temp:AnyObject){ 
+export function addResourceTemplate(resources: AnyObject, name: AnyArray, temp: AnyObject) { 
+    
     let template
     if (Object.keys(temp).length==0) {
         template=rover_resources.skeleton()
@@ -111,7 +112,6 @@ export function removeFolder (path:string) {
 }
 export function generateLambdafiles(logic:boolean,app_data:AnyObject,resources:AnyObject,stacktype:string,stackname:string,j:string) {
     let code
-    
     if(logic){
         
         if (resources["resources"][j].hasOwnProperty("logicpath")) {
@@ -204,7 +204,7 @@ export function createStackResources(resources: AnyObject, app_data: AnyObject, 
         });
     
     for(let j in  resources["resources"]){ 
-        if(stack_names==undefined){
+        if(stack_names==""){
                 let randomstr:string=(crypto.randomBytes(1).toString("base64url").replace(/\d/g, 'd')).toLowerCase();
                 resources["resources"][j]["name"]=resources["resources"][j]["name"]+randomstr
         }
@@ -220,21 +220,25 @@ export function createStackResources(resources: AnyObject, app_data: AnyObject, 
             let path:string=""
             let path2:string=""
             let lambda_stack_names=stack_names
-            if (stack_names==undefined) {
+            if (stack_names=="") {
                 if (comp.demo_desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
-                path2=pwd+app_data.app_name+"/"+resources["resources"][j]["name"]+"/"
+                    path2 = pwd + app_data.app_name + "/" + resources["resources"][j]["name"] + "/"
+                    
                     
                 }
                 if (comp.desti!==undefined) {
                     path=pwd+comp.demo_desti+"/"+"lambda_demo"+"/ "
                     path2=pwd+comp.desti+"/"+resources["resources"][j]["name"]+"/"
-                    lambda_stack_names=(comp.desti.split("/")[1]).replace("_Stack","")
+                    lambda_stack_names = (comp.desti.split("/")[1]).replace("_Stack", "")
+                    
                 }
             }else{
                 path=pwd+app_data.app_name+"/"+"lambda_demo"+"/ "
-                path2=pwd+app_data.app_name+"/"+stack_names+"/"+resources["resources"][j]["name"]+"/"
+                path2 = pwd + app_data.app_name + "/" + stack_names + "/" + resources["resources"][j]["name"] + "/"
+                
             }
+            
             copyLambdaLogic(path,path2)
             generateLambdafiles(logic,app_data,resources,StackType,lambda_stack_names,j)
             testsetup(path2,app_data.dependency,app_data.app_name)
@@ -244,9 +248,7 @@ export function createStackResources(resources: AnyObject, app_data: AnyObject, 
             let path
             let configpath
             let filepath
-           
-            
-            if (stack_names==undefined) {
+            if (stack_names=="") {
                 
                 if (comp.desti!==undefined) {
                     path=pwd+comp.desti+"/"+resources["resources"][j]["name"]
@@ -269,12 +271,12 @@ export function createStackResources(resources: AnyObject, app_data: AnyObject, 
     return res
 }
 export  function createStack(app_data:AnyObject,app_types:AnyObject,filename:string){
-    console.log(filename)
+    
     let stack_names:AnyArray = Object.keys(app_types)
     let resource=app_types
     let StackType = app_data.StackType
     let stackes:AnyObject = {}
-    let data = {}
+    let data:AnyObject = {}
     for( let i=0;i< stack_names.length;i++){ 
         let stacks= rover_resources.resourceGeneration("stack",{"TemplateURL":stack_names[i]+"/template.yaml"})
         stackes[stack_names[i]]=stacks
@@ -284,9 +286,7 @@ export  function createStack(app_data:AnyObject,app_types:AnyObject,filename:str
             let res=createStackResources(resources,app_data,StackType[i],stack_names[i],comp)
         let template1 = addResourceTemplate(res, Object.keys(res), {})
             if (resources.hasOwnProperty("parameter")) {
-
                 template1["Parameters"]=resources.parameter
-                
             }
             let doc = new yaml.Document();
             doc.contents = template1;
@@ -294,8 +294,9 @@ export  function createStack(app_data:AnyObject,app_types:AnyObject,filename:str
             writeFile(app_data.app_name+"/"+stack_names[i]+"/template.yaml",temp)   
     }
     if (filename!=="") {
-        let datas:string = fs.readFileSync(pwd + "/" + filename.trim(), { encoding: "utf-8" });
-        data=Yaml.load(replaceTempTag(datas))
+        let datas: string = fs.readFileSync(pwd + "/" + filename.trim(), { encoding: "utf-8" });
+        data = Yaml.load(replaceTempTag(datas))
+        if (data.hasOwnProperty("AWSTemplateFormatVersion"))data["AWSTemplateFormatVersion"]=config.SkeletonConfig["template_version"]
         if(!data.hasOwnProperty("Resources"))throw new Error("Improper SAM template file in "+filename);
     
     }
@@ -458,15 +459,17 @@ function updatevalue(input:string,data:string){
   
 }
 export function replaceTempTag(yamlinput:string){
-      let result
+    let result
       do{
         result=sub.exec(yamlinput)
         if (result!==null) {
           yamlinput=updatevalue(result[0],yamlinput)
         }
         
-      }while(result!==null)
-      return yamlinput
+      } while (result !== null)
+    
+    return yamlinput
+    
 }
 export function NumtoAlpabet (params:number) {
     let res=""

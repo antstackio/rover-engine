@@ -5,7 +5,6 @@ import * as modules  from "../resources/modules"
 import * as components  from "../resources/components"
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
-const crypto = require('crypto');
 const yaml = require("yaml");
 let fs = require("fs");
 export let  pwd =process.cwd()+"/"
@@ -205,7 +204,7 @@ export function createStackResources(resources: AnyObject, app_data: AnyObject, 
     
     for(let j in  resources["resources"]){ 
         if(stack_names==""){
-                let randomstr:string=(crypto.randomBytes(1).toString("base64url").replace(/\d/g, 'd')).toLowerCase();
+                let randomstr:string=makeid(4)
                 resources["resources"][j]["name"]=resources["resources"][j]["name"]+randomstr
         }
         let configs=resources["resources"][j]["config"]
@@ -339,7 +338,6 @@ export function addComponents(input:AnyObject){
             Object.keys(input.nestedComponents).forEach(ele=>{
                 let comp:AnyObject={}
                 res["resources"]=getComponents(input.nestedComponents[ele]["components"])
-
                 Data = Yaml.load(replaceTempTag(fs.readFileSync(pwd+"/"+input.app_name+"/"+input.nestedComponents[ele]["path"].trim(), { encoding: "utf-8" })));
                 let path:AnyArray =(input.app_name+"/"+input.nestedComponents[ele]["path"]).split("/")
                 path.pop()

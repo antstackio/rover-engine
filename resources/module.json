@@ -1232,7 +1232,7 @@
               ]
             }
           },
-          "package": ["typeorm", "typeorm-aurora-data-api-driver"],
+          "package": ["data-api-client"],
           "logic": true,
           "logicpath": "rdstable"
         },
@@ -1246,6 +1246,435 @@
           }
         }
       ]
+    }
+  },
+  "RDSS": {
+    "RDS": {
+      "resources": [
+        {
+          "name": "VPC",
+          "type": "vpc",
+          "config": {
+            "CidrBlock": "10.0.0.0/16"
+          }
+        },
+        {
+          "name": "SubnetA",
+          "type": "subnet",
+          "config": {
+            "AvailabilityZone": {
+              "Fn::Select": "[ 0,!GetAZs Ref: 'AWS::Region']"
+            },
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "CidrBlock": "10.0.0.0/24"
+          }
+        },
+        {
+          "name": "SubnetB",
+          "type": "subnet",
+          "config": {
+            "AvailabilityZone": {
+              "Fn::Select": "[1 , !GetAZs Ref: 'AWS::Region' ]"
+            },
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "CidrBlock": "10.0.1.0/24"
+          }
+        },
+        {
+          "name": "RouteTable",
+          "type": "routetable",
+          "config": {
+            "VpcId": {
+              "Ref": "\"VPC\""
+            }
+          }
+        },
+        {
+          "name": "SubnetGroup",
+          "type": "dbsubnetgroup",
+          "config": {
+            "DBSubnetGroupName": "subnetgroup",
+            "DBSubnetGroupDescription": "Subnet Group",
+            "SubnetIds": [
+              {
+                "Ref": "\"SubnetA\""
+              },
+              {
+                "Ref": "\"SubnetB\""
+              }
+            ]
+          }
+        },
+        {
+          "name": "InstanceSecurityGroup",
+          "type": "securitygroup",
+          "config": {
+            "GroupName": "Example Security Group",
+            "GroupDescription": "RDS traffic",
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "SecurityGroupEgress": [
+              {
+                "IpProtocol": "-1",
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        },
+        {
+          "name": "InstanceSecurityGroupIngress",
+          "type": "securitygroupingress",
+          "config": {
+            "GroupId": {
+              "Ref": "\"InstanceSecurityGroup\""
+            },
+            "IpProtocol": "tcp",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "SourceSecurityGroupId": {
+              "Ref": "\"InstanceSecurityGroup\""
+            }
+          }
+        },
+        {
+          "name": "RDSCluster",
+          "type": "dbcluster",
+          "config": {
+            "DBSubnetGroupName": {
+              "Ref": "SubnetGroup"
+            },
+            "MasterUsername": {
+              "Ref": "DBUserName"
+            },
+            "MasterUserPassword": {
+              "Ref": "DBUserPassword"
+            },
+            "DatabaseName": {
+              "Ref": "DBUserName"
+            },
+            "Engine": "aurora-postgresql",
+            "EnableHttpEndpoint": true,
+            "EngineMode": "serverless",
+            "VpcSecurityGroupIds": [
+              {
+                "Ref": "\"InstanceSecurityGroup\""
+              }
+            ],
+            "ScalingConfiguration": {
+              "AutoPause": true,
+              "MaxCapacity": 16,
+              "MinCapacity": 2,
+              "SecondsUntilAutoPause": 300
+            }
+          }
+        },
+        {
+          "name": "user",
+          "type": "function",
+          "config": {
+            "FunctionName": "user",
+            "CodeUri": "user/",
+            "Runtime": "nodejs14.x",
+            "Environment": {
+              "Variables": {
+                "Secret": {
+                  "Ref": "usersecret"
+                },
+                "Clustername": {
+                  "Ref": "RDSCluster"
+                },
+                "Region": {
+                  "Ref": "AWS::Region"
+                },
+                "Accountid": {
+                  "Ref": "AWS::AccountId"
+                },
+                "DBname": {
+                  "Ref": "DBUserName"
+                }
+              }
+            },
+            "Policies": [
+              "AWSLambdaBasicExecutionRole",
+              {
+                "Version": "2012-10-17T00:00:00.000Z",
+                "Statement": [
+                  {
+                    "Sid": "RDSDataServiceAccess",
+                    "Effect": "Allow",
+                    "Action": [
+                      "rds-data:BatchExecuteStatement",
+                      "rds-data:BeginTransaction",
+                      "rds-data:CommitTransaction",
+                      "rds-data:ExecuteStatement",
+                      "rds-data:RollbackTransaction"
+                    ],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "SecretsManagerDbCredentialsAccess",
+                    "Effect": "Allow",
+                    "Action": ["secretsmanager:GetSecretValue"],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "SecretsManagerDbCredentialsAccess2",
+                    "Effect": "Allow",
+                    "Action": ["secretsmanager:GetSecretValue"],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "RDSDataServiceAccess2",
+                    "Effect": "Allow",
+                    "Action": ["rds-data:*"],
+                    "Resource": "*"
+                  }
+                ]
+              }
+            ],
+            "Tags": {
+              "createdBy": "rover",
+              "applicationName": "rdssample"
+            },
+            "Description": "Rover-tools created user  named lambda resource",
+            "Handler": "app.lambdaHandler"
+          }
+        },
+        {
+          "name": "usersecret",
+          "type": "secret",
+          "config": {
+            "Name": "usersecret",
+            "Description": "Rover-tools created usersecret  named secret resource",
+            "SecretString": {
+              "Fn::Sub": "{'database':${DBName},'username':${DBUserName},'password':${DBUserPassword}}"
+            },
+            "Tags": [
+              {
+                "Key": "createdBy",
+                "Value": "rover"
+              },
+              {
+                "Key": "applicationName",
+                "Value": "rdssample"
+              }
+            ]
+          }
+        }
+      ],
+      "parameter": {
+        "VPC": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": "10.0.0.0/16"
+          }
+        },
+        "SubnetA": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": {
+              "Fn::Select": "[ 0,!GetAZs Ref: 'AWS::Region']"
+            },
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "CidrBlock": "10.0.0.0/24"
+          }
+        },
+        "SubnetB": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": {
+              "Fn::Select": "[1 , !GetAZs Ref: 'AWS::Region' ]"
+            },
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "CidrBlock": "10.0.1.0/24"
+          }
+        },
+        "RouteTable": {
+          "Type": "AWS::EC2::RouteTable",
+          "Properties": {
+            "VpcId": {
+              "Ref": "\"VPC\""
+            }
+          }
+        },
+        "SubnetGroup": {
+          "Type": "AWS::RDS::DBSubnetGroup",
+          "Properties": {
+            "DBSubnetGroupName": "subnetgroup",
+            "DBSubnetGroupDescription": "Subnet Group",
+            "SubnetIds": [
+              {
+                "Ref": "\"SubnetA\""
+              },
+              {
+                "Ref": "\"SubnetB\""
+              }
+            ]
+          }
+        },
+        "InstanceSecurityGroup": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "GroupName": "Example Security Group",
+            "GroupDescription": "RDS traffic",
+            "VpcId": {
+              "Ref": "\"VPC\""
+            },
+            "SecurityGroupEgress": [
+              {
+                "IpProtocol": "-1",
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        },
+        "InstanceSecurityGroupIngress": {
+          "Type": "AWS::EC2::SecurityGroupIngress",
+          "DependsOn": "InstanceSecurityGroup",
+          "Properties": {
+            "GroupId": {
+              "Ref": "\"InstanceSecurityGroup\""
+            },
+            "IpProtocol": "tcp",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "SourceSecurityGroupId": {
+              "Ref": "\"InstanceSecurityGroup\""
+            }
+          }
+        },
+        "RDSCluster": {
+          "Type": "AWS::RDS::DBCluster",
+          "Properties": {
+            "DBSubnetGroupName": {
+              "Ref": "SubnetGroup"
+            },
+            "MasterUsername": {
+              "Ref": "DBUserName"
+            },
+            "MasterUserPassword": {
+              "Ref": "DBUserPassword"
+            },
+            "DatabaseName": {
+              "Ref": "DBUserName"
+            },
+            "Engine": "aurora-postgresql",
+            "EnableHttpEndpoint": true,
+            "EngineMode": "serverless",
+            "VpcSecurityGroupIds": [
+              {
+                "Ref": "\"InstanceSecurityGroup\""
+              }
+            ],
+            "ScalingConfiguration": {
+              "AutoPause": true,
+              "MaxCapacity": 16,
+              "MinCapacity": 2,
+              "SecondsUntilAutoPause": 300
+            }
+          }
+        },
+        "user": {
+          "Type": "AWS::Serverless::Function",
+          "Properties": {
+            "FunctionName": "user",
+            "CodeUri": "user/",
+            "Runtime": "nodejs14.x",
+            "Environment": {
+              "Variables": {
+                "Secret": {
+                  "Ref": "usersecret"
+                },
+                "Clustername": {
+                  "Ref": "RDSCluster"
+                },
+                "Region": {
+                  "Ref": "AWS::Region"
+                },
+                "Accountid": {
+                  "Ref": "AWS::AccountId"
+                },
+                "DBname": {
+                  "Ref": "DBUserName"
+                }
+              }
+            },
+            "Policies": [
+              "AWSLambdaBasicExecutionRole",
+              {
+                "Version": "2012-10-17T00:00:00.000Z",
+                "Statement": [
+                  {
+                    "Sid": "RDSDataServiceAccess",
+                    "Effect": "Allow",
+                    "Action": [
+                      "rds-data:BatchExecuteStatement",
+                      "rds-data:BeginTransaction",
+                      "rds-data:CommitTransaction",
+                      "rds-data:ExecuteStatement",
+                      "rds-data:RollbackTransaction"
+                    ],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "SecretsManagerDbCredentialsAccess",
+                    "Effect": "Allow",
+                    "Action": ["secretsmanager:GetSecretValue"],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "SecretsManagerDbCredentialsAccess2",
+                    "Effect": "Allow",
+                    "Action": ["secretsmanager:GetSecretValue"],
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "RDSDataServiceAccess2",
+                    "Effect": "Allow",
+                    "Action": ["rds-data:*"],
+                    "Resource": "*"
+                  }
+                ]
+              }
+            ],
+            "Tags": {
+              "createdBy": "rover",
+              "applicationName": "rdssample"
+            },
+            "Description": "Rover-tools created user  named lambda resource",
+            "Handler": "app.lambdaHandler"
+          }
+        },
+        "usersecret": {
+          "Type": "AWS::SecretsManager::Secret",
+          "Properties": {
+            "Name": "usersecret",
+            "Description": "Rover-tools created usersecret  named secret resource",
+            "SecretString": {
+              "Fn::Sub": "{'database':${DBName},'username':${DBUserName},'password':${DBUserPassword}}"
+            },
+            "Tags": [
+              {
+                "Key": "createdBy",
+                "Value": "rover"
+              },
+              {
+                "Key": "applicationName",
+                "Value": "rdssample"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }

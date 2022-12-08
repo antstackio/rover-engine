@@ -20,4 +20,4 @@ module.exports = {
   },
   rules: {},
   ignorePatterns: ["**/*.js", "**/*.d.ts"],
-}
+};

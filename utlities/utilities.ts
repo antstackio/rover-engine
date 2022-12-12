@@ -245,17 +245,33 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     initializeSAM(input);
   }
   const app_types: AnyObject = {};
-  if (Object.keys(input["Stacks"]).length > 0) {
-    Object.keys(input["Stacks"]).forEach((ele) => {
+  
+  if (Object.keys(input["stack_details"]).length > 0) {
+    Object.keys(input["stack_details"]).forEach((ele) => {
       let stackdata: AnyObject = {};
-      if (input["Stacks"][ele] == "CRUDModule") {
-        stackdata = modules.Modules[input["Stacks"][ele]]["resource"](
+      if (input["stack_details"][ele]["type"] == "CRUDModule") {
+        stackdata = modules.Modules[input["stack_details"][ele]["type"]]["resource"](
           ele,
-          input["StackParams"][ele]
+          input["stack_details"][ele]["params"]
         );
-      } else {
+      }else if (input["stack_details"][ele]["type"] == "Custom") {
+          const resources: AnyArray = [];
+          const customstackarray: AnyArray = input["stack_details"][ele]["componentlist"];
+          customstackarray.map((ele) => {
+            const componentarray: AnyArray = JSON.parse(
+              JSON.stringify(components.Components[ele])
+            );
+            componentarray.map((ele) => {
+              resources.push(ele);
+            });
+          });
+          app_types[ele] = {};
+          app_types[ele]["resources"] = resources;
+          app_types[ele]["type"] = "components";
+      }
+       else {
         stackdata = JSON.parse(
-          JSON.stringify(modules.Modules[input["Stacks"][ele]]["resource"])
+          JSON.stringify(modules.Modules[input["stack_details"][ele]["type"]]["resource"])
         );
       }
       Object.keys(stackdata).forEach((ele1) => {
@@ -264,24 +280,6 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
       });
     });
   }
-  if (Object.keys(input["CustomStacks"]).length > 0) {
-    Object.keys(input["CustomStacks"]).forEach((ele) => {
-      const resources: AnyArray = [];
-      const customstackarray: AnyArray = input["CustomStacks"][ele];
-      customstackarray.map((ele) => {
-        const componentarray: AnyArray = JSON.parse(
-          JSON.stringify(components.Components[ele])
-        );
-        componentarray.map((ele) => {
-          resources.push(ele);
-        });
-      });
-      app_types[ele] = {};
-      app_types[ele]["resources"] = resources;
-      app_types[ele]["type"] = "components";
-    });
-  }
-
   return app_types;
 }
 export function createStackResources(
@@ -480,8 +478,12 @@ export function getAppdata(input: AnyObject) {
   app_data["language"] = config.LanguageSupport[input.language]["version"];
   app_data["dependency"] = config.LanguageSupport[input.language]["dependency"];
   app_data["extension"] = config.LanguageSupport[input.language]["extension"];
-  if (input["Stacks"] !== undefined) {
-    app_data["StackType"] = Object.values(input["Stacks"]);
+  if (input["stack_details"] !== undefined) {
+    let appdata:AnyArray=[]
+    Object.keys(input["stack_details"]).forEach(ele=>{
+      appdata.push(input["stack_details"][ele]["type"])
+    })
+    app_data["StackType"] = appdata
   }
 
   return app_data;

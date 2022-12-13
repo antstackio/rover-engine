@@ -5,7 +5,9 @@ import * as modules from "../resources/modules";
 import * as components from "../resources/components";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
-const exec = child.execSync;
+const exec = child.execSync
+const execs = child.spawnSync;
+
 import * as yaml from "yaml";
 import * as fs from "fs";
 export const pwd = process.cwd() + "/";
@@ -80,10 +82,10 @@ export function setupTestEnv(
   }
 }
 export function setupESLint(path: string, filename: string) {
-  exec(
+  execs(
     "cd " +
       path +
-      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier "
+      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier ",{ shell: true }
   );
   writeFile(
     filename + "/.prettierrc.json",

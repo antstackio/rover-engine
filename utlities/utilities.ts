@@ -6,7 +6,7 @@ import * as components from "../resources/components";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
 const exec = child.execSync
-const execs = child.spawnSync;
+
 
 import * as yaml from "yaml";
 import * as fs from "fs";
@@ -82,11 +82,10 @@ export function setupTestEnv(
   }
 }
 export function setupESLint(path: string, filename: string) {
-  execs(
+  exec(
     "cd " +
       path +
-      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier ",{ shell: true }
-  );
+      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier ");
   writeFile(
     filename + "/.prettierrc.json",
     JSON.stringify(config.prettierConfig)

@@ -10,5 +10,5 @@ export = {
   rover_modules: rover_modules,
   rover_components: rover_components,
   rover_config: rover_config,
-  rover_genSAM: generateSAM,
+  rover_generateSAM: generateSAM,
 };

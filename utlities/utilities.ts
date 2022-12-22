@@ -5,21 +5,20 @@ import * as modules from "../resources/modules";
 import * as components from "../resources/components";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
-const exec = child.execSync
-
-
 import * as yaml from "yaml";
 import * as fs from "fs";
-export const pwd = process.cwd() + "/";
+import * as TOML from "@iarna/toml";
+
+const exec = child.execSync;
 const sub = new RegExp(
   /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*\n/g
 );
 const pythonpattern = new RegExp(/python[1-9]*\.[1-9]*/g);
 const jspattern = new RegExp(/nodejs[1-9]*\.[a-zA-Z]*/g);
 const yamlpattern = new RegExp(/(\.yaml$)/g);
-const Yaml = require("js-yaml");
+import * as Yaml from "js-yaml";
 
-import * as TOML from "@iarna/toml";
+export const pwd = process.cwd() + "/";
 export const npmrootTest = function () {
   let packages: AnyArray = exec(" npm -g  ls").toString().trim().split(/\r?\n/);
   packages.shift();
@@ -85,7 +84,8 @@ export function setupESLint(path: string, filename: string) {
   exec(
     "cd " +
       path +
-      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier ");
+      "&& npm i -D eslint prettier eslint-plugin-prettier eslint-config-prettier "
+  );
   writeFile(
     filename + "/.prettierrc.json",
     JSON.stringify(config.prettierConfig)
@@ -246,33 +246,34 @@ export function cliModuletoConfig(input: AnyObject, modify: boolean) {
     initializeSAM(input);
   }
   const app_types: AnyObject = {};
-  
+
   if (Object.keys(input["stack_details"]).length > 0) {
     Object.keys(input["stack_details"]).forEach((ele) => {
       let stackdata: AnyObject = {};
       if (input["stack_details"][ele]["type"] == "CRUDModule") {
-        stackdata = modules.Modules[input["stack_details"][ele]["type"]]["resource"](
-          ele,
-          input["stack_details"][ele]["params"]
-        );
-      }else if (input["stack_details"][ele]["type"] == "Custom") {
-          const resources: AnyArray = [];
-          const customstackarray: AnyArray = input["stack_details"][ele]["componentlist"];
-          customstackarray.map((ele) => {
-            const componentarray: AnyArray = JSON.parse(
-              JSON.stringify(components.Components[ele])
-            );
-            componentarray.map((ele) => {
-              resources.push(ele);
-            });
+        stackdata = modules.Modules[input["stack_details"][ele]["type"]][
+          "resource"
+        ](ele, input["stack_details"][ele]["params"]);
+      } else if (input["stack_details"][ele]["type"] == "Custom") {
+        const resources: AnyArray = [];
+        const customstackarray: AnyArray =
+          input["stack_details"][ele]["componentlist"];
+        customstackarray.map((ele) => {
+          const componentarray: AnyArray = JSON.parse(
+            JSON.stringify(components.Components[ele])
+          );
+          componentarray.map((ele) => {
+            resources.push(ele);
           });
-          app_types[ele] = {};
-          app_types[ele]["resources"] = resources;
-          app_types[ele]["type"] = "components";
-      }
-       else {
+        });
+        app_types[ele] = {};
+        app_types[ele]["resources"] = resources;
+        app_types[ele]["type"] = "components";
+      } else {
         stackdata = JSON.parse(
-          JSON.stringify(modules.Modules[input["stack_details"][ele]["type"]]["resource"])
+          JSON.stringify(
+            modules.Modules[input["stack_details"][ele]["type"]]["resource"]
+          )
         );
       }
       Object.keys(stackdata).forEach((ele1) => {
@@ -460,7 +461,7 @@ export function createStack(
     const datas: string = fs.readFileSync(pwd + "/" + filename.trim(), {
       encoding: "utf-8",
     });
-    data = Yaml.load(replaceTempTag(datas));
+    data = <AnyObject>Yaml.load(replaceTempTag(datas));
     if (Object.prototype.hasOwnProperty.call(data, "AWSTemplateFormatVersion"))
       data["AWSTemplateFormatVersion"] =
         config.SkeletonConfig["template_version"];
@@ -480,11 +481,11 @@ export function getAppdata(input: AnyObject) {
   app_data["dependency"] = config.LanguageSupport[input.language]["dependency"];
   app_data["extension"] = config.LanguageSupport[input.language]["extension"];
   if (input["stack_details"] !== undefined) {
-    let appdata:AnyArray=[]
-    Object.keys(input["stack_details"]).forEach(ele=>{
-      appdata.push(input["stack_details"][ele]["type"])
-    })
-    app_data["StackType"] = appdata
+    const appdata: AnyArray = [];
+    Object.keys(input["stack_details"]).forEach((ele) => {
+      appdata.push(input["stack_details"][ele]["type"]);
+    });
+    app_data["StackType"] = appdata;
   }
 
   return app_data;
@@ -502,7 +503,7 @@ export function addComponents(input: AnyObject) {
   const Datas = fs.readFileSync(pwd + "/" + input.file_name.trim(), {
     encoding: "utf-8",
   });
-  let Data = Yaml.load(replaceTempTag(Datas));
+  let Data = <AnyObject>Yaml.load(replaceTempTag(Datas));
   if (Object.prototype.hasOwnProperty.call(Data, "Resources")) {
     const res: AnyObject = {};
     const app_data = getAppdata(input);
@@ -515,15 +516,17 @@ export function addComponents(input: AnyObject) {
         res["resources"] = getComponents(
           input.nestedComponents[ele]["components"]
         );
-        Data = Yaml.load(
-          replaceTempTag(
-            fs.readFileSync(
-              pwd +
-                "/" +
-                input.app_name +
-                "/" +
-                input.nestedComponents[ele]["path"].trim(),
-              { encoding: "utf-8" }
+        Data = <AnyObject>(
+          Yaml.load(
+            replaceTempTag(
+              fs.readFileSync(
+                pwd +
+                  "/" +
+                  input.app_name +
+                  "/" +
+                  input.nestedComponents[ele]["path"].trim(),
+                { encoding: "utf-8" }
+              )
             )
           )
         );
@@ -600,9 +603,11 @@ export function getComponents(component: AnyObject) {
   return resources;
 }
 export function checkNested(template: string) {
-  const Data = Yaml.load(
-    replaceTempTag(
-      fs.readFileSync(pwd + "/" + template.trim(), { encoding: "utf-8" })
+  const Data = <AnyObject>(
+    Yaml.load(
+      replaceTempTag(
+        fs.readFileSync(pwd + "/" + template.trim(), { encoding: "utf-8" })
+      )
     )
   );
   const CompStacks: AnyObject = {};
@@ -714,8 +719,8 @@ export const samValidate = async function (filename: string) {
       if (ele.match(yamlpattern) !== null) yamlfiles.push(path + ele);
     });
     yamlfiles.map((ele) => {
-      let data = fs.readFileSync(ele, { encoding: "utf-8" });
-      data = Yaml.load(replaceTempTag(data));
+      const datas = fs.readFileSync(ele, { encoding: "utf-8" });
+      const data = <AnyObject>Yaml.load(replaceTempTag(datas));
       if (
         Object.prototype.hasOwnProperty.call(
           data,

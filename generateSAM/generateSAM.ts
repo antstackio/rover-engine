@@ -10,10 +10,13 @@ import * as rover_resources from "../resources/resources";
 import * as Yaml from "js-yaml";
 const exec = child.execSync;
 const pwd = utlities.pwd;
+import { IroverInput, IroverAppData } from "./generatesam.types";
+import {TroverAppTypeObject,TroverResourcesArray} from "../roverTypes/rover.types"
 
-export function generateSAM(input: AnyObject) {
-  const app_data = getAppdata(input);
-  const app_types = cliModuletoConfig(input, false);
+export function generateSAM(input: IroverInput): void {
+  const app_data: IroverAppData = getAppdata(input);
+  const app_types:TroverAppTypeObject = cliModuletoConfig(input, false);
+  console.log("app_types", JSON.stringify(app_types));
   const appname: string = input.app_name;
   createStack(app_data, app_types, "");
   exec(config.ForceRemove + input.app_name + config.LambdaDemo);
@@ -21,30 +24,28 @@ export function generateSAM(input: AnyObject) {
   exec("cd " + utlities.pwd + appname + " && npm run format:write");
 }
 
-function getAppdata(input: AnyObject) {
-  const app_data: AnyObject = {};
-  app_data["app_name"] = input.app_name;
-  app_data["language"] = config.LanguageSupport[input.language]["version"];
-  app_data["dependency"] = config.LanguageSupport[input.language]["dependency"];
-  app_data["extension"] = config.LanguageSupport[input.language]["extension"];
-  if (input["stack_details"] !== undefined) {
-    const appdata: AnyArray = [];
-    Object.keys(input["stack_details"]).forEach((ele) => {
-      appdata.push(input["stack_details"][ele]["type"]);
-    });
-    app_data["StackType"] = appdata;
-  }
-
-  return app_data;
+function getAppdata(input: IroverInput): IroverAppData {
+  const appDataArray: Array<string> = [];
+  Object.keys(input.stack_details).forEach((ele) => {
+    appDataArray.push(input.stack_details[ele].type);
+  });
+  const appData: IroverAppData = {
+    app_name: input.app_name,
+    language: config.LanguageSupport[input.language]["version"],
+    dependency: config.LanguageSupport[input.language]["dependency"],
+    extension: config.LanguageSupport[input.language]["extension"],
+    StackType: appDataArray,
+  };
+  return appData;
 }
 
-function cliModuletoConfig(input: AnyObject, modify: boolean) {
+function cliModuletoConfig(input: IroverInput, modify: boolean):TroverAppTypeObject {
   if (!modify) {
     utlities.initializeSAM(input);
   }
-  const app_types: AnyObject = {};
+  let app_types: TroverAppTypeObject={};
 
-  if (Object.keys(input["stack_details"]).length > 0) {
+  if (Object.keys(input.stack_details).length > 0) {}
     Object.keys(input["stack_details"]).forEach((ele) => {
       let stackdata: AnyObject = {};
       if (input["stack_details"][ele]["type"] == "CRUDModule") {
@@ -52,9 +53,8 @@ function cliModuletoConfig(input: AnyObject, modify: boolean) {
           "resource"
         ](ele, input["stack_details"][ele]["params"]);
       } else if (input["stack_details"][ele]["type"] == "Custom") {
-        const resources: AnyArray = [];
-        const customstackarray: AnyArray =
-          input["stack_details"][ele]["componentlist"];
+        const resources: TroverResourcesArray=[];
+        const customstackarray: AnyArray =input.stack_details.ele["componentlist"];
         customstackarray.map((ele) => {
           const componentarray: AnyArray = JSON.parse(
             JSON.stringify(components.Components[ele])
@@ -63,9 +63,10 @@ function cliModuletoConfig(input: AnyObject, modify: boolean) {
             resources.push(ele);
           });
         });
-        app_types[ele] = {};
-        app_types[ele]["resources"] = resources;
-        app_types[ele]["type"] = "components";
+        app_types[ele]={
+        "resources" :resources,
+        "type" : "components"
+        }
       } else {
         stackdata = JSON.parse(
           JSON.stringify(
@@ -78,7 +79,7 @@ function cliModuletoConfig(input: AnyObject, modify: boolean) {
         app_types[ele]["type"] = "module";
       });
     });
-  }
+  
   return app_types;
 }
 

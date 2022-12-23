@@ -28,7 +28,7 @@
   "main": "dist/bin/init.js",
   "scripts": {
     "clean": "shx rm -rf dist/*",
-    "build": "tsc",
+    "build": "tsc && npm run format:write && npm run lint:fix",
     "watch": "tsc --watch",
     "prepack": "npm run clean && npm run build ",
     "format:check": "prettier --check .",

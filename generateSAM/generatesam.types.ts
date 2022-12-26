@@ -25,4 +25,11 @@ export interface IroverAppData extends Omit<IroverInput, "stack_details"> {
   StackType: Array<string>;
 }
 
-
+export interface IroverConfigTag {
+  createdBy: string;
+  applicationName: string;
+}
+export interface IroverConfigTagArrayValue {
+  Key: string;
+  Value: string;
+}

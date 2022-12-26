@@ -2,23 +2,31 @@ import * as config from "../utlities/config";
 import * as utlities from "../utlities/utilities";
 import * as modules from "../resources/modules";
 import * as components from "../resources/components";
-import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as rover_resources from "../resources/resources";
-import * as Yaml from "js-yaml";
 const exec = child.execSync;
 const pwd = utlities.pwd;
-import { IroverInput, IroverAppData } from "./generatesam.types";
-import {TroverAppTypeObject,TroverResourcesArray} from "../roverTypes/rover.types"
+import {
+  IroverInput,
+  IroverAppData,
+  IroverConfigTag,
+} from "./generatesam.types";
+import {
+  IroverResources,
+  TroverAppTypeObject,
+  TroverResourcesArray,
+  TSAMTemplate,
+  ISAMTemplateResource,
+  IroverAppType,
+} from "../roverTypes/rover.types";
 
 export function generateSAM(input: IroverInput): void {
   const app_data: IroverAppData = getAppdata(input);
-  const app_types:TroverAppTypeObject = cliModuletoConfig(input, false);
-  console.log("app_types", JSON.stringify(app_types));
+  const app_types: TroverAppTypeObject = cliModuletoConfig(input, false);
   const appname: string = input.app_name;
-  createStack(app_data, app_types, "");
+  createStack(app_data, app_types);
   exec(config.ForceRemove + input.app_name + config.LambdaDemo);
   utlities.generateRoverConfig(input.app_name, input, "rover_create_project");
   exec("cd " + utlities.pwd + appname + " && npm run format:write");
@@ -39,76 +47,76 @@ function getAppdata(input: IroverInput): IroverAppData {
   return appData;
 }
 
-function cliModuletoConfig(input: IroverInput, modify: boolean):TroverAppTypeObject {
+function cliModuletoConfig(
+  input: IroverInput,
+  modify: boolean
+): TroverAppTypeObject {
   if (!modify) {
     utlities.initializeSAM(input);
   }
-  let app_types: TroverAppTypeObject={};
-
-  if (Object.keys(input.stack_details).length > 0) {}
-    Object.keys(input["stack_details"]).forEach((ele) => {
-      let stackdata: AnyObject = {};
-      if (input["stack_details"][ele]["type"] == "CRUDModule") {
-        stackdata = modules.Modules[input["stack_details"][ele]["type"]][
-          "resource"
-        ](ele, input["stack_details"][ele]["params"]);
-      } else if (input["stack_details"][ele]["type"] == "Custom") {
-        const resources: TroverResourcesArray=[];
-        const customstackarray: AnyArray =input.stack_details.ele["componentlist"];
-        customstackarray.map((ele) => {
-          const componentarray: AnyArray = JSON.parse(
-            JSON.stringify(components.Components[ele])
-          );
-          componentarray.map((ele) => {
-            resources.push(ele);
-          });
-        });
-        app_types[ele]={
-        "resources" :resources,
-        "type" : "components"
-        }
-      } else {
-        stackdata = JSON.parse(
-          JSON.stringify(
-            modules.Modules[input["stack_details"][ele]["type"]]["resource"]
-          )
+  const app_types: TroverAppTypeObject = {};
+  Object.keys(input["stack_details"]).forEach((ele) => {
+    let stackdata: TroverAppTypeObject = {};
+    if (input["stack_details"][ele]["type"] == "CRUDModule") {
+      stackdata = modules.Modules[input["stack_details"][ele]["type"]][
+        "resource"
+      ](ele, input["stack_details"][ele]["params"]);
+    } else if (input["stack_details"][ele]["type"] == "Custom") {
+      const resources: TroverResourcesArray = [];
+      const customstackarray: Array<string> =
+        input.stack_details[ele]["componentlist"];
+      customstackarray.map((ele) => {
+        const componentarray: TroverResourcesArray = JSON.parse(
+          JSON.stringify(components.Components[ele])
         );
-      }
-      Object.keys(stackdata).forEach((ele1) => {
-        app_types[ele] = stackdata[ele1];
-        app_types[ele]["type"] = "module";
+        componentarray.map((ele) => {
+          resources.push(ele);
+        });
       });
+      app_types[ele] = {
+        resources: resources,
+        type: "components",
+      };
+    } else {
+      stackdata = JSON.parse(
+        JSON.stringify(
+          modules.Modules[input["stack_details"][ele]["type"]]["resource"]
+        )
+      );
+    }
+    Object.keys(stackdata).forEach((ele1) => {
+      app_types[ele] = stackdata[ele1];
+      app_types[ele]["type"] = "module";
     });
-  
+  });
+
   return app_types;
 }
 
 function createStack(
-  app_data: AnyObject,
-  app_types: AnyObject,
-  filename: string
-) {
-  const stack_names: AnyArray = Object.keys(app_types);
-  const resource = app_types;
+  app_data: IroverAppData,
+  app_types: TroverAppTypeObject
+): void {
+  const stack_names: Array<string> = Object.keys(app_types);
+  const resource: TroverAppTypeObject = app_types;
   const StackType = app_data.StackType;
-  const stackes: AnyObject = {};
-  let data: AnyObject = {};
+  const stackes: TSAMTemplate = {};
+  const data: object = {};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
-    stackes[stack_names[i]] = stacks;
+    stackes[stack_names[i]] = <ISAMTemplateResource>stacks;
+
     exec("mkdir " + utlities.pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
-    const comp = {};
     const res = createStackResources(
       resources,
       app_data,
       StackType[i],
-      stack_names[i],
-      comp
+      stack_names[i]
     );
-    const template1 = addResourceTemplate(res, Object.keys(res), {});
+    const template1 = utlities.addResourceTemplate(res, Object.keys(res), {});
     if (Object.prototype.hasOwnProperty.call(resources, "parameter")) {
       template1["Parameters"] = resources.parameter;
     }
@@ -120,51 +128,37 @@ function createStack(
       temp
     );
   }
-  if (filename !== "") {
-    const datas: string = fs.readFileSync(
-      utlities.pwd + "/" + filename.trim(),
-      {
-        encoding: "utf-8",
-      }
-    );
-    data = <AnyObject>Yaml.load(utlities.replaceTempTag(datas));
-    if (Object.prototype.hasOwnProperty.call(data, "AWSTemplateFormatVersion"))
-      data["AWSTemplateFormatVersion"] =
-        config.SkeletonConfig["template_version"];
-    if (!Object.prototype.hasOwnProperty.call(data, "Resources"))
-      throw new Error("Improper SAM template file in " + filename);
-  }
-
-  const template = addResourceTemplate(stackes, stack_names, data);
+  const template = utlities.addResourceTemplate(stackes, stack_names, data);
   const doc = new yaml.Document();
   doc.contents = template;
   utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
 }
 
 function createStackResources(
-  resources: AnyObject,
-  app_data: AnyObject,
+  resources: IroverAppType,
+  app_data: IroverAppData,
   StackType: string,
-  stack_names: string,
-  comp: AnyObject
+  stack_names: string
 ) {
-  const res: AnyObject = {};
-  const resourceobject: AnyObject = resources["resources"];
-  resourceobject.forEach(function (element: AnyObject) {
+  const res: TSAMTemplate = {};
+  const resourceobject: TroverResourcesArray = resources["resources"];
+  resourceobject.forEach(function (element: IroverResources) {
     element.config[
       "Description"
     ] = `Rover-tools created ${element.name}  named ${element.type} resource`;
     if (config.samabstract.includes(element.type)) {
-      element.config["Tags"] = {};
-      element.config["Tags"]["createdBy"] = "rover";
-      element.config["Tags"]["applicationName"] = app_data.app_name;
+      element.config["Tags"] = <IroverConfigTag>{
+        createdBy: "rover",
+        applicationName: app_data.app_name,
+      };
     } else {
-      element.config["Tags"] = [];
-      element.config["Tags"].push({ Key: "createdBy", Value: "rover" });
-      element.config["Tags"].push({
-        Key: "applicationName",
-        Value: app_data.app_name,
-      });
+      element.config["Tags"] = [
+        { Key: "createdBy", Value: "rover" },
+        {
+          Key: "applicationName",
+          Value: app_data.app_name,
+        },
+      ];
     }
   });
 
@@ -191,34 +185,16 @@ function createStackResources(
     if (resources["resources"][j]["type"] == "lambda") {
       let path = "";
       let path2 = "";
-      let lambda_stack_names = stack_names;
-      if (stack_names == "") {
-        if (comp.demo_desti !== undefined) {
-          path = pwd + comp.demo_desti + "/" + "lambda_demo" + "/ ";
-          path2 =
-            pwd +
-            app_data.app_name +
-            "/" +
-            resources["resources"][j]["name"] +
-            "/";
-        }
-        if (comp.desti !== undefined) {
-          path = pwd + comp.demo_desti + "/" + "lambda_demo" + "/ ";
-          path2 =
-            pwd + comp.desti + "/" + resources["resources"][j]["name"] + "/";
-          lambda_stack_names = comp.desti.split("/")[1].replace("_Stack", "");
-        }
-      } else {
-        path = pwd + app_data.app_name + "/" + "lambda_demo" + "/ ";
-        path2 =
-          pwd +
-          app_data.app_name +
-          "/" +
-          stack_names +
-          "/" +
-          resources["resources"][j]["name"] +
-          "/";
-      }
+      const lambda_stack_names = stack_names;
+      path = pwd + app_data.app_name + "/" + "lambda_demo" + "/ ";
+      path2 =
+        pwd +
+        app_data.app_name +
+        "/" +
+        stack_names +
+        "/" +
+        resources["resources"][j]["name"] +
+        "/";
 
       utlities.copyLambdaLogic(path, path2);
       utlities.generateLambdafiles(
@@ -234,64 +210,35 @@ function createStackResources(
       configs["CodeUri"] = resources["resources"][j]["name"] + "/";
       configs["Runtime"] = app_data.language;
     } else if (resources["resources"][j]["type"] == "apigateway") {
-      let path = "";
-      let configpath;
-      let filepath;
-      if (stack_names == "") {
-        if (comp.desti !== undefined) {
-          path = pwd + comp.desti + "/" + resources["resources"][j]["name"];
-          configpath = resources["resources"][j]["name"] + "/swagger.yaml";
-          filepath =
-            comp.desti +
-            "/" +
-            resources["resources"][j]["name"] +
-            "/swagger.yaml";
-        }
-      } else {
-        path =
-          pwd +
-          app_data.app_name +
-          "/" +
-          stack_names +
-          "/" +
-          resources["resources"][j]["name"];
-        configpath = resources["resources"][j]["name"] + "/swagger.yaml";
-        filepath =
-          app_data.app_name +
-          "/" +
-          stack_names +
-          "/" +
-          resources["resources"][j]["name"] +
-          "/swagger.yaml";
-      }
+      const path =
+        pwd +
+        app_data.app_name +
+        "/" +
+        stack_names +
+        "/" +
+        resources["resources"][j]["name"];
+      const configpath = resources["resources"][j]["name"] + "/swagger.yaml";
+      const filepath =
+        app_data.app_name +
+        "/" +
+        stack_names +
+        "/" +
+        resources["resources"][j]["name"] +
+        "/swagger.yaml";
+
       if (fs.existsSync(path)) throw new Error(path + " file already exists");
       exec("mkdir " + path);
       configs["path"] = configpath;
       configs["filepath"] = filepath;
     }
-    const resources1 = rover_resources.resourceGeneration(
-      resources["resources"][j]["type"],
-      configs
+    const resources1 = <ISAMTemplateResource>(
+      rover_resources.resourceGeneration(
+        resources["resources"][j]["type"],
+        configs
+      )
     );
-    res[resources["resources"][j]["name"]] = resources1;
+    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
   }
+
   return res;
-}
-
-function addResourceTemplate(
-  resources: AnyObject,
-  name: AnyArray,
-  temp: AnyObject
-) {
-  let template;
-  if (Object.keys(temp).length == 0) {
-    template = rover_resources.skeleton();
-  } else {
-    template = temp;
-  }
-
-  for (const i in name) {
-    template["Resources"][name[i]] = resources[name[i]];
-  }
-  return template;
 }

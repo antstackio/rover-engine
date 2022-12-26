@@ -8,7 +8,7 @@ import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as TOML from "@iarna/toml";
-
+import * as Yaml from "js-yaml";
 const exec = child.execSync;
 const sub = new RegExp(
   /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*\n/g
@@ -16,7 +16,6 @@ const sub = new RegExp(
 const pythonpattern = new RegExp(/python[1-9]*\.[1-9]*/g);
 const jspattern = new RegExp(/nodejs[1-9]*\.[a-zA-Z]*/g);
 const yamlpattern = new RegExp(/(\.yaml$)/g);
-import * as Yaml from "js-yaml";
 
 export const pwd = process.cwd() + "/";
 export const npmrootTest = function () {

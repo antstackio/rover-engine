@@ -139,7 +139,7 @@ function createStackResources(
   app_data: IroverAppData,
   StackType: string,
   stack_names: string
-) {
+): TSAMTemplate {
   const res: TSAMTemplate = {};
   const resourceobject: TroverResourcesArray = resources["resources"];
   resourceobject.forEach(function (element: IroverResources) {

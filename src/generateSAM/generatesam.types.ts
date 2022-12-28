@@ -1,13 +1,12 @@
 type TcrudMethods = "put" | "get" | "post" | "delete" | "options";
-//type TroverLang = "node" | "python";
-interface curdObject {
+interface IcurdObject {
   path: string;
   methods: Array<TcrudMethods>;
   resourcetype: string;
 }
 interface IstackDetailsObject {
   type: string;
-  params: curdObject | object;
+  params: IcurdObject | object;
   componentlist: Array<string>;
 }
 export interface IstackDetails {

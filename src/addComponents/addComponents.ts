@@ -2,142 +2,181 @@ import * as config from "../utlities/config";
 import * as rover_resources from "../resources/resources";
 import * as components from "../resources/components";
 import * as utlities from "../utlities/utilities";
-import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as Yaml from "js-yaml";
-import { IroverConfigTagArrayValue } from "./addComponents.types";
-const j: IroverConfigTagArrayValue = { Key: "hi", Value: "jh" };
-console.log(j);
+import {
+  IroveraddComponentInput,
+  IroveraddComponentInputNestedType,
+  IroveraddComponentInputType,
+  IaddComponentAppData,
+  IaddComponentComp,
+} from "./addComponents.types";
+import {
+  TSAMTemplate,
+  TSAMTemplateResources,
+  ISAMTemplateResource,
+  TroverResourcesArray,
+  IaddComponentResource,
+  IroverResources,
+  IroverConfigTag,
+} from "../roverTypes/rover.types";
 const exec = child.execSync;
 const pwd = utlities.pwd;
 
-export function addComponents(input: AnyObject) {
-  const Datas = fs.readFileSync(pwd + "/" + input.file_name.trim(), {
-    encoding: "utf-8",
-  });
-  let Data = <AnyObject>Yaml.load(utlities.replaceTempTag(Datas));
-  if (Object.prototype.hasOwnProperty.call(Data, "Resources")) {
-    const res: AnyObject = {};
-    const app_data = getAppdata(input);
-    const input2 = JSON.parse(JSON.stringify(input));
-    input2.app_name = input.app_name + "_test";
-    utlities.initializeSAM(input2);
-    if (input.nested) {
-      Object.keys(input.nestedComponents).forEach((ele) => {
-        const comp: AnyObject = {};
-        res["resources"] = getComponents(
-          input.nestedComponents[ele]["components"]
-        );
-        Data = <AnyObject>(
-          Yaml.load(
-            utlities.replaceTempTag(
-              fs.readFileSync(
-                pwd +
-                  "/" +
-                  input.app_name +
-                  "/" +
-                  input.nestedComponents[ele]["path"].trim(),
-                { encoding: "utf-8" }
-              )
-            )
-          )
-        );
-        const path: AnyArray = (
-          input.app_name +
-          "/" +
-          input.nestedComponents[ele]["path"]
-        ).split("/");
-        path.pop();
-        comp["desti"] = path.join("/");
-
-        comp["demo_desti"] = input2.app_name;
-        let res1 = createStackResources(res, app_data, "", "", comp);
-        res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
-        const doc = new yaml.Document();
-        doc.contents = res1;
-        const temp = utlities.replaceYAML(doc.toString());
-        utlities.writeFile(
-          input.app_name + "/" + input.nestedComponents[ele]["path"].trim(),
-          temp
-        );
-      });
-    } else {
-      const comp: AnyObject = {};
-      res["resources"] = getComponents(input.components);
-
-      comp["demo_desti"] = input2.app_name;
-      let res1 = createStackResources(res, app_data, "", "", comp);
-      res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
-      const doc = new yaml.Document();
-      doc.contents = res1;
-      const temp = utlities.replaceYAML(doc.toString());
-      utlities.writeFile(input.file_name.trim(), temp);
-    }
-    utlities.removeFolder(input2.app_name);
-    utlities.generateRoverConfig(input.app_name, input, "rover_add_component");
-  } else {
+export function addComponents(input: IroveraddComponentInput): void {
+  const Data: TSAMTemplate = getYamlData(input.file_name);
+  if (!Object.prototype.hasOwnProperty.call(Data, "Resources")) {
     console.log("wrong template structure");
   }
+  const app_data = getAppdata(input);
+  const input2 = JSON.parse(JSON.stringify(input));
+  input2.app_name = input.app_name + "_test";
+  utlities.initializeSAM(input2);
+  if (input.nested) {
+    const inputs: IroveraddComponentInputNestedType = <
+      IroveraddComponentInputNestedType
+    >input;
+    addComponentsNested(inputs, Data, input2, app_data);
+  } else {
+    const inputs: IroveraddComponentInputType = <IroveraddComponentInputType>(
+      input
+    );
+    addComponentsnonNested(inputs, Data, app_data, input2);
+  }
+  utlities.removeFolder(input2.app_name);
+  utlities.generateRoverConfig(input.app_name, input, "rover_add_component");
 }
 
-export function getAppdata(input: AnyObject) {
-  const app_data: AnyObject = {};
-  app_data["app_name"] = input.app_name;
-  app_data["language"] = config.LanguageSupport[input.language]["version"];
-  app_data["dependency"] = config.LanguageSupport[input.language]["dependency"];
-  app_data["extension"] = config.LanguageSupport[input.language]["extension"];
-  if (input["stack_details"] !== undefined) {
-    const appdata: AnyArray = [];
-    Object.keys(input["stack_details"]).forEach((ele) => {
-      appdata.push(input["stack_details"][ele]["type"]);
-    });
-    app_data["StackType"] = appdata;
-  }
+function getYamlData(file_name: string): TSAMTemplate {
+  const Datas = fs.readFileSync(pwd + "/" + file_name.trim(), {
+    encoding: "utf-8",
+  });
+  const Data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(Datas));
+  return Data;
+}
 
+function addComponentsNested(
+  input: IroveraddComponentInputNestedType,
+  Data: TSAMTemplate,
+  input2: IroveraddComponentInputNestedType,
+  app_data: IaddComponentAppData
+) {
+  Object.keys(input.nestedComponents).forEach((ele) => {
+    const res: IaddComponentResource = {
+      resources: getComponents(input.nestedComponents[ele]["components"]),
+    };
+    Data = <TSAMTemplate>(
+      Yaml.load(
+        utlities.replaceTempTag(
+          fs.readFileSync(
+            pwd +
+              "/" +
+              input.app_name +
+              "/" +
+              input.nestedComponents[ele]["path"].trim(),
+            { encoding: "utf-8" }
+          )
+        )
+      )
+    );
+    const path: Array<string> = (
+      input.app_name +
+      "/" +
+      input.nestedComponents[ele]["path"]
+    ).split("/");
+    path.pop();
+    const comp: IaddComponentComp = {
+      desti: path.join("/"),
+      demo_desti: input2.app_name,
+    };
+
+    let res1 = createStackResources(res, app_data, "", "", comp);
+    res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
+    const doc = new yaml.Document();
+    doc.contents = res1;
+    const temp = utlities.replaceYAML(doc.toString());
+    utlities.writeFile(
+      input.app_name + "/" + input.nestedComponents[ele]["path"].trim(),
+      temp
+    );
+  });
+}
+
+function addComponentsnonNested(
+  input: IroveraddComponentInputType,
+  Data: TSAMTemplate,
+  app_data: IaddComponentAppData,
+  input2: IroveraddComponentInputType
+) {
+  const res: IaddComponentResource = {
+    resources: getComponents(input.components),
+  };
+  const comp: IaddComponentComp = {
+    demo_desti: input2.app_name,
+  };
+
+  let res1 = createStackResources(res, app_data, "", "", comp);
+  res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
+  const doc = new yaml.Document();
+  doc.contents = res1;
+  const temp = utlities.replaceYAML(doc.toString());
+  utlities.writeFile(input.file_name.trim(), temp);
+}
+
+export function getAppdata(
+  input: IroveraddComponentInput
+): IaddComponentAppData {
+  const app_data: IaddComponentAppData = {
+    app_name: input.app_name,
+    language: config.LanguageSupport[input.language]["version"],
+    dependency: config.LanguageSupport[input.language]["dependency"],
+    extension: config.LanguageSupport[input.language]["extension"],
+  };
   return app_data;
 }
 
-export function getComponents(component: AnyObject) {
-  const resources: AnyArray = [];
+export function getComponents(component: Array<string>): TroverResourcesArray {
+  const resources: TroverResourcesArray = [];
   Object.entries(component).map((ele) => {
     const componentstype: string = ele[1];
-    const componentstypeobj: AnyObject = JSON.parse(
+    const componentstypeobj: TroverResourcesArray = JSON.parse(
       JSON.stringify(components.Components[componentstype])
     );
-
-    componentstypeobj.map(function (ele: AnyObject) {
-      resources.push(ele);
+    componentstypeobj.map(function (ele: IroverResources) {
+      resources.push(<IroverResources>ele);
     });
   });
   return resources;
 }
 
 export function createStackResources(
-  resources: AnyObject,
-  app_data: AnyObject,
+  resources: IaddComponentResource,
+  app_data: IaddComponentAppData,
   StackType: string,
   stack_names: string,
-  comp: AnyObject
+  comp: IaddComponentComp
 ) {
-  const res: AnyObject = {};
-  const resourceobject: AnyObject = resources["resources"];
-  resourceobject.forEach(function (element: AnyObject) {
+  const res: TSAMTemplateResources = {};
+  const resourceobject: TroverResourcesArray = resources["resources"];
+  resourceobject.forEach(function (element: IroverResources) {
     element.config[
       "Description"
     ] = `Rover-tools created ${element.name}  named ${element.type} resource`;
     if (config.samabstract.includes(element.type)) {
-      element.config["Tags"] = {};
-      element.config["Tags"]["createdBy"] = "rover";
-      element.config["Tags"]["applicationName"] = app_data.app_name;
+      element.config["Tags"] = <IroverConfigTag>{
+        createdBy: "rover",
+        applicationName: app_data.app_name,
+      };
     } else {
-      element.config["Tags"] = [];
-      element.config["Tags"].push({ Key: "createdBy", Value: "rover" });
-      element.config["Tags"].push({
-        Key: "applicationName",
-        Value: app_data.app_name,
-      });
+      element.config["Tags"] = [
+        { Key: "createdBy", Value: "rover" },
+        {
+          Key: "applicationName",
+          Value: app_data.app_name,
+        },
+      ];
     }
   });
 
@@ -246,7 +285,7 @@ export function createStackResources(
       resources["resources"][j]["type"],
       configs
     );
-    res[resources["resources"][j]["name"]] = resources1;
+    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
   }
   return res;
 }

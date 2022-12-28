@@ -1,3 +1,4 @@
+import { IstackDetails } from "../generateSAM/generatesam.types";
 export interface IroverResources {
   name: string;
   type: string;
@@ -29,4 +30,38 @@ export interface ISAMTemplateResource {
   Properties: Record<string, object | string | number | boolean>;
 }
 
-export type TSAMTemplate = Record<string, ISAMTemplateResource>;
+export type TSAMTemplateResources = Record<string, ISAMTemplateResource>;
+
+export interface TSAMTemplate {
+  AWSTemplateFormatVersion: string;
+  Transform: string;
+  Description: string;
+  Globals: {
+    Function: {
+      Timeout: 30;
+    };
+  };
+  Resources: TSAMTemplateResources;
+}
+export interface IroverInput {
+  app_name: string;
+  language: string;
+  stack_details: IstackDetails;
+}
+
+export interface IroverAppData extends Omit<IroverInput, "stack_details"> {
+  dependency: string;
+  extension: string;
+  StackType: Array<string>;
+}
+
+export type IaddComponentResource = Omit<IroverAppType, "parameter" | "type">;
+
+export interface IroverConfigTag {
+  createdBy: string;
+  applicationName: string;
+}
+export interface IroverConfigTagArrayValue {
+  Key: string;
+  Value: string;
+}

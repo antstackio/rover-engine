@@ -10,26 +10,6 @@ interface IstackDetailsObject {
   params: curdObject | object;
   componentlist: Array<string>;
 }
-interface IstackDetails {
+export interface IstackDetails {
   [key: string]: IstackDetailsObject;
-}
-export interface IroverInput {
-  app_name: string;
-  language: string;
-  stack_details: IstackDetails;
-}
-
-export interface IroverAppData extends Omit<IroverInput, "stack_details"> {
-  dependency: string;
-  extension: string;
-  StackType: Array<string>;
-}
-
-export interface IroverConfigTag {
-  createdBy: string;
-  applicationName: string;
-}
-export interface IroverConfigTagArrayValue {
-  Key: string;
-  Value: string;
 }

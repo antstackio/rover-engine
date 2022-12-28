@@ -3,7 +3,6 @@ import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
-import * as yaml from "yaml";
 import * as fs from "fs";
 import * as TOML from "@iarna/toml";
 import * as Yaml from "js-yaml";

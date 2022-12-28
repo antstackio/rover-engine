@@ -10,18 +10,17 @@ import * as rover_resources from "../resources/resources";
 const exec = child.execSync;
 const pwd = utlities.pwd;
 
+import {} from "./generatesam.types";
 import {
   IroverInput,
   IroverAppData,
-  IroverConfigTag,
-} from "./generatesam.types";
-import {
   IroverResources,
   TroverAppTypeObject,
   TroverResourcesArray,
-  TSAMTemplate,
+  TSAMTemplateResources,
   ISAMTemplateResource,
   IroverAppType,
+  IroverConfigTag,
 } from "../roverTypes/rover.types";
 
 export function generateSAM(input: IroverInput): void {
@@ -102,7 +101,7 @@ function createStack(
   const stack_names: Array<string> = Object.keys(app_types);
   const resource: TroverAppTypeObject = app_types;
   const StackType = app_data.StackType;
-  const stackes: TSAMTemplate = {};
+  const stackes: TSAMTemplateResources = {};
   const data: object = {};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
@@ -141,8 +140,8 @@ function createStackResources(
   app_data: IroverAppData,
   StackType: string,
   stack_names: string
-): TSAMTemplate {
-  const res: TSAMTemplate = {};
+): TSAMTemplateResources {
+  const res: TSAMTemplateResources = {};
   const resourceobject: TroverResourcesArray = resources["resources"];
   resourceobject.forEach(function (element: IroverResources) {
     element.config[

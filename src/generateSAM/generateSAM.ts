@@ -10,7 +10,6 @@ import * as rover_resources from "../resources/resources";
 const exec = child.execSync;
 const pwd = utlities.pwd;
 
-import {} from "./generatesam.types";
 import {
   IroverInput,
   IroverAppData,
@@ -33,7 +32,7 @@ export function generateSAM(input: IroverInput): void {
   exec("cd " + utlities.pwd + appname + " && npm run format:write");
 }
 
-function getAppdata(input: IroverInput): IroverAppData {
+export function getAppdata(input: IroverInput): IroverAppData {
   const appDataArray: Array<string> = [];
   Object.keys(input.stack_details).forEach((ele) => {
     appDataArray.push(input.stack_details[ele].type);
@@ -48,7 +47,7 @@ function getAppdata(input: IroverInput): IroverAppData {
   return appData;
 }
 
-function cliModuletoConfig(
+export function cliModuletoConfig(
   input: IroverInput,
   modify: boolean
 ): TroverAppTypeObject {
@@ -94,7 +93,7 @@ function cliModuletoConfig(
   return app_types;
 }
 
-function createStack(
+export function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject
 ): void {
@@ -135,7 +134,7 @@ function createStack(
   utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
 }
 
-function createStackResources(
+export function createStackResources(
   resources: IroverAppType,
   app_data: IroverAppData,
   StackType: string,

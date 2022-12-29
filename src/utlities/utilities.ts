@@ -27,7 +27,7 @@ export const npmrootTest = function () {
   return packages.length > 0;
 };
 export function checkFile(path: string, type: string) {
-  const response: AnyObject = {};
+  const response: Record<string,boolean> = {};
   response["checkFile"] = false;
   const patharray = path.split("/");
   if (type == "no") {
@@ -47,7 +47,7 @@ export function writeFile(path: string, data: string) {
 }
 export function installDependies(
   path: string,
-  packages: AnyArray,
+  packages: Array<string>,
   dependency: string
 ) {
   if (dependency == "npm") {
@@ -98,7 +98,7 @@ export function setupESLint(path: string, filename: string) {
 }
 export function addResourceTemplate(
   resources: AnyObject,
-  name: AnyArray,
+  name: Array<string>,
   temp: AnyObject
 ) {
   let template;

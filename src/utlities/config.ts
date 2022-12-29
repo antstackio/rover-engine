@@ -906,7 +906,7 @@ export const AWSResources: AnyObject = {
   secret: secretResource,
   codebuildproject: codebuildprojectResource,
 };
-export const APIGatewayURI: AnyObject = {
+export const APIGatewayURI: Record<string,string> = {
   lambda: "lambda:path/2015-03-31/functions/${lambda.Arn}/invocations",
   stepfunction: "states:action/StartSyncExecution",
 };

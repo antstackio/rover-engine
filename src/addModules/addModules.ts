@@ -1,19 +1,28 @@
 import * as utlities from "../utlities/utilities";
 import * as config from "../utlities/config";
 import * as rover_resources from "../resources/resources";
-import * as components from "../resources/components";
-import * as modules from "../resources/modules";
-import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as Yaml from "js-yaml";
-import { IroverConfigTagArrayValue } from "./addModules.types";
+import * as generateSAM from "../generateSAM/generatesam";
+import {
+  IroverAppData,
+  IroverResources,
+  TroverAppTypeObject,
+  TroverResourcesArray,
+  TSAMTemplateResources,
+  ISAMTemplateResource,
+  IroverAppType,
+  TSAMTemplate,
+} from "../roverTypes/rover.types";
+
+import { IaddComponentComp } from "../addComponents/addComponents.types";
+
+import { IroveraddModule } from "./addModules.types";
 const exec = child.execSync;
 const pwd = utlities.pwd;
-const j: IroverConfigTagArrayValue = { Key: "hi", Value: "jh" };
-console.log(j);
-export function addModules(input: AnyObject) {
+export function addModules(input: IroveraddModule) {
   try {
     const input2 = JSON.parse(JSON.stringify(input));
     input2.app_name = input.app_name + "_test";
@@ -25,8 +34,8 @@ export function addModules(input: AnyObject) {
     );
     exec("rm -rf " + pwd + input2.app_name);
 
-    const app_types = cliModuletoConfig(input, true);
-    const app_data = getAppdata(input);
+    const app_types = generateSAM.cliModuletoConfig(input, true);
+    const app_data = generateSAM.getAppdata(input);
     createStack(app_data, app_types, input.file_name);
     exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
     utlities.generateRoverConfig(input.app_name, input, "rover_add_module");
@@ -34,86 +43,24 @@ export function addModules(input: AnyObject) {
     throw new Error((error as Error).message);
   }
 }
-
-export function getAppdata(input: AnyObject) {
-  const app_data: AnyObject = {};
-  app_data["app_name"] = input.app_name;
-  app_data["language"] = config.LanguageSupport[input.language]["version"];
-  app_data["dependency"] = config.LanguageSupport[input.language]["dependency"];
-  app_data["extension"] = config.LanguageSupport[input.language]["extension"];
-  if (input["stack_details"] !== undefined) {
-    const appdata: AnyArray = [];
-    Object.keys(input["stack_details"]).forEach((ele) => {
-      appdata.push(input["stack_details"][ele]["type"]);
-    });
-    app_data["StackType"] = appdata;
-  }
-
-  return app_data;
-}
-
-export function cliModuletoConfig(input: AnyObject, modify: boolean) {
-  if (!modify) {
-    utlities.initializeSAM(input);
-  }
-  const app_types: AnyObject = {};
-
-  if (Object.keys(input["stack_details"]).length > 0) {
-    Object.keys(input["stack_details"]).forEach((ele) => {
-      let stackdata: AnyObject = {};
-      if (input["stack_details"][ele]["type"] == "CRUDModule") {
-        stackdata = modules.Modules[input["stack_details"][ele]["type"]][
-          "resource"
-        ](ele, input["stack_details"][ele]["params"]);
-      } else if (input["stack_details"][ele]["type"] == "Custom") {
-        const resources: AnyArray = [];
-        const customstackarray: AnyArray =
-          input["stack_details"][ele]["componentlist"];
-        customstackarray.map((ele) => {
-          const componentarray: AnyArray = JSON.parse(
-            JSON.stringify(components.Components[ele])
-          );
-          componentarray.map((ele) => {
-            resources.push(ele);
-          });
-        });
-        app_types[ele] = {};
-        app_types[ele]["resources"] = resources;
-        app_types[ele]["type"] = "components";
-      } else {
-        stackdata = JSON.parse(
-          JSON.stringify(
-            modules.Modules[input["stack_details"][ele]["type"]]["resource"]
-          )
-        );
-      }
-      Object.keys(stackdata).forEach((ele1) => {
-        app_types[ele] = stackdata[ele1];
-        app_types[ele]["type"] = "module";
-      });
-    });
-  }
-  return app_types;
-}
-
 export function createStack(
-  app_data: AnyObject,
-  app_types: AnyObject,
+  app_data: IroverAppData,
+  app_types: TroverAppTypeObject,
   filename: string
 ) {
-  const stack_names: AnyArray = Object.keys(app_types);
+  const stack_names: Array<string> = Object.keys(app_types);
   const resource = app_types;
   const StackType = app_data.StackType;
-  const stackes: AnyObject = {};
-  let data: AnyObject = {};
+  const stackes: TSAMTemplateResources = {};
+  let data: TSAMTemplate = <TSAMTemplate>{};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
-    stackes[stack_names[i]] = stacks;
+    stackes[stack_names[i]] = <ISAMTemplateResource>stacks;
     exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
-    const comp = {};
+    const comp: IaddComponentComp = <IaddComponentComp>{};
     const res = createStackResources(
       resources,
       app_data,
@@ -137,10 +84,9 @@ export function createStack(
     const datas: string = fs.readFileSync(pwd + "/" + filename.trim(), {
       encoding: "utf-8",
     });
-    data = <AnyObject>Yaml.load(utlities.replaceTempTag(datas));
+    data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(datas));
     if (Object.prototype.hasOwnProperty.call(data, "AWSTemplateFormatVersion"))
-      data["AWSTemplateFormatVersion"] =
-        config.SkeletonConfig["template_version"];
+      data.AWSTemplateFormatVersion = config.SkeletonConfig["template_version"];
     if (!Object.prototype.hasOwnProperty.call(data, "Resources"))
       throw new Error("Improper SAM template file in " + filename);
   }
@@ -152,29 +98,31 @@ export function createStack(
 }
 
 export function createStackResources(
-  resources: AnyObject,
-  app_data: AnyObject,
+  resources: IroverAppType,
+  app_data: IroverAppData,
   StackType: string,
   stack_names: string,
-  comp: AnyObject
+  comp: IaddComponentComp
 ) {
-  const res: AnyObject = {};
-  const resourceobject: AnyObject = resources["resources"];
-  resourceobject.forEach(function (element: AnyObject) {
+  const res: TSAMTemplateResources = {};
+  const resourceobject: TroverResourcesArray = resources["resources"];
+  resourceobject.forEach(function (element: IroverResources) {
     element.config[
       "Description"
     ] = `Rover-tools created ${element.name}  named ${element.type} resource`;
     if (config.samabstract.includes(element.type)) {
-      element.config["Tags"] = {};
-      element.config["Tags"]["createdBy"] = "rover";
-      element.config["Tags"]["applicationName"] = app_data.app_name;
+      element.config["Tags"] = {
+        createdBy: "rover",
+        applicationName: app_data.app_name,
+      };
     } else {
-      element.config["Tags"] = [];
-      element.config["Tags"].push({ Key: "createdBy", Value: "rover" });
-      element.config["Tags"].push({
-        Key: "applicationName",
-        Value: app_data.app_name,
-      });
+      element.config["Tags"] = [
+        { Key: "createdBy", Value: "rover" },
+        {
+          Key: "applicationName",
+          Value: app_data.app_name,
+        },
+      ];
     }
   });
 
@@ -283,7 +231,7 @@ export function createStackResources(
       resources["resources"][j]["type"],
       configs
     );
-    res[resources["resources"][j]["name"]] = resources1;
+    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
   }
   return res;
 }

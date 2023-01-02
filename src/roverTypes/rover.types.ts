@@ -5,6 +5,8 @@ export interface IroverResources {
   config: Record<string, unknown>;
   policies: Record<string, unknown>;
   logic: boolean;
+  logicpath: string;
+  package: Array<string>;
 }
 
 export interface ItemplateparameterObject {
@@ -55,7 +57,9 @@ export interface IroverAppData extends Omit<IroverInput, "stack_details"> {
   StackType: Array<string>;
 }
 
-export type IaddComponentResource = Omit<IroverAppType, "parameter" | "type">;
+export type IaddComponentResource = Omit<IroverAppType, "type"> & {
+  type?: string;
+};
 
 export interface IroverConfigTag {
   createdBy: string;
@@ -65,3 +69,10 @@ export interface IroverConfigTagArrayValue {
   Key: string;
   Value: string;
 }
+export interface IroverCheckNestedObject {
+  checkNested: boolean;
+  compStacks: Record<string, string>;
+}
+export type regexmatchs = string | null;
+
+export type RegExpExecArray = Array<string>;

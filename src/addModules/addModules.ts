@@ -22,7 +22,7 @@ import { IaddComponentComp } from "../addComponents/addComponents.types";
 import { IroveraddModule } from "./addModules.types";
 const exec = child.execSync;
 const pwd = utlities.pwd;
-export function addModules(input: IroveraddModule):void {
+export function addModules(input: IroveraddModule): void {
   try {
     const input2 = JSON.parse(JSON.stringify(input));
     input2.app_name = input.app_name + "_test";
@@ -47,7 +47,7 @@ export function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject,
   filename: string
-):void {
+): void {
   const stack_names: Array<string> = Object.keys(app_types);
   const resource = app_types;
   const StackType = app_data.StackType;
@@ -68,7 +68,11 @@ export function createStack(
       stack_names[i],
       comp
     );
-    const template1 = utlities.addResourceTemplate(res, Object.keys(res), {});
+    const template1 = utlities.addResourceTemplate(
+      res,
+      Object.keys(res),
+      undefined
+    );
     if (Object.prototype.hasOwnProperty.call(resources, "parameter")) {
       template1["Parameters"] = resources.parameter;
     }
@@ -103,7 +107,7 @@ export function createStackResources(
   StackType: string,
   stack_names: string,
   comp: IaddComponentComp
-):TSAMTemplateResources {
+): TSAMTemplateResources {
   const res: TSAMTemplateResources = {};
   const resourceobject: TroverResourcesArray = resources["resources"];
   resourceobject.forEach(function (element: IroverResources) {

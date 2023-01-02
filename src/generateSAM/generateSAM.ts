@@ -22,7 +22,7 @@ import {
   IroverConfigTag,
 } from "../roverTypes/rover.types";
 
-export function generateSAM(input: IroverInput): void {
+export async function generateSAM(input: IroverInput): Promise<void> {
   const app_data: IroverAppData = getAppdata(input);
   const app_types: TroverAppTypeObject = cliModuletoConfig(input, false);
   const appname: string = input.app_name;
@@ -101,7 +101,6 @@ export function createStack(
   const resource: TroverAppTypeObject = app_types;
   const StackType = app_data.StackType;
   const stackes: TSAMTemplateResources = {};
-  const data: object = {};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
@@ -116,7 +115,11 @@ export function createStack(
       StackType[i],
       stack_names[i]
     );
-    const template1 = utlities.addResourceTemplate(res, Object.keys(res), {});
+    const template1 = utlities.addResourceTemplate(
+      res,
+      Object.keys(res),
+      undefined
+    );
     if (Object.prototype.hasOwnProperty.call(resources, "parameter")) {
       template1["Parameters"] = resources.parameter;
     }
@@ -128,7 +131,11 @@ export function createStack(
       temp
     );
   }
-  const template = utlities.addResourceTemplate(stackes, stack_names, data);
+  const template = utlities.addResourceTemplate(
+    stackes,
+    stack_names,
+    undefined
+  );
   const doc = new yaml.Document();
   doc.contents = template;
   utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());

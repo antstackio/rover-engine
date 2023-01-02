@@ -6,6 +6,19 @@ import * as child from "child_process";
 import * as fs from "fs";
 import * as TOML from "@iarna/toml";
 import * as Yaml from "js-yaml";
+
+import {
+  IaddComponentResource,
+  IroverAppData,
+  IroverAppType,
+  IroverInput,
+  TSAMTemplate,
+  TSAMTemplateResources,
+} from "../roverTypes/rover.types";
+import {
+  IaddComponentAppData,
+  IroveraddComponentInput,
+} from "../addComponents/addComponents.types";
 const exec = child.execSync;
 const sub = new RegExp(
   /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*\n/g
@@ -27,7 +40,7 @@ export const npmrootTest = function () {
   return packages.length > 0;
 };
 export function checkFile(path: string, type: string) {
-  const response: Record<string,boolean> = {};
+  const response: Record<string, boolean> = {};
   response["checkFile"] = false;
   const patharray = path.split("/");
   if (type == "no") {
@@ -97,12 +110,12 @@ export function setupESLint(path: string, filename: string) {
   exec("cd " + path + "&& npm  pkg set scripts.lint:fix='eslint --fix .'");
 }
 export function addResourceTemplate(
-  resources: AnyObject,
+  resources: TSAMTemplateResources,
   name: Array<string>,
-  temp: AnyObject
+  temp: TSAMTemplate | undefined
 ) {
   let template;
-  if (Object.keys(temp).length == 0) {
+  if (temp == undefined) {
     template = rover_resources.skeleton();
   } else {
     template = temp;
@@ -114,7 +127,7 @@ export function addResourceTemplate(
   return template;
 }
 export function replaceYAML(doc: string) {
-  const yamlArray: AnyObject = {
+  const yamlArray: Record<string, string> = {
     OFF: "'OFF'",
   };
   Object.keys(yamlArray).forEach((key) => {
@@ -122,7 +135,7 @@ export function replaceYAML(doc: string) {
   });
   return doc;
 }
-export function initializeSAM(input: AnyObject) {
+export function initializeSAM(input: IroveraddComponentInput | IroverInput) {
   const app_name = input.app_name;
   removeFolder(input.app_name);
   const language = config.LanguageSupport[input.language]["version"];
@@ -161,20 +174,16 @@ export function removeFolder(path: string) {
 }
 export function generateLambdafiles(
   logic: boolean,
-  app_data: AnyObject,
-  resources: AnyObject,
+  app_data: IroverAppData | IaddComponentAppData,
+  resources: IroverAppType | IaddComponentResource,
   stacktype: string,
   stackname: string,
-  j: string
+  i: string
 ) {
   let code;
+  const j = <number>(<unknown>i);
   if (logic) {
-    if (
-      Object.prototype.hasOwnProperty.call(
-        resources["resources"][j],
-        "logicpath"
-      )
-    ) {
+    if (resources["resources"][j]["logicpath"] !== "") {
       code =
         logics.LambdaLogics[app_data.language][
           resources["resources"][j]["logicpath"]
@@ -238,25 +247,25 @@ export function generateLambdafiles(
   }
 }
 export function checkNested(template: string) {
-  const Data = <AnyObject>(
+  const Data = <TSAMTemplate>(
     Yaml.load(
       replaceTempTag(
         fs.readFileSync(pwd + "/" + template.trim(), { encoding: "utf-8" })
       )
     )
   );
-  const CompStacks: AnyObject = {};
+  const CompStacks: Record<string, string> = {};
   let checkNested = false;
-  const result: AnyObject = {};
   const resources = Object.keys(Data["Resources"]);
   resources.forEach((ele) => {
     if (Data["Resources"][ele]["Type"] === config.stacktype) {
       checkNested = true;
-      CompStacks[ele] = Data["Resources"][ele]["Properties"]["TemplateURL"];
+      CompStacks[ele] = <string>(
+        Data["Resources"][ele]["Properties"]["TemplateURL"]
+      );
     }
   });
-  result["checkNested"] = checkNested;
-  result["CompStacks"] = CompStacks;
+  const result = { checkNested: checkNested, compStacks: CompStacks };
   return result;
 }
 
@@ -271,6 +280,7 @@ function updatevalue(input: string, data: string) {
 
   val[tag] = resvalue;
   data = data.replace(input.trim(), JSON.stringify(val));
+  console.log("updatevalue", JSON.stringify(val), JSON.stringify(data));
   return data;
 }
 export function replaceTempTag(yamlinput: string) {
@@ -318,9 +328,10 @@ export const langValue = async function () {
     encoding: "utf-8",
   });
   const data: AnyObject = TOML.parse(datas);
+  console.log("data", JSON.stringify(data), typeof data);
   const langarray: AnyArray = [];
-  const jsresult: AnyArray = [];
-  const pyresult: AnyArray = [];
+  const jsresult: Array<string> = [];
+  const pyresult: Array<string> = [];
   Object.keys(data).forEach((ele) => {
     Object.keys(data[ele]).forEach((obj) => {
       if (Object.prototype.hasOwnProperty.call(data[ele][obj], "runtime"))
@@ -328,7 +339,9 @@ export const langValue = async function () {
     });
   });
   langarray.forEach((ele) => {
-    if (ele.match(jspattern) !== null) jsresult.push(...ele.match(jspattern));
+    if (ele.match(jspattern) !== null) {
+      jsresult.push(...ele.match(jspattern));
+    }
     if (ele.match(pythonpattern) !== null)
       pyresult.push(...ele.match(pythonpattern));
   });
@@ -355,7 +368,7 @@ export const samValidate = async function (filename: string) {
     });
     yamlfiles.map((ele) => {
       const datas = fs.readFileSync(ele, { encoding: "utf-8" });
-      const data = <AnyObject>Yaml.load(replaceTempTag(datas));
+      const data = <TSAMTemplate>Yaml.load(replaceTempTag(datas));
       if (
         Object.prototype.hasOwnProperty.call(
           data,

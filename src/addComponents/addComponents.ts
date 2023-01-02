@@ -62,7 +62,7 @@ function addComponentsNested(
   Data: TSAMTemplate,
   input2: IroveraddComponentInputNestedType,
   app_data: IaddComponentAppData
-):void {
+): void {
   Object.keys(input.nestedComponents).forEach((ele) => {
     const res: IaddComponentResource = {
       resources: getComponents(input.nestedComponents[ele]["components"]),
@@ -109,7 +109,7 @@ function addComponentsnonNested(
   Data: TSAMTemplate,
   app_data: IaddComponentAppData,
   input2: IroveraddComponentInputType
-):void {
+): void {
   const res: IaddComponentResource = {
     resources: getComponents(input.components),
   };
@@ -157,7 +157,7 @@ export function createStackResources(
   StackType: string,
   stack_names: string,
   comp: IaddComponentComp
-):TSAMTemplateResources {
+): TSAMTemplateResources {
   const res: TSAMTemplateResources = {};
   const resourceobject: TroverResourcesArray = resources["resources"];
   resourceobject.forEach(function (element: IroverResources) {

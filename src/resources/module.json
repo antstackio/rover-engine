@@ -7,14 +7,18 @@
           "type": "lambda",
           "config": {},
           "policies": {},
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "lamtwo",
           "type": "lambda",
           "config": {},
           "policies": {},
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         }
       ]
     },
@@ -25,14 +29,18 @@
           "type": "lambda",
           "config": {},
           "policies": {},
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "lamfour",
           "type": "lambda",
           "config": {},
           "policies": {},
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         }
       ]
     }
@@ -58,7 +66,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "AuthorizerFunction",
@@ -79,7 +89,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "CreateAuthChallenge",
@@ -103,7 +115,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "VerifyAuthChallengeResponse",
@@ -124,7 +138,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PreSignUp",
@@ -144,7 +160,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "SignUpFunctions",
@@ -168,7 +186,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ResendCode",
@@ -193,7 +213,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ConfirmForgotPassword",
@@ -217,7 +239,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ForgotPassword",
@@ -241,7 +265,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ConfirmUser",
@@ -264,7 +290,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "Users",
@@ -287,7 +315,9 @@
               }
             ]
           },
-          "logic": true
+          "logic": true,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "UserTable",
@@ -307,7 +337,9 @@
               }
             ]
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "CreateAuthChallengeInvocationPermission",
@@ -318,7 +350,9 @@
             "Principal": "cognito-idp.amazonaws.com",
             "SourceArn": { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "DefineAuthChallengeInvocationPermission",
@@ -329,7 +363,9 @@
             "Principal": "cognito-idp.amazonaws.com",
             "SourceArn": { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "VerifyAuthChallengeResponseInvocationPermission",
@@ -342,7 +378,9 @@
             "Principal": "cognito-idp.amazonaws.com",
             "SourceArn": { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "SignUpInvocationPermission",
@@ -353,7 +391,9 @@
             "FunctionName": { "Fn::GetAtt": ["SignUpFunctions", "Arn"] },
             "SourceArn": { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PreSignUpInvocationPermission",
@@ -364,7 +404,9 @@
             "Principal": "cognito-idp.amazonaws.com",
             "SourceArn": { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "AuthUserPools",
@@ -413,7 +455,9 @@
               }
             }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "AuthUserPoolsClient",
@@ -425,7 +469,9 @@
 
             "ExplicitAuthFlows": ["CUSTOM_AUTH_FLOW_ONLY"]
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "SignUpRoles",
@@ -477,7 +523,9 @@
               }
             ]
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "AllowSetUserAttributes",
@@ -493,7 +541,9 @@
             "Roles": [{ "Ref": "SignUpRoles" }],
             "PolicyName": "AllowSetUserAttributespolicy"
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "EmailAuthAPIs",
@@ -579,7 +629,9 @@
               }
             }
           },
-          "logic": false
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ClientApiKey",
@@ -593,7 +645,10 @@
                 "StageName": "dev"
               }
             ]
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ClientOrderUsagePlan",
@@ -611,7 +666,10 @@
               "BurstLimit": 5,
               "RateLimit": 5
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "ClientOrderUsagePlanKey",
@@ -621,7 +679,10 @@
             "KeyId": { "Ref": "ClientApiKey" },
             "KeyType": "API_KEY",
             "UsagePlanId": { "Ref": "ClientOrderUsagePlan" }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "CognitoAuthorizer",
@@ -632,7 +693,10 @@
             "ProviderARNs": [{ "Fn::GetAtt": ["AuthUserPools", "Arn"] }],
             "RestApiId": { "Ref": "EmailAuthAPIs" },
             "Type": "COGNITO_USER_POOLS"
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         }
       ]
     }
@@ -706,12 +770,18 @@
             },
             "EnableDnsSupport": true,
             "EnableDnsHostnames": true
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "InternetGateway",
           "type": "internetgateway",
-          "config": {}
+          "config": {},
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "InternetGatewayAttachment",
@@ -723,7 +793,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet1",
@@ -739,7 +812,10 @@
               "Ref": "PublicSubnet1CIDR"
             },
             "MapPublicIpOnLaunch": true
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet2",
@@ -755,7 +831,10 @@
               "Ref": "PublicSubnet2CIDR"
             },
             "MapPublicIpOnLaunch": true
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet3",
@@ -771,7 +850,10 @@
               "Ref": "PublicSubnet3CIDR"
             },
             "MapPublicIpOnLaunch": true
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet1",
@@ -787,7 +869,10 @@
               "Ref": "PrivateSubnet1CIDR"
             },
             "MapPublicIpOnLaunch": false
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet2",
@@ -803,7 +888,10 @@
               "Ref": "PrivateSubnet2CIDR"
             },
             "MapPublicIpOnLaunch": false
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet3",
@@ -819,7 +907,10 @@
               "Ref": "PrivateSubnet3CIDR"
             },
             "MapPublicIpOnLaunch": false
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRouteTable1",
@@ -828,7 +919,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRouteTable2",
@@ -837,7 +931,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRouteTable3",
@@ -846,7 +943,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRoute1",
@@ -859,7 +959,10 @@
             "GatewayId": {
               "Ref": "InternetGateway"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRoute2",
@@ -872,7 +975,10 @@
             "GatewayId": {
               "Ref": "InternetGateway"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicRoute3",
@@ -885,7 +991,10 @@
             "GatewayId": {
               "Ref": "InternetGateway"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet1RouteTableAssociation",
@@ -897,7 +1006,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet1"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet2RouteTableAssociation",
@@ -909,7 +1021,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet2"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PublicSubnet3RouteTableAssociation",
@@ -921,7 +1036,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet3"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRouteTable1",
@@ -930,7 +1048,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRouteTable2",
@@ -939,7 +1060,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRouteTable3",
@@ -948,7 +1072,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet1RouteTableAssociation",
@@ -960,7 +1087,10 @@
             "SubnetId": {
               "Ref": "PrivateSubnet1"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet2RouteTableAssociation",
@@ -972,7 +1102,10 @@
             "SubnetId": {
               "Ref": "PrivateSubnet2"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateSubnet3RouteTableAssociation",
@@ -984,28 +1117,40 @@
             "SubnetId": {
               "Ref": "PrivateSubnet3"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "EIP1",
           "type": "eip",
           "config": {
             "Domain": "vpc"
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "EIP2",
           "type": "eip",
           "config": {
             "Domain": "vpc"
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "EIP3",
           "type": "eip",
           "config": {
             "Domain": "vpc"
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "NatGateway1",
@@ -1017,7 +1162,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet1"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "NatGateway2",
@@ -1029,7 +1177,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet2"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "NatGateway3",
@@ -1041,7 +1192,10 @@
             "SubnetId": {
               "Ref": "PublicSubnet3"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRoute1",
@@ -1054,7 +1208,10 @@
             "NatGatewayId": {
               "Ref": "NatGateway1"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRoute2",
@@ -1067,7 +1224,10 @@
             "NatGatewayId": {
               "Ref": "NatGateway2"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "PrivateRoute3",
@@ -1080,7 +1240,10 @@
             "NatGatewayId": {
               "Ref": "NatGateway3"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "LambdaSecurityGroup",
@@ -1090,7 +1253,10 @@
             "VpcId": {
               "Ref": "VPC"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "RDSSecurityGroup",
@@ -1118,7 +1284,10 @@
                 "CidrIp": "0.0.0.0/0"
               }
             ]
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "RDSSubnetGroup",
@@ -1136,7 +1305,10 @@
                 "Ref": "PrivateSubnet3"
               }
             ]
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "RDSCluster",
@@ -1171,7 +1343,10 @@
                 "Ref": "RDSSecurityGroup"
               }
             ]
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         },
         {
           "name": "user",
@@ -1243,438 +1418,12 @@
             "SecretString": {
               "Fn::Sub": "{'database':${DBName},'username':${DBUserName},'password':${DBUserPassword}}"
             }
-          }
+          },
+          "logic": false,
+          "logicpath": "",
+          "package": []
         }
       ]
-    }
-  },
-  "RDSS": {
-    "RDS": {
-      "resources": [
-        {
-          "name": "VPC",
-          "type": "vpc",
-          "config": {
-            "CidrBlock": "10.0.0.0/16"
-          }
-        },
-        {
-          "name": "SubnetA",
-          "type": "subnet",
-          "config": {
-            "AvailabilityZone": {
-              "Fn::Select": "[ 0,!GetAZs Ref: 'AWS::Region']"
-            },
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "CidrBlock": "10.0.0.0/24"
-          }
-        },
-        {
-          "name": "SubnetB",
-          "type": "subnet",
-          "config": {
-            "AvailabilityZone": {
-              "Fn::Select": "[1 , !GetAZs Ref: 'AWS::Region' ]"
-            },
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "CidrBlock": "10.0.1.0/24"
-          }
-        },
-        {
-          "name": "RouteTable",
-          "type": "routetable",
-          "config": {
-            "VpcId": {
-              "Ref": "\"VPC\""
-            }
-          }
-        },
-        {
-          "name": "SubnetGroup",
-          "type": "dbsubnetgroup",
-          "config": {
-            "DBSubnetGroupName": "subnetgroup",
-            "DBSubnetGroupDescription": "Subnet Group",
-            "SubnetIds": [
-              {
-                "Ref": "\"SubnetA\""
-              },
-              {
-                "Ref": "\"SubnetB\""
-              }
-            ]
-          }
-        },
-        {
-          "name": "InstanceSecurityGroup",
-          "type": "securitygroup",
-          "config": {
-            "GroupName": "Example Security Group",
-            "GroupDescription": "RDS traffic",
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "SecurityGroupEgress": [
-              {
-                "IpProtocol": "-1",
-                "CidrIp": "0.0.0.0/0"
-              }
-            ]
-          }
-        },
-        {
-          "name": "InstanceSecurityGroupIngress",
-          "type": "securitygroupingress",
-          "config": {
-            "GroupId": {
-              "Ref": "\"InstanceSecurityGroup\""
-            },
-            "IpProtocol": "tcp",
-            "FromPort": "0",
-            "ToPort": "65535",
-            "SourceSecurityGroupId": {
-              "Ref": "\"InstanceSecurityGroup\""
-            }
-          }
-        },
-        {
-          "name": "RDSCluster",
-          "type": "dbcluster",
-          "config": {
-            "DBSubnetGroupName": {
-              "Ref": "SubnetGroup"
-            },
-            "MasterUsername": {
-              "Ref": "DBUserName"
-            },
-            "MasterUserPassword": {
-              "Ref": "DBUserPassword"
-            },
-            "DatabaseName": {
-              "Ref": "DBUserName"
-            },
-            "Engine": "aurora-postgresql",
-            "EnableHttpEndpoint": true,
-            "EngineMode": "serverless",
-            "VpcSecurityGroupIds": [
-              {
-                "Ref": "\"InstanceSecurityGroup\""
-              }
-            ],
-            "ScalingConfiguration": {
-              "AutoPause": true,
-              "MaxCapacity": 16,
-              "MinCapacity": 2,
-              "SecondsUntilAutoPause": 300
-            }
-          }
-        },
-        {
-          "name": "user",
-          "type": "function",
-          "config": {
-            "FunctionName": "user",
-            "CodeUri": "user/",
-            "Runtime": "nodejs14.x",
-            "Environment": {
-              "Variables": {
-                "Secret": {
-                  "Ref": "usersecret"
-                },
-                "Clustername": {
-                  "Ref": "RDSCluster"
-                },
-                "Region": {
-                  "Ref": "AWS::Region"
-                },
-                "Accountid": {
-                  "Ref": "AWS::AccountId"
-                },
-                "DBname": {
-                  "Ref": "DBUserName"
-                }
-              }
-            },
-            "Policies": [
-              "AWSLambdaBasicExecutionRole",
-              {
-                "Version": "2012-10-17T00:00:00.000Z",
-                "Statement": [
-                  {
-                    "Sid": "RDSDataServiceAccess",
-                    "Effect": "Allow",
-                    "Action": [
-                      "rds-data:BatchExecuteStatement",
-                      "rds-data:BeginTransaction",
-                      "rds-data:CommitTransaction",
-                      "rds-data:ExecuteStatement",
-                      "rds-data:RollbackTransaction"
-                    ],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "SecretsManagerDbCredentialsAccess",
-                    "Effect": "Allow",
-                    "Action": ["secretsmanager:GetSecretValue"],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "SecretsManagerDbCredentialsAccess2",
-                    "Effect": "Allow",
-                    "Action": ["secretsmanager:GetSecretValue"],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "RDSDataServiceAccess2",
-                    "Effect": "Allow",
-                    "Action": ["rds-data:*"],
-                    "Resource": "*"
-                  }
-                ]
-              }
-            ],
-            "Tags": {
-              "createdBy": "rover",
-              "applicationName": "rdssample"
-            },
-            "Description": "Rover-tools created user  named lambda resource",
-            "Handler": "app.lambdaHandler"
-          }
-        },
-        {
-          "name": "usersecret",
-          "type": "secret",
-          "config": {
-            "Name": "usersecret",
-            "Description": "Rover-tools created usersecret  named secret resource",
-            "SecretString": {
-              "Fn::Sub": "{'database':${DBName},'username':${DBUserName},'password':${DBUserPassword}}"
-            },
-            "Tags": [
-              {
-                "Key": "createdBy",
-                "Value": "rover"
-              },
-              {
-                "Key": "applicationName",
-                "Value": "rdssample"
-              }
-            ]
-          }
-        }
-      ],
-      "parameter": {
-        "VPC": {
-          "Type": "AWS::EC2::VPC",
-          "Properties": {
-            "CidrBlock": "10.0.0.0/16"
-          }
-        },
-        "SubnetA": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "AvailabilityZone": {
-              "Fn::Select": "[ 0,!GetAZs Ref: 'AWS::Region']"
-            },
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "CidrBlock": "10.0.0.0/24"
-          }
-        },
-        "SubnetB": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "AvailabilityZone": {
-              "Fn::Select": "[1 , !GetAZs Ref: 'AWS::Region' ]"
-            },
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "CidrBlock": "10.0.1.0/24"
-          }
-        },
-        "RouteTable": {
-          "Type": "AWS::EC2::RouteTable",
-          "Properties": {
-            "VpcId": {
-              "Ref": "\"VPC\""
-            }
-          }
-        },
-        "SubnetGroup": {
-          "Type": "AWS::RDS::DBSubnetGroup",
-          "Properties": {
-            "DBSubnetGroupName": "subnetgroup",
-            "DBSubnetGroupDescription": "Subnet Group",
-            "SubnetIds": [
-              {
-                "Ref": "\"SubnetA\""
-              },
-              {
-                "Ref": "\"SubnetB\""
-              }
-            ]
-          }
-        },
-        "InstanceSecurityGroup": {
-          "Type": "AWS::EC2::SecurityGroup",
-          "Properties": {
-            "GroupName": "Example Security Group",
-            "GroupDescription": "RDS traffic",
-            "VpcId": {
-              "Ref": "\"VPC\""
-            },
-            "SecurityGroupEgress": [
-              {
-                "IpProtocol": "-1",
-                "CidrIp": "0.0.0.0/0"
-              }
-            ]
-          }
-        },
-        "InstanceSecurityGroupIngress": {
-          "Type": "AWS::EC2::SecurityGroupIngress",
-          "DependsOn": "InstanceSecurityGroup",
-          "Properties": {
-            "GroupId": {
-              "Ref": "\"InstanceSecurityGroup\""
-            },
-            "IpProtocol": "tcp",
-            "FromPort": "0",
-            "ToPort": "65535",
-            "SourceSecurityGroupId": {
-              "Ref": "\"InstanceSecurityGroup\""
-            }
-          }
-        },
-        "RDSCluster": {
-          "Type": "AWS::RDS::DBCluster",
-          "Properties": {
-            "DBSubnetGroupName": {
-              "Ref": "SubnetGroup"
-            },
-            "MasterUsername": {
-              "Ref": "DBUserName"
-            },
-            "MasterUserPassword": {
-              "Ref": "DBUserPassword"
-            },
-            "DatabaseName": {
-              "Ref": "DBUserName"
-            },
-            "Engine": "aurora-postgresql",
-            "EnableHttpEndpoint": true,
-            "EngineMode": "serverless",
-            "VpcSecurityGroupIds": [
-              {
-                "Ref": "\"InstanceSecurityGroup\""
-              }
-            ],
-            "ScalingConfiguration": {
-              "AutoPause": true,
-              "MaxCapacity": 16,
-              "MinCapacity": 2,
-              "SecondsUntilAutoPause": 300
-            }
-          }
-        },
-        "user": {
-          "Type": "AWS::Serverless::Function",
-          "Properties": {
-            "FunctionName": "user",
-            "CodeUri": "user/",
-            "Runtime": "nodejs14.x",
-            "Environment": {
-              "Variables": {
-                "Secret": {
-                  "Ref": "usersecret"
-                },
-                "Clustername": {
-                  "Ref": "RDSCluster"
-                },
-                "Region": {
-                  "Ref": "AWS::Region"
-                },
-                "Accountid": {
-                  "Ref": "AWS::AccountId"
-                },
-                "DBname": {
-                  "Ref": "DBUserName"
-                }
-              }
-            },
-            "Policies": [
-              "AWSLambdaBasicExecutionRole",
-              {
-                "Version": "2012-10-17T00:00:00.000Z",
-                "Statement": [
-                  {
-                    "Sid": "RDSDataServiceAccess",
-                    "Effect": "Allow",
-                    "Action": [
-                      "rds-data:BatchExecuteStatement",
-                      "rds-data:BeginTransaction",
-                      "rds-data:CommitTransaction",
-                      "rds-data:ExecuteStatement",
-                      "rds-data:RollbackTransaction"
-                    ],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "SecretsManagerDbCredentialsAccess",
-                    "Effect": "Allow",
-                    "Action": ["secretsmanager:GetSecretValue"],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "SecretsManagerDbCredentialsAccess2",
-                    "Effect": "Allow",
-                    "Action": ["secretsmanager:GetSecretValue"],
-                    "Resource": "*"
-                  },
-                  {
-                    "Sid": "RDSDataServiceAccess2",
-                    "Effect": "Allow",
-                    "Action": ["rds-data:*"],
-                    "Resource": "*"
-                  }
-                ]
-              }
-            ],
-            "Tags": {
-              "createdBy": "rover",
-              "applicationName": "rdssample"
-            },
-            "Description": "Rover-tools created user  named lambda resource",
-            "Handler": "app.lambdaHandler"
-          }
-        },
-        "usersecret": {
-          "Type": "AWS::SecretsManager::Secret",
-          "Properties": {
-            "Name": "usersecret",
-            "Description": "Rover-tools created usersecret  named secret resource",
-            "SecretString": {
-              "Fn::Sub": "{'database':${DBName},'username':${DBUserName},'password':${DBUserPassword}}"
-            },
-            "Tags": [
-              {
-                "Key": "createdBy",
-                "Value": "rover"
-              },
-              {
-                "Key": "applicationName",
-                "Value": "rdssample"
-              }
-            ]
-          }
-        }
-      }
     }
   }
 }

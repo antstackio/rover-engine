@@ -376,10 +376,10 @@ export const samValidate = async function (filename: string) {
     const files: Array<string> = fs.readdirSync(filename);
     const yamlfiles: Array<string> = [];
     const response: Array<boolean> = [];
-    files.map((ele) => {
+    files.forEach((ele) => {
       if (ele.match(yamlpattern) !== null) yamlfiles.push(path + ele);
     });
-    yamlfiles.map((ele) => {
+    yamlfiles.forEach((ele) => {
       const datas = fs.readFileSync(ele, { encoding: "utf-8" });
       const data = <TSAMTemplate>Yaml.load(replaceTempTag(datas));
       if (

@@ -85,20 +85,19 @@ export interface IroverCreateProject {
 
 export type TconfigFile =
   | "rover_create_project"
-  | "rover_create_project"
-  | "rover_create_project";
+  | "rover_add_component"
+  | "rover_add_module";
 export type TconfigFileTypes =
   | Array<IroverCreateProject>
   | Array<IroveraddComponentInput>
   | Array<IroveraddModule>
-  | object;
 export interface IroverConfigFileObject {
   app_name?: string;
   language?: string;
-  rover_create_project?: object;
+  rover_create_project?:object;
   //Array<IroverCreateProject>;
   rover_add_component?: object;
-  // Array<IroveraddComponentInput>;
+  //Array<IroveraddComponentInput>;
   rover_add_module?: object;
-  // Array<IroveraddModule>;
+  //Array<IroveraddModule>;
 }

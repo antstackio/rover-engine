@@ -8,7 +8,8 @@ export const generateRoverResource = (
   const resource: AnyObject = {};
   resource["name"] = name;
   resource["type"] = type;
-  (resource["logicpath"] = ""), (resource["package"] = []);
+  resource["logicpath"] = ""
+  resource["package"] = []
   resource["logic"] = logic;
   if (config.length !== 0 || config !== undefined) {
     resource["config"] = config;

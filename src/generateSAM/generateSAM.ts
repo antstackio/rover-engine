@@ -20,15 +20,20 @@ import {
   ISAMTemplateResource,
   IroverAppType,
   IroverConfigTag,
+  IroverConfigFileObject,
 } from "../roverTypes/rover.types";
 
-export async function generateSAM(input: IroverInput): Promise<void> {
+export function generateSAM(input: IroverInput): void {
   const app_data: IroverAppData = getAppdata(input);
   const app_types: TroverAppTypeObject = cliModuletoConfig(input, false);
   const appname: string = input.app_name;
   createStack(app_data, app_types);
   exec(config.ForceRemove + input.app_name + config.LambdaDemo);
-  utlities.generateRoverConfig(input.app_name, input, "rover_create_project");
+  utlities.generateRoverConfig(
+    input.app_name,
+    <IroverConfigFileObject>input,
+    "rover_create_project"
+  );
   exec("cd " + utlities.pwd + appname + " && npm run format:write");
 }
 

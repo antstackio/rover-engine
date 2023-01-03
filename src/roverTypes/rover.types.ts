@@ -1,3 +1,5 @@
+import { IroveraddComponentInput } from "../addComponents/addComponents.types";
+import { IroveraddModule } from "../addModules/addModules.types";
 import { IstackDetails } from "../generateSAM/generatesam.types";
 export interface IroverResources {
   name: string;
@@ -76,3 +78,27 @@ export interface IroverCheckNestedObject {
 export type regexmatchs = string | null;
 
 export type RegExpExecArray = Array<string>;
+
+export interface IroverCreateProject {
+  stack_details?: IstackDetails;
+}
+
+export type TconfigFile =
+  | "rover_create_project"
+  | "rover_create_project"
+  | "rover_create_project";
+export type TconfigFileTypes =
+  | Array<IroverCreateProject>
+  | Array<IroveraddComponentInput>
+  | Array<IroveraddModule>
+  | object;
+export interface IroverConfigFileObject {
+  app_name?: string;
+  language?: string;
+  rover_create_project?: object;
+  //Array<IroverCreateProject>;
+  rover_add_component?: object;
+  // Array<IroveraddComponentInput>;
+  rover_add_module?: object;
+  // Array<IroveraddModule>;
+}

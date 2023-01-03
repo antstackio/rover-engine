@@ -1,7 +1,6 @@
 import * as config from "./config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
-import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as child from "child_process";
 import * as fs from "fs";
 import * as TOML from "@iarna/toml";
@@ -14,14 +13,19 @@ import {
   IroverInput,
   TSAMTemplate,
   TSAMTemplateResources,
+  IroverConfigFileObject,
+  TconfigFile,
 } from "../roverTypes/rover.types";
 import {
   IaddComponentAppData,
   IroveraddComponentInput,
 } from "../addComponents/addComponents.types";
+
+import { TsamBuildTOML } from "../roverTypes/sam.types";
+
 const exec = child.execSync;
 const sub = new RegExp(
-  /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)\s[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*\n/g
+  /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]*\n/g
 );
 const pythonpattern = new RegExp(/python[1-9]*\.[1-9]*/g);
 const jspattern = new RegExp(/nodejs[1-9]*\.[a-zA-Z]*/g);
@@ -29,12 +33,15 @@ const yamlpattern = new RegExp(/(\.yaml$)/g);
 
 export const pwd = process.cwd() + "/";
 export const npmrootTest = function () {
-  let packages: AnyArray = exec(" npm -g  ls").toString().trim().split(/\r?\n/);
+  let packages: Array<string> = exec(" npm -g  ls")
+    .toString()
+    .trim()
+    .split(/\r?\n/);
   packages.shift();
   packages = packages.filter((ele) => {
-    ele = ele.match("@rover-tools/cli");
-    if (ele !== null) {
-      return ele;
+    const exp = ele.match("@rover-tools/cli");
+    if (exp !== null) {
+      return exp;
     }
   });
   return packages.length > 0;
@@ -64,7 +71,7 @@ export function installDependies(
   dependency: string
 ) {
   if (dependency == "npm") {
-    packages.map((ele) => {
+    packages.forEach((ele) => {
       exec("npm --prefix " + pwd + path + " install " + ele + " --save");
     });
   }
@@ -246,6 +253,7 @@ export function generateLambdafiles(
     }
   }
 }
+
 export function checkNested(template: string) {
   const Data = <TSAMTemplate>(
     Yaml.load(
@@ -271,16 +279,15 @@ export function checkNested(template: string) {
 
 function updatevalue(input: string, data: string) {
   const result = input.trim().split(" ");
-  const val: AnyObject = {};
+  const val: Record<string, string> = {};
   const resvalue = result.splice(1, result.length).join(" ");
   let tag = result[0].replace("!", "");
   if (tag !== "Ref") {
-    tag = "Fn::" + tag;
+    tag = `Fn::` + tag;
   }
 
   val[tag] = resvalue;
   data = data.replace(input.trim(), JSON.stringify(val));
-  console.log("updatevalue", JSON.stringify(val), JSON.stringify(data));
   return data;
 }
 export function replaceTempTag(yamlinput: string) {
@@ -327,23 +334,29 @@ export const langValue = async function () {
   const datas = fs.readFileSync(pwd + ".aws-sam/build.toml", {
     encoding: "utf-8",
   });
-  const data: AnyObject = TOML.parse(datas);
-  console.log("data", JSON.stringify(data), typeof data);
-  const langarray: AnyArray = [];
+  const data: TsamBuildTOML = <TsamBuildTOML>(<unknown>TOML.parse(datas));
+  const langarray: Array<string> = [];
   const jsresult: Array<string> = [];
   const pyresult: Array<string> = [];
-  Object.keys(data).forEach((ele) => {
-    Object.keys(data[ele]).forEach((obj) => {
+  Object.keys(data).forEach((ele: string) => {
+    Object.keys(data[ele]).forEach((obj: string) => {
       if (Object.prototype.hasOwnProperty.call(data[ele][obj], "runtime"))
         langarray.push(data[ele][obj]["runtime"]);
     });
   });
   langarray.forEach((ele) => {
     if (ele.match(jspattern) !== null) {
-      jsresult.push(...ele.match(jspattern));
+      const jsList = ele.match(jspattern);
+      jsList?.forEach((ele) => {
+        jsresult.push(ele);
+      });
     }
-    if (ele.match(pythonpattern) !== null)
-      pyresult.push(...ele.match(pythonpattern));
+    if (ele.match(pythonpattern) !== null) {
+      const pyList = ele.match(pythonpattern);
+      pyList?.forEach((ele) => {
+        pyresult.push(ele);
+      });
+    }
   });
   if (jsresult.length > pyresult.length) return "js";
   else if (pyresult.length > jsresult.length) return "python";
@@ -360,9 +373,9 @@ export const samValidate = async function (filename: string) {
       filename = exec("pwd").toString().replace("\n", "");
       path = "";
     }
-    const files: AnyArray = fs.readdirSync(filename);
-    const yamlfiles: AnyArray = [];
-    const response: AnyArray = [];
+    const files: Array<string> = fs.readdirSync(filename);
+    const yamlfiles: Array<string> = [];
+    const response: Array<boolean> = [];
     files.map((ele) => {
       if (ele.match(yamlpattern) !== null) yamlfiles.push(path + ele);
     });
@@ -392,10 +405,11 @@ export const samValidate = async function (filename: string) {
 
 export const generateRoverConfig = function (
   filename: string,
-  data: AnyObject,
+  data: IroverConfigFileObject,
   type: string
 ) {
-  const response: AnyObject = {};
+  const typess = <TconfigFile>(<unknown>type);
+  const response: IroverConfigFileObject = <IroverConfigFileObject>{};
   if (filename === "") filename = pwd.split("/")[pwd.split("/").length - 1];
   const originalfilename = filename;
   filename = filename + "/roverconfig.json";
@@ -420,10 +434,10 @@ export const generateRoverConfig = function (
       return 0;
     }
     if (!Object.prototype.hasOwnProperty.call(dataobject, type))
-      dataobject[type] = [];
+      dataobject[typess] = [];
     if (dataobject.app_name == data.app_name) delete data.app_name;
     if (dataobject.language == data.language) delete data.language;
-    dataobject[type].push(data);
+    dataobject[typess].push(data);
     data = dataobject;
   } else {
     if (!fs.existsSync(pwd + originalfilename))
@@ -432,9 +446,14 @@ export const generateRoverConfig = function (
     response["language"] = data.language;
     delete data.app_name;
     delete data.language;
-    response[type] = [];
-    response[type].push(data);
+    response[typess] = [data];
     data = response;
   }
+  console.log(
+    "data",
+    JSON.stringify(data),
+    "response",
+    JSON.stringify(response)
+  );
   writeFile(filename, JSON.stringify(data));
 };

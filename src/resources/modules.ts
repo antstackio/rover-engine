@@ -1,9 +1,8 @@
-import { AnyObject } from "immer/dist/internal";
 import * as config from "../utlities/config";
 import * as components from "./components";
 import { RDS, BaseModule, EmailAuthModule } from "./module.json";
 
-export const Modules: AnyObject = {
+export const Modules: Record<string,object> = {
   BaseModule: {
     resource: BaseModule,
     params: {},

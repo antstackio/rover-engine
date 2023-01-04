@@ -8,7 +8,8 @@ export const generateRoverResource = (
   const resource: AnyObject = {};
   resource["name"] = name;
   resource["type"] = type;
-
+  resource["logicpath"] = ""
+  resource["package"] = []
   resource["logic"] = logic;
   if (config.length !== 0 || config !== undefined) {
     resource["config"] = config;
@@ -129,6 +130,7 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
       ],
     },
     logic: false,
+    logicpath: "",
   };
   const apis: AnyObject = {
     name: apiname + "APIs",
@@ -138,6 +140,7 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
       objects: objects,
     },
     logic: false,
+    logicpath: "",
   };
   const res: AnyObject = {};
   res[apiname] = { resources: [] };
@@ -192,6 +195,8 @@ export const Components: AnyObject = {
         Policies: ["AWSLambdaDynamoDBExecutionRole"],
       },
       logic: true,
+      logicpath: "",
+      package: [],
     },
     {
       name: "Bucket",
@@ -207,6 +212,9 @@ export const Components: AnyObject = {
           ],
         },
       },
+      logic: false,
+      logicpath: "",
+      package: [],
     },
   ],
   "CRUD API": crudcomponent["Book"]["resources"],

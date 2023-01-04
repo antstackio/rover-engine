@@ -1,4 +1,4 @@
-export const LambdaLogics: Record<string,Record<string,string>> = {
+export const LambdaLogics: Record<string, Record<string, string>> = {
   "nodejs14.x": {
     EmailAuthModule_PreSignUp: `exports.lambdaHandler = async event => {
                 event.response.autoConfirmUser = false;

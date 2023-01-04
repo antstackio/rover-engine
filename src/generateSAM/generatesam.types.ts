@@ -1,12 +1,9 @@
-type TcrudMethods = "put" | "get" | "post" | "delete" | "options";
-interface IcurdObject {
-  path: string;
-  methods: Array<TcrudMethods>;
-  resourcetype: string;
-}
+import { IcurdObject } from "../resources/components.types";
+type IcurdComponentObject = Omit<IcurdObject, "name" | "role" | "resource">;
+
 interface IstackDetailsObject {
   type: string;
-  params: IcurdObject | object;
+  params: IcurdComponentObject | object;
   componentlist: Array<string>;
 }
 export interface IstackDetails {

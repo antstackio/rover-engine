@@ -449,11 +449,5 @@ export const generateRoverConfig = function (
     response[typess] = [data];
     data = response;
   }
-  console.log(
-    "data",
-    JSON.stringify(data),
-    "response",
-    JSON.stringify(response)
-  );
   writeFile(filename, JSON.stringify(data));
 };

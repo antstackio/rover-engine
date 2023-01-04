@@ -5,7 +5,7 @@ export interface IroverResources {
   name: string;
   type: string;
   config: Record<string, unknown>;
-  policies: Record<string, unknown>;
+  policies?: Record<string, unknown>;
   logic: boolean;
   logicpath: string;
   package: Array<string>;
@@ -90,11 +90,11 @@ export type TconfigFile =
 export type TconfigFileTypes =
   | Array<IroverCreateProject>
   | Array<IroveraddComponentInput>
-  | Array<IroveraddModule>
+  | Array<IroveraddModule>;
 export interface IroverConfigFileObject {
   app_name?: string;
   language?: string;
-  rover_create_project?:object;
+  rover_create_project?: object;
   //Array<IroverCreateProject>;
   rover_add_component?: object;
   //Array<IroveraddComponentInput>;

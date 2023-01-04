@@ -1,34 +1,49 @@
-import { AnyArray, AnyObject } from "immer/dist/internal";
+import {
+  IroverResources,
+  IaddComponentResource,
+} from "../roverTypes/rover.types";
+import {
+  IcurdObject,
+  ICRUDiamresource,
+  TLambdaENV,
+  TcrudMethods,
+} from "./components.types";
+
 export const generateRoverResource = (
   name: string,
   type: string,
-  config: AnyObject,
+  config: Record<string, unknown>,
   logic: boolean
-) => {
-  const resource: AnyObject = {};
-  resource["name"] = name;
-  resource["type"] = type;
-  resource["logicpath"] = ""
-  resource["package"] = []
-  resource["logic"] = logic;
+): IroverResources => {
+  const resource = {
+    name: name,
+    type: type,
+    config: {},
+    logicpath: "",
+    package: [""],
+    logic: logic,
+  };
   if (config.length !== 0 || config !== undefined) {
     resource["config"] = config;
     if (Object.prototype.hasOwnProperty.call(config, "logicpath"))
-      resource["logicpath"] = config["logicpath"];
+      resource["logicpath"] = <string>config["logicpath"];
     if (Object.prototype.hasOwnProperty.call(config, "package"))
-      resource["package"] = config["package"];
+      resource["package"] = <Array<string>>config["package"];
   }
-  return resource;
+  return <IroverResources>resource;
 };
 
-export const generatecrud = (apiname: string, config: AnyObject) => {
-  const objects: AnyArray = [];
-  const functions: AnyArray = [];
-  const tables: AnyArray = [];
-  const iamresources: AnyArray = [];
+export const generatecrud = (
+  apiname: string,
+  config: Record<string, unknown>
+): Record<string, IaddComponentResource> => {
+  const objects: Array<IcurdObject> = [];
+  const functions: Array<IroverResources> = [];
+  const tables: Array<IroverResources> = [];
+  const iamresources: Array<ICRUDiamresource> = [];
 
   Object.keys(config).forEach((ele) => {
-    const obj: AnyObject = JSON.parse(JSON.stringify(config[ele]));
+    const obj: IcurdObject = JSON.parse(JSON.stringify(config[ele]));
     obj["name"] = ele;
     obj["role"] = apiname + "Roles";
     obj["resource"] = ele + "Function";
@@ -48,7 +63,7 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
         },
       ],
     };
-    const lambdafunc: AnyObject = generateRoverResource(
+    const lambdafunc: IroverResources = generateRoverResource(
       ele + "Function",
       "lambda",
       tableaccess,
@@ -93,7 +108,7 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
       }
     );
   });
-  const role: AnyObject = {
+  const role = {
     name: apiname + "Roles",
     type: "iamrole",
     config: {
@@ -129,10 +144,12 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
         },
       ],
     },
+    package: [""],
+
     logic: false,
     logicpath: "",
   };
-  const apis: AnyObject = {
+  const apis = {
     name: apiname + "APIs",
     type: "apigateway",
     config: {
@@ -142,37 +159,41 @@ export const generatecrud = (apiname: string, config: AnyObject) => {
     logic: false,
     logicpath: "",
   };
-  const res: AnyObject = {};
+  const res: Record<string, IaddComponentResource> = {};
   res[apiname] = { resources: [] };
   let resarray = res[apiname]["resources"];
-  resarray.push(role);
-  resarray.push(apis);
+  resarray.push(<IroverResources>(<unknown>role));
+  resarray.push(<IroverResources>(<unknown>apis));
   resarray = resarray.concat(functions);
   resarray = resarray.concat(tables);
   res[apiname]["resources"] = resarray;
 
   return res;
 };
-export const generateLambdaEnv = (input: AnyObject) => {
-  const response: AnyObject = {};
+export const generateLambdaEnv = (input: Record<string, unknown>) => {
+  const response: TLambdaENV = {};
   response["Variables"] = {};
   Object.keys(input).forEach((ele) => {
-    const refval: AnyObject = {};
-    refval["Ref"] = input[ele];
+    const refval: Record<string, string> = {};
+    refval["Ref"] = <string>input[ele];
     response["Variables"][ele] = refval;
   });
   return response;
 };
-export const generateAPIGatewayObject = (input: AnyArray) => {
-  const response: AnyArray = [];
+export const generateAPIGatewayObject = (
+  input: Array<Array<string | Array<string>>>
+): Array<IcurdObject> => {
+  console.log("input", JSON.stringify(input));
+  const response: Array<IcurdObject> = [];
   input.forEach((ele) => {
-    const obj: AnyObject = {};
-    obj["name"] = ele[0];
-    obj["methods"] = ele[1];
-    obj["resource"] = ele[2];
-    obj["role"] = ele[3];
-    obj["path"] = ele[4];
-    obj["resourcetype"] = ele[5];
+    const obj: IcurdObject = {
+      name: <string>ele[0],
+      methods: <Array<TcrudMethods>>(<unknown>ele[1]),
+      resource: <string>ele[2],
+      role: <string>ele[3],
+      path: <string>ele[4],
+      resourcetype: <string>ele[5],
+    };
     response.push(obj);
   });
   return response;
@@ -184,9 +205,12 @@ const crudcomponentconfig = {
     resourcetype: "lambda",
   },
 };
-const crudcomponent: AnyObject = generatecrud("Book", crudcomponentconfig);
+const crudcomponent: Record<string, IaddComponentResource> = generatecrud(
+  "Book",
+  crudcomponentconfig
+);
 
-export const Components: AnyObject = {
+export const Components: Record<string, Array<IroverResources>> = {
   "S3 Lambda": [
     {
       name: "Lambdas",

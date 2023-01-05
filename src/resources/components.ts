@@ -170,7 +170,9 @@ export const generatecrud = (
 
   return res;
 };
-export const generateLambdaEnv = (input: Record<string, unknown>) => {
+export const generateLambdaEnv = (
+  input: Record<string, unknown>
+): TLambdaENV => {
   const response: TLambdaENV = {};
   response["Variables"] = {};
   Object.keys(input).forEach((ele) => {
@@ -183,7 +185,6 @@ export const generateLambdaEnv = (input: Record<string, unknown>) => {
 export const generateAPIGatewayObject = (
   input: Array<Array<string | Array<string>>>
 ): Array<IcurdObject> => {
-  console.log("input", JSON.stringify(input));
   const response: Array<IcurdObject> = [];
   input.forEach((ele) => {
     const obj: IcurdObject = {

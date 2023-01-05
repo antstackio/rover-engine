@@ -101,3 +101,20 @@ export interface IroverConfigFileObject {
   rover_add_module?: object;
   //Array<IroveraddModule>;
 }
+export interface IroverDeploymentObject {
+  app_name?: string;
+  name?: string;
+  repoType: string;
+  tool: string;
+  language: string;
+  no_of_env: number;
+  envs: Array<string>;
+  branches: Array<string>;
+  framework: string;
+  steps: Record<string, Record<string, string>>;
+  stackname: Record<string, string>;
+  deploymentbucket: Record<string, string>;
+  deploymentregion: Record<string, string>;
+  deploymentparameters: Record<string, string>;
+  deploymentevents: Array<string>;
+}

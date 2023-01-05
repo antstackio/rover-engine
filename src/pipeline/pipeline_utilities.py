@@ -30,7 +30,7 @@ def append_deployment_options(input,i,step):
 def git(input):
     output=base(input["tool"])
     output["name"]=input["name"]
-    output["on"]=input["deployment events"]
+    output["on"]=input["deploymentevents"]
     for i in input["envs"]:
         k={}
         k= env(input["tool"])
@@ -48,7 +48,7 @@ def git(input):
 def bit(input):
     output=base(input["tool"])
     output["image"]=steps(input["framework"],input["tool"])[input["language"]]["language_setup"]
-    if("push" in input["deployment events"]):
+    if("push" in input["deploymentevents"]):
         for b in input["branches"]:
             for i in input["envs"]:
                 k={}

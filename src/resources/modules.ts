@@ -1,12 +1,15 @@
-import { AnyObject } from "immer/dist/internal";
 import * as config from "../utlities/config";
 import * as components from "./components";
 import { RDS, BaseModule, EmailAuthModule } from "./module.json";
+import {
+  IroverResourceModule,
+  IroverParamObjects,
+} from "../resources/modules.types";
 
-export const Modules: AnyObject = {
+export const Modules: Record<string, IroverResourceModule> = {
   BaseModule: {
     resource: BaseModule,
-    params: {},
+    params: <IroverParamObjects>{},
     description: {
       key: "BaseModule",
       value:
@@ -166,7 +169,7 @@ export const Modules: AnyObject = {
         ],
       },
     },
-    params: {},
+    params: <IroverParamObjects>{},
     description: {
       key: "TestModule",
       value: "Test Module : Module with all AWS services supported by rover",
@@ -174,7 +177,7 @@ export const Modules: AnyObject = {
   },
   EmailAuthModule: {
     resource: EmailAuthModule,
-    params: {},
+    params: <IroverParamObjects>{},
     description: {
       key: "EmailAuthModule",
       value: "Email Auth Module : Authentication module using Cognito",
@@ -197,12 +200,12 @@ export const Modules: AnyObject = {
   },
   RDSModule: {
     resource: RDS,
-    params: {},
+    params: <IroverParamObjects>{},
     description: { key: "RDSModule", value: "RDS Module : RDS Data base" },
   },
   CustomizableModule: {
     resource: {},
-    params: {},
+    params: <IroverParamObjects>{},
     description: {
       key: "CustomizableModule",
       value: "Customizable Module : Create your own Module",

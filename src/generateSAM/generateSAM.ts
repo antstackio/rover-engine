@@ -21,7 +21,10 @@ import {
   IroverAppType,
   IroverConfigTag,
   IroverConfigFileObject,
+  IaddComponentResource,
 } from "../roverTypes/rover.types";
+
+import { IcurdComponentObject } from "../generateSAM/generatesam.types";
 
 export function generateSAM(input: IroverInput): void {
   const app_data: IroverAppData = getAppdata(input);
@@ -63,9 +66,18 @@ export function cliModuletoConfig(
   Object.keys(input["stack_details"]).forEach((ele) => {
     let stackdata: TroverAppTypeObject = {};
     if (input["stack_details"][ele]["type"] == "CRUDModule") {
-      stackdata = modules.Modules[input["stack_details"][ele]["type"]][
-        "resource"
-      ](ele, input["stack_details"][ele]["params"]);
+      const fundata = (<
+        (
+          apiname: string,
+          config: Record<string, IcurdComponentObject>
+        ) => Record<string, IaddComponentResource>
+      >modules.Modules[input["stack_details"][ele]["type"]]["resource"])(
+        ele,
+        <Record<string, IcurdComponentObject>>(
+          input["stack_details"][ele]["params"]
+        )
+      );
+      stackdata = <TroverAppTypeObject>fundata;
     } else if (input["stack_details"][ele]["type"] == "Custom") {
       const resources: TroverResourcesArray = [];
       const customstackarray: Array<string> =

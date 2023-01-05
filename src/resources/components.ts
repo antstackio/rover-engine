@@ -8,7 +8,7 @@ import {
   TLambdaENV,
   TcrudMethods,
 } from "./components.types";
-
+import { IcurdComponentObject } from "../generateSAM/generatesam.types";
 export const generateRoverResource = (
   name: string,
   type: string,
@@ -35,7 +35,7 @@ export const generateRoverResource = (
 
 export const generatecrud = (
   apiname: string,
-  config: Record<string, unknown>
+  config: Record<string, IcurdComponentObject>
 ): Record<string, IaddComponentResource> => {
   const objects: Array<IcurdObject> = [];
   const functions: Array<IroverResources> = [];
@@ -198,7 +198,7 @@ export const generateAPIGatewayObject = (
   });
   return response;
 };
-const crudcomponentconfig = {
+const crudcomponentconfig = <Record<string, IcurdComponentObject>>{
   book: {
     path: "/book",
     methods: ["put", "get", "post", "delete", "options"],

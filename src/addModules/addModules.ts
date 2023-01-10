@@ -1,18 +1,17 @@
 import * as utlities from "../utlities/utilities";
 import * as config from "../utlities/config";
+import * as helpers from "../helpers/helpers";
 import * as rover_resources from "../resources/resources";
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as Yaml from "js-yaml";
-import * as generateSAM from "../generateSAM/generatesam";
 import {
   IroverAppData,
   IroverResources,
   TroverAppTypeObject,
   TroverResourcesArray,
   TSAMTemplateResources,
-  ISAMTemplateResource,
   IroverAppType,
   TSAMTemplate,
 } from "../roverTypes/rover.types";
@@ -34,16 +33,16 @@ export function addModules(input: IroveraddModule): void {
     );
     exec("rm -rf " + pwd + input2.app_name);
 
-    const app_types = generateSAM.cliModuletoConfig(input, true);
-    const app_data = generateSAM.getAppdata(input);
+    const app_types = utlities.cliModuletoConfig(input, true);
+    const app_data = utlities.getAppdata(input);
     createStack(app_data, app_types, input.file_name);
     exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
-    utlities.generateRoverConfig(input.app_name, input, "rover_add_module");
+    helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);
   }
 }
-export function createStack(
+function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject,
   filename: string
@@ -57,7 +56,7 @@ export function createStack(
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
-    stackes[stack_names[i]] = <ISAMTemplateResource>stacks;
+    stackes[stack_names[i]] = stacks;
     exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
     const comp: IaddComponentComp = <IaddComponentComp>{};
@@ -101,7 +100,7 @@ export function createStack(
   utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
 }
 
-export function createStackResources(
+function createStackResources(
   resources: IroverAppType,
   app_data: IroverAppData,
   StackType: string,
@@ -132,12 +131,12 @@ export function createStackResources(
 
   for (const j in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = utlities.makeid(4);
+      const randomstr: string = helpers.makeid(4);
       resources["resources"][j]["name"] =
         resources["resources"][j]["name"] + randomstr;
     }
     const configs = resources["resources"][j]["config"];
-    const logic = resources["resources"][j]["logic"];
+    const haslogic = resources["resources"][j]["logic"];
 
     if (
       Object.prototype.hasOwnProperty.call(
@@ -184,7 +183,7 @@ export function createStackResources(
 
       utlities.copyLambdaLogic(path, path2);
       utlities.generateLambdafiles(
-        logic,
+        haslogic,
         app_data,
         resources,
         StackType,
@@ -235,7 +234,7 @@ export function createStackResources(
       resources["resources"][j]["type"],
       configs
     );
-    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
+    res[resources["resources"][j]["name"]] = resources1;
   }
   return res;
 }

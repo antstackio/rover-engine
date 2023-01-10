@@ -1,5 +1,5 @@
-import { IaddComponentResource } from "../roverTypes/rover.types";
-import { IcurdComponentObject } from "../generateSAM/generatesam.types";
+import { IaddComponentResource } from "../../roverTypes/rover.types";
+import { IcurdComponentObject } from "../../generateSAM/generatesam.types";
 interface IroverParamObject extends Iroverdescription {
   message: string;
 }

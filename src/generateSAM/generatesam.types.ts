@@ -1,4 +1,4 @@
-import { IcurdObject } from "../resources/components.types";
+import { IcurdObject } from "../resources/components/components.types";
 export type IcurdComponentObject = Omit<
   IcurdObject,
   "name" | "role" | "resource"

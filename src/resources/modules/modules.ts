@@ -1,10 +1,7 @@
-import * as config from "../utlities/config";
-import * as components from "./components";
+import * as config from "../../utlities/config";
+import * as components from "../components/components";
 import { RDS, BaseModule, EmailAuthModule } from "./module.json";
-import {
-  IroverResourceModule,
-  IroverParamObjects,
-} from "../resources/modules.types";
+import { IroverResourceModule, IroverParamObjects } from "./modules.types";
 
 export const Modules: Record<string, IroverResourceModule> = {
   BaseModule: {

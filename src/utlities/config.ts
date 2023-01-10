@@ -1,8 +1,11 @@
-import { AnyArray, AnyObject } from "immer/dist/internal";
-export const SkeletonConfig: AnyObject = {};
+export const SkeletonConfig: Record<string, string> = {};
 SkeletonConfig["template_version"] = "2010-09-09";
 SkeletonConfig["sam_transform_version"] = "AWS::Serverless-2016-10-31";
-
+import {
+  IroverlangDetails,
+  IroverConfigDefaultsObject,
+  IroverGenerateResourceObject,
+} from "../roverTypes/rover.types";
 import * as child from "child_process";
 const exec = child.execSync;
 export const npmroot = exec(" npm root -g").toString().trim();
@@ -191,7 +194,7 @@ export const APIGatewaySkeleton = {
     },
   },
 };
-export const LanguageSupport: AnyObject = {
+export const LanguageSupport: Record<string, IroverlangDetails> = {
   node: {
     version: "nodejs14.x",
     dependency: "npm",
@@ -206,11 +209,12 @@ export const LanguageSupport: AnyObject = {
 export function generateAWSResource(
   name: string,
   type: string,
-  base: AnyArray,
-  optional: AnyArray,
-  defaults: AnyObject
-) {
-  const resource: AnyObject = {
+  base: Array<string>,
+  optional: Array<string>,
+  defaults: Record<string, IroverConfigDefaultsObject>
+): IroverGenerateResourceObject {
+  const resource: IroverGenerateResourceObject = {
+    name: "",
     attributes: ["Type", "Properties", "DependsOn"],
     type: type,
     Properties: {
@@ -505,7 +509,7 @@ const usageplanResource = generateAWSResource(
 );
 
 const usageplankeyBase = ["KeyId", "KeyType", "UsagePlanId"];
-const usageplankeyOptional: AnyArray = [];
+const usageplankeyOptional: Array<string> = [];
 const usageplankeyDefault = {};
 const usageplankeyResource = generateAWSResource(
   "undefined",
@@ -534,7 +538,7 @@ const apiauthorizerResource = generateAWSResource(
   apiauthorizerDefault
 );
 
-const vpcBase: AnyArray = [];
+const vpcBase: Array<string> = [];
 const vpcOptional = [
   "CidrBlock",
   "EnableDnsHostnames",
@@ -552,7 +556,7 @@ const vpcResource = generateAWSResource(
   {}
 );
 
-const internetgatewayBase: AnyArray = [];
+const internetgatewayBase: Array<string> = [];
 const internetgatewayOptional = ["Tags"];
 const internetgatewayResource = generateAWSResource(
   "",
@@ -628,7 +632,7 @@ const routeResource = generateAWSResource(
 );
 
 const subnetroutetableassociationBase = ["RouteTableId", "SubnetId"];
-const subnetroutetableassociationOptional: AnyArray = [];
+const subnetroutetableassociationOptional: Array<string> = [];
 const subnetroutetableassociationResource = generateAWSResource(
   "",
   "AWS::EC2::SubnetRouteTableAssociation",
@@ -637,7 +641,7 @@ const subnetroutetableassociationResource = generateAWSResource(
   {}
 );
 
-const eipBase: AnyArray = [];
+const eipBase: Array<string> = [];
 const eipOptional = [
   "Domain",
   "InstanceId",
@@ -874,7 +878,7 @@ const iamroleResource = generateAWSResource(
   iamroleOptional,
   iamroleDefault
 );
-export const AWSResources: AnyObject = {
+export const AWSResources: Record<string, IroverGenerateResourceObject> = {
   stack: stackResource,
   lambda: lambdaResource,
   dynamoDB: dynamoDBResource,
@@ -997,9 +1001,9 @@ const swaggermethods = {
   responses: swaggerresponse,
   "x-amazon-apigateway-integration": xamazonapigatewayintegration,
 };
-const swaggermethodswithparameter: AnyObject = swaggermethods;
+const swaggermethodswithparameter: Record<string, unknown> = swaggermethods;
 swaggermethodswithparameter["parameters"] = [swaggerparameter];
-export const SwaggerPathSkeleton: AnyObject = {
+export const SwaggerPathSkeleton: Record<string, unknown> = {
   get: swaggermethodswithparameter,
   post: swaggermethods,
   delete: swaggermethodswithparameter,

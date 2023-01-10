@@ -8,7 +8,6 @@ module.exports = {
     "prettier",
     "plugin:eslint-plugin/recommended",
     "plugin:@typescript-eslint/recommended",
-    //'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
 
   overrides: [],
@@ -18,6 +17,30 @@ module.exports = {
     sourceType: "module",
     project: ["./tsconfig.json"],
   },
-  rules: {},
+  rules: {
+    //"@typescript-eslint/naming-convention": [
+    // "error",
+    // {
+    //   selector: "default",
+    //   format: [
+    //     "camelCase",
+    //     "UPPER_CASE",
+    //     "PascalCase",
+    //     "snake_case",
+    //     //"skewer-case",
+    //   ],
+    // },
+    // {
+    //   selector: "variable",
+    //   format: ["camelCase"],
+    //   types: ["boolean"],
+    //   prefix: ["is", "should", "has", "can", "did", "will"],
+    // },
+    // {
+    //   selector: "variableLike",
+    //   format: ["camelCase", "UPPER_CASE", "PascalCase"],
+    // },
+    // ],
+  },
   ignorePatterns: ["**/*.js", "**/*.d.ts"],
 };

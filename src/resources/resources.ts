@@ -1,92 +1,129 @@
-import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as configs from "../utlities/config";
 import * as utilities from "../utlities/utilities";
 import * as yaml from "yaml";
-
-export function skeleton() {
-  const template_skeleton: AnyObject = {};
-  template_skeleton["AWSTemplateFormatVersion"] = JSON.parse(
-    JSON.stringify(configs.SkeletonConfig["template_version"])
-  );
-  template_skeleton["Transform"] = JSON.parse(
-    JSON.stringify(configs.SkeletonConfig["sam_transform_version"])
-  );
-  template_skeleton["Description"] = "SAM Template";
-  template_skeleton["Globals"] = { Function: { Timeout: 30 } };
-  template_skeleton["Resources"] = {};
+import {
+  TSAMTemplate,
+  ISAMPolicyObject,
+  ISAMTemplateResource,
+  ISAMPolicyDocumentObject,
+  ISAMRolePolicyStatementObject,
+  IconfigPolicy,
+} from "../roverTypes/rover.types";
+import { IcurdObject } from "./components/components.types";
+export function skeleton(): TSAMTemplate {
+  const template_skeleton: TSAMTemplate = {
+    AWSTemplateFormatVersion: JSON.parse(
+      JSON.stringify(configs.SkeletonConfig["template_version"])
+    ),
+    Transform: JSON.parse(
+      JSON.stringify(configs.SkeletonConfig["sam_transform_version"])
+    ),
+    Description: "SAM Template",
+    Globals: { Function: { Timeout: 30 } },
+    Resources: {},
+  };
   return template_skeleton;
 }
-function rolePolicyAddition(template: AnyObject, config: AnyObject) {
-  const policies: AnyArray = [];
+function rolePolicyAddition(
+  template: ISAMTemplateResource,
+  config: Record<string, unknown>
+) {
+  const policies: Array<ISAMPolicyObject> = [];
 
-  const base = template["Properties"]["ManagedPolicyArns"][0];
-  for (const j in config["managedarn"]) {
-    template["Properties"]["ManagedPolicyArns"][j] =
-      base + config["managedarn"][j];
+  const base = (<Array<string>>template["Properties"]["ManagedPolicyArns"])[0];
+  let j = "";
+  for (j in <Array<string>>config["managedarn"]) {
+    (<Array<string>>template["Properties"]["ManagedPolicyArns"])[
+      <number>(<unknown>j)
+    ] = base + (<Array<string>>config["managedarn"])[j];
   }
   if (Object.prototype.hasOwnProperty.call(config, "iamservice")) {
-    for (const j in config["iamservice"]) {
-      template["Properties"]["AssumeRolePolicyDocument"]["Statement"][0][
-        "Principal"
-      ]["Service"].push(config["iamservice"][j]);
+    for (const j in <Array<string>>config["iamservice"]) {
+      (<ISAMPolicyDocumentObject>(
+        template["Properties"]["AssumeRolePolicyDocument"]
+      ))["Statement"][0]["Principal"]["Service"].push(
+        (<Array<string>>config["iamservice"])[j]
+      );
     }
   }
 
-  for (const k in config["Policies"]) {
-    const role: AnyObject = JSON.parse(JSON.stringify(configs.PolicySkeleton));
-    role["PolicyName"] = config["Policies"][k]["name"];
+  const configPolicies = <Array<IconfigPolicy>>config["Policies"];
+  for (const k in configPolicies) {
+    const role: ISAMPolicyObject = JSON.parse(
+      JSON.stringify(configs.PolicySkeleton)
+    );
+    role["PolicyName"] = configPolicies[k]["name"];
     role["PolicyDocument"]["Statement"][0]["Action"] =
-      config["Policies"][k]["Action"];
+      configPolicies[k]["Action"];
     role["PolicyDocument"]["Statement"][0]["Resource"] =
-      config["Policies"][k]["Resource"];
+      configPolicies[k]["Resource"];
     policies.push(role);
   }
   template["Properties"]["Policies"] = policies;
 
   return template;
 }
-function policyAddition(template: AnyObject, config: AnyObject) {
+function policyAddition(
+  template: ISAMTemplateResource,
+  config: Record<string, unknown>
+) {
   const role = JSON.parse(JSON.stringify(configs.PolicySkeleton));
-  for (const k in config["Statement"]) {
+  const configRoleObject = <Array<ISAMRolePolicyStatementObject>>(
+    config["Statement"]
+  );
+  for (const k in configRoleObject) {
     role["PolicyDocument"]["Statement"][k]["Action"] =
-      config["Statement"][k]["Action"];
+      configRoleObject[k]["Action"];
     role["PolicyDocument"]["Statement"][k]["Resource"] =
-      config["Statement"][k]["Resource"];
+      configRoleObject[k]["Resource"];
   }
   template["Properties"]["PolicyDocument"] = role["PolicyDocument"];
 
   return template;
 }
 
-function swaggerGenerator(config: AnyObject) {
+function swaggerGenerator(config: Record<string, unknown>) {
   const swagger = JSON.parse(JSON.stringify(configs.SwaggerSkeleton));
-  const swaggerPaths: AnyObject = {};
+  const swaggerPaths: Record<string, unknown> = {};
   if (Object.prototype.hasOwnProperty.call(config, "security")) {
     swagger["securityDefinitions"] = JSON.parse(
       JSON.stringify(config["security"])
     );
   }
-  const security: AnyArray = [];
+  const security: Array<Record<string, Array<unknown>>> = [];
 
   if (
     config["security"] !== undefined &&
-    Object.keys(config.security).length > 0
+    Object.keys(<Record<string, unknown>>config.security).length > 0
   ) {
+    const apikeyObject = <Record<string, unknown>>config.security;
     if (Object.prototype.hasOwnProperty.call(config.security, "api_key")) {
-      const apikey: AnyObject = {};
-      apikey[JSON.parse(JSON.stringify(config.security.api_key.apikeyName))] =
-        [];
+      const apikey: Record<string, Array<unknown>> = {};
+
+      apikey[
+        JSON.parse(
+          JSON.stringify(
+            (<Record<string, string>>apikeyObject.api_key).apikeyName
+          )
+        )
+      ] = [];
       security.push(apikey);
     }
-    if (Object.prototype.hasOwnProperty.call(config.security, "authorizer")) {
-      const authorizer: AnyObject = {};
+    if (Object.prototype.hasOwnProperty.call(apikeyObject, "authorizer")) {
+      const authorizer: Record<string, Array<unknown>> = {};
       authorizer[
-        JSON.parse(JSON.stringify(config.security.authorizer.authorizerName))
+        JSON.parse(
+          JSON.stringify(
+            (<Record<string, string>>apikeyObject.authorizer).authorizerName
+          )
+        )
       ] = [];
       security.push(authorizer);
     }
   }
-  config.objects.map((data: AnyObject) => {
+
+  const configObjects = <Array<IcurdObject>>config.objects;
+  configObjects.map((data: IcurdObject) => {
     const pathName = data["path"];
     swaggerPaths[pathName] = attachMethods(data["methods"], data, security);
     return null;
@@ -95,15 +132,15 @@ function swaggerGenerator(config: AnyObject) {
   swagger["paths"] = swaggerPaths;
   const doc = new yaml.Document();
   doc.contents = swagger;
-  utilities.writeFile(config["filepath"], doc.toString());
+  utilities.writeFile(<string>config["filepath"], doc.toString());
 }
 
 const attachMethods = (
-  methodArray: AnyArray,
-  data: AnyObject,
-  security: AnyObject
+  methodArray: Array<string>,
+  data: IcurdObject,
+  security: Array<Record<string, Array<unknown>>>
 ) => {
-  const result: AnyObject = {};
+  const result: Record<string, object> = {};
   if (methodArray.length) {
     methodArray.map((item: string) => {
       result[item] = JSON.parse(
@@ -111,7 +148,9 @@ const attachMethods = (
       );
       if (item !== "options") {
         let uri =
-          result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"] +
+          (<Record<string, Record<string, Record<string, unknown>>>>(
+            result[item]
+          ))["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"] +
           configs.APIGatewayURI[data["resourcetype"]];
 
         if (data["resourcetype"] == "lambda") {
@@ -119,21 +158,28 @@ const attachMethods = (
         }
 
         if (security !== undefined && Object.keys(security).length > 0) {
-          result[item]["security"] = JSON.parse(JSON.stringify(security));
+          (<Record<string, unknown>>result[item])["security"] = JSON.parse(
+            JSON.stringify(security)
+          );
         }
-        result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"] = uri;
+        (<Record<string, Record<string, Record<string, unknown>>>>result[item])[
+          "x-amazon-apigateway-integration"
+        ]["uri"]["Fn::Sub"] = uri;
       }
-      result[item]["x-amazon-apigateway-integration"]["credentials"] = {};
-      result[item]["x-amazon-apigateway-integration"]["credentials"][
-        "Fn::Sub"
-      ] = "${" + data["role"] + ".Arn}";
+      (<Record<string, Record<string, unknown>>>result[item])[
+        "x-amazon-apigateway-integration"
+      ]["credentials"] = {};
+      (<Record<string, Record<string, Record<string, unknown>>>>result[item])[
+        "x-amazon-apigateway-integration"
+      ]["credentials"]["Fn::Sub"] = "${" + data["role"] + ".Arn}";
       return null;
     });
   }
+
   return result;
 };
 
-export function apigatewaypath(template: AnyObject, path: string) {
+export function apigatewaypath(template: ISAMTemplateResource, path: string) {
   const definationbody = JSON.parse(JSON.stringify(configs.APIGatewaySkeleton));
   definationbody["Fn::Transform"]["Parameters"]["Location"] = path;
   template["Properties"]["DefinitionBody"] = definationbody;
@@ -141,28 +187,28 @@ export function apigatewaypath(template: AnyObject, path: string) {
 }
 export const resourceGeneration = function (
   resource_name: string,
-  config: AnyObject
+  config: Record<string, unknown>
 ) {
   const resource_properties = JSON.parse(
     JSON.stringify(configs.AWSResources[resource_name])
   );
-  let template: AnyObject = {};
+  let template: ISAMTemplateResource = <ISAMTemplateResource>{};
   for (const j in resource_properties.attributes) {
     if (resource_properties.attributes[j] == "Type") {
-      template[resource_properties.attributes[j]] = JSON.parse(
+      template[<"Type">resource_properties.attributes[j]] = JSON.parse(
         JSON.stringify(configs.AWSResources[resource_name].type)
       );
     } else if (resource_properties.attributes[j] == "DependsOn") {
       if (config["DependsOn"] !== undefined)
-        template[resource_properties.attributes[j]] = JSON.parse(
+        template[<"DependsOn">resource_properties.attributes[j]] = JSON.parse(
           JSON.stringify(config["DependsOn"])
         );
     } else {
-      template[resource_properties.attributes[j]] = {};
+      template[<"Properties">resource_properties.attributes[j]] = {};
 
       if (resource_properties.Properties.Base.length > 0) {
         for (const k in resource_properties.Properties.Base) {
-          template[resource_properties.attributes[j]][
+          template[<"Properties">resource_properties.attributes[j]][
             resource_properties.Properties.Base[k]
           ] = config[resource_properties.Properties.Base[k]];
         }
@@ -173,7 +219,7 @@ export const resourceGeneration = function (
           if (
             config[resource_properties.Properties.Optional[l]] !== undefined
           ) {
-            template[resource_properties.attributes[j]][
+            template[<"Properties">resource_properties.attributes[j]][
               resource_properties.Properties.Optional[l]
             ] = config[resource_properties.Properties.Optional[l]];
           }
@@ -181,7 +227,7 @@ export const resourceGeneration = function (
       }
 
       for (const m in resource_properties.Properties.Default) {
-        template[resource_properties.attributes[j]][
+        template[<"Properties">resource_properties.attributes[j]][
           resource_properties.Properties.Default[m]["Key"]
         ] = resource_properties.Properties.Default[m]["Value"];
       }
@@ -195,11 +241,12 @@ export const resourceGeneration = function (
   }
   if (resource_name == "apigateway") {
     if (Object.prototype.hasOwnProperty.call(config, "path")) {
-      template = apigatewaypath(template, config["path"]);
+      template = apigatewaypath(template, <string>config["path"]);
     }
     if (Object.prototype.hasOwnProperty.call(config, "objects")) {
       swaggerGenerator(config);
     }
   }
+  console.log("template", JSON.stringify(template));
   return template;
 };

@@ -1,10 +1,10 @@
 import * as config from "../utlities/config";
 import * as utlities from "../utlities/utilities";
-import * as modules from "../resources/modules";
-import * as components from "../resources/components";
+
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
+import * as helpers from "../helpers/helpers";
 import * as rover_resources from "../resources/resources";
 
 const exec = child.execSync;
@@ -17,22 +17,21 @@ import {
   TroverAppTypeObject,
   TroverResourcesArray,
   TSAMTemplateResources,
-  ISAMTemplateResource,
   IroverAppType,
   IroverConfigTag,
   IroverConfigFileObject,
-  IaddComponentResource,
 } from "../roverTypes/rover.types";
 
-import { IcurdComponentObject } from "../generateSAM/generatesam.types";
-
 export function generateSAM(input: IroverInput): void {
-  const app_data: IroverAppData = getAppdata(input);
-  const app_types: TroverAppTypeObject = cliModuletoConfig(input, false);
+  const app_data: IroverAppData = utlities.getAppdata(input);
+  const app_types: TroverAppTypeObject = utlities.cliModuletoConfig(
+    input,
+    false
+  );
   const appname: string = input.app_name;
   createStack(app_data, app_types);
   exec(config.ForceRemove + input.app_name + config.LambdaDemo);
-  utlities.generateRoverConfig(
+  helpers.generateRoverConfig(
     input.app_name,
     <IroverConfigFileObject>input,
     "rover_create_project"
@@ -40,77 +39,7 @@ export function generateSAM(input: IroverInput): void {
   exec("cd " + utlities.pwd + appname + " && npm run format:write");
 }
 
-export function getAppdata(input: IroverInput): IroverAppData {
-  const appDataArray: Array<string> = [];
-  Object.keys(input.stack_details).forEach((ele) => {
-    appDataArray.push(input.stack_details[ele].type);
-  });
-  const appData: IroverAppData = {
-    app_name: input.app_name,
-    language: config.LanguageSupport[input.language]["version"],
-    dependency: config.LanguageSupport[input.language]["dependency"],
-    extension: config.LanguageSupport[input.language]["extension"],
-    StackType: appDataArray,
-  };
-  return appData;
-}
-
-export function cliModuletoConfig(
-  input: IroverInput,
-  modify: boolean
-): TroverAppTypeObject {
-  if (!modify) {
-    utlities.initializeSAM(input);
-  }
-  const app_types: TroverAppTypeObject = {};
-  Object.keys(input["stack_details"]).forEach((ele) => {
-    let stackdata: TroverAppTypeObject = {};
-    if (input["stack_details"][ele]["type"] == "CRUDModule") {
-      const fundata = (<
-        (
-          apiname: string,
-          config: Record<string, IcurdComponentObject>
-        ) => Record<string, IaddComponentResource>
-      >modules.Modules[input["stack_details"][ele]["type"]]["resource"])(
-        ele,
-        <Record<string, IcurdComponentObject>>(
-          input["stack_details"][ele]["params"]
-        )
-      );
-      stackdata = <TroverAppTypeObject>fundata;
-    } else if (input["stack_details"][ele]["type"] == "Custom") {
-      const resources: TroverResourcesArray = [];
-      const customstackarray: Array<string> =
-        input.stack_details[ele]["componentlist"];
-      customstackarray.map((ele) => {
-        const componentarray: TroverResourcesArray = JSON.parse(
-          JSON.stringify(components.Components[ele])
-        );
-        componentarray.map((ele) => {
-          resources.push(ele);
-        });
-      });
-      app_types[ele] = {
-        resources: resources,
-        type: "components",
-      };
-    } else {
-      stackdata = JSON.parse(
-        JSON.stringify(
-          modules.Modules[input["stack_details"][ele]["type"]]["resource"]
-        )
-      );
-    }
-    Object.keys(stackdata).forEach((ele1) => {
-      app_types[ele] = stackdata[ele1];
-      app_types[ele]["type"] = "module";
-    });
-  });
-
-  return app_types;
-}
-
-export function createStack(
+function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject
 ): void {
@@ -122,7 +51,7 @@ export function createStack(
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
-    stackes[stack_names[i]] = <ISAMTemplateResource>stacks;
+    stackes[stack_names[i]] = stacks;
 
     exec("mkdir " + utlities.pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
@@ -158,7 +87,7 @@ export function createStack(
   utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
 }
 
-export function createStackResources(
+function createStackResources(
   resources: IroverAppType,
   app_data: IroverAppData,
   StackType: string,
@@ -188,19 +117,14 @@ export function createStackResources(
 
   for (const j in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = utlities.makeid(4);
+      const randomstr: string = helpers.makeid(4);
       resources["resources"][j]["name"] =
         resources["resources"][j]["name"] + randomstr;
     }
     const configs = resources["resources"][j]["config"];
-    const logic = resources["resources"][j]["logic"];
+    const haslogic = resources["resources"][j]["logic"];
 
-    if (
-      Object.prototype.hasOwnProperty.call(
-        config.AWSResources[resources["resources"][j]["type"]],
-        "name"
-      )
-    ) {
+    if (config.AWSResources[resources["resources"][j]["type"]]["name"] !== "") {
       let name = resources["resources"][j]["name"].replace(" ", "");
       name = name.replace(/[^a-z0-9]/gi, "");
       configs[config.AWSResources[resources["resources"][j]["type"]]["name"]] =
@@ -222,7 +146,7 @@ export function createStackResources(
 
       utlities.copyLambdaLogic(path, path2);
       utlities.generateLambdafiles(
-        logic,
+        haslogic,
         app_data,
         resources,
         StackType,
@@ -255,13 +179,11 @@ export function createStackResources(
       configs["path"] = configpath;
       configs["filepath"] = filepath;
     }
-    const resources1 = <ISAMTemplateResource>(
-      rover_resources.resourceGeneration(
-        resources["resources"][j]["type"],
-        configs
-      )
+    const resources1 = rover_resources.resourceGeneration(
+      resources["resources"][j]["type"],
+      configs
     );
-    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
+    res[resources["resources"][j]["name"]] = resources1;
   }
 
   return res;

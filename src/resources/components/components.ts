@@ -1,14 +1,14 @@
 import {
   IroverResources,
   IaddComponentResource,
-} from "../roverTypes/rover.types";
+} from "../../roverTypes/rover.types";
 import {
   IcurdObject,
   ICRUDiamresource,
   TLambdaENV,
   TcrudMethods,
 } from "./components.types";
-import { IcurdComponentObject } from "../generateSAM/generatesam.types";
+import { IcurdComponentObject } from "../../generateSAM/generatesam.types";
 export const generateRoverResource = (
   name: string,
   type: string,

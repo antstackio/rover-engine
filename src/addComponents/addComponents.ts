@@ -1,10 +1,11 @@
 import * as config from "../utlities/config";
 import * as rover_resources from "../resources/resources";
-import * as components from "../resources/components";
+import * as components from "../resources/components/components";
 import * as utlities from "../utlities/utilities";
 import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
+import * as helpers from "../helpers/helpers";
 import * as Yaml from "js-yaml";
 import {
   IroveraddComponentInput,
@@ -16,7 +17,6 @@ import {
 import {
   TSAMTemplate,
   TSAMTemplateResources,
-  ISAMTemplateResource,
   TroverResourcesArray,
   IaddComponentResource,
   IroverResources,
@@ -46,7 +46,7 @@ export function addComponents(input: IroveraddComponentInput): void {
     addComponentsnonNested(inputs, Data, app_data, input2);
   }
   utlities.removeFolder(input2.app_name);
-  utlities.generateRoverConfig(input.app_name, input, "rover_add_component");
+  helpers.generateRoverConfig(input.app_name, input, "rover_add_component");
 }
 
 function getYamlData(file_name: string): TSAMTemplate {
@@ -92,10 +92,10 @@ function addComponentsNested(
       demo_desti: input2.app_name,
     };
 
-    let res1 = createStackResources(res, app_data, "", "", comp);
-    res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
+    const res1 = createStackResources(res, app_data, "", "", comp);
+    const res3 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
     const doc = new yaml.Document();
-    doc.contents = res1;
+    doc.contents = res3;
     const temp = utlities.replaceYAML(doc.toString());
     utlities.writeFile(
       input.app_name + "/" + input.nestedComponents[ele]["path"].trim(),
@@ -117,17 +117,15 @@ function addComponentsnonNested(
     demo_desti: input2.app_name,
   };
 
-  let res1 = createStackResources(res, app_data, "", "", comp);
-  res1 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
+  const res1 = createStackResources(res, app_data, "", "", comp);
+  const res2 = utlities.addResourceTemplate(res1, Object.keys(res1), Data);
   const doc = new yaml.Document();
-  doc.contents = res1;
+  doc.contents = res2;
   const temp = utlities.replaceYAML(doc.toString());
   utlities.writeFile(input.file_name.trim(), temp);
 }
 
-export function getAppdata(
-  input: IroveraddComponentInput
-): IaddComponentAppData {
+function getAppdata(input: IroveraddComponentInput): IaddComponentAppData {
   const app_data: IaddComponentAppData = {
     app_name: input.app_name,
     language: config.LanguageSupport[input.language]["version"],
@@ -137,7 +135,7 @@ export function getAppdata(
   return app_data;
 }
 
-export function getComponents(component: Array<string>): TroverResourcesArray {
+function getComponents(component: Array<string>): TroverResourcesArray {
   const resources: TroverResourcesArray = [];
   Object.entries(component).map((ele) => {
     const componentstype: string = ele[1];
@@ -145,13 +143,13 @@ export function getComponents(component: Array<string>): TroverResourcesArray {
       JSON.stringify(components.Components[componentstype])
     );
     componentstypeobj.map(function (ele: IroverResources) {
-      resources.push(<IroverResources>ele);
+      resources.push(ele);
     });
   });
   return resources;
 }
 
-export function createStackResources(
+function createStackResources(
   resources: IaddComponentResource,
   app_data: IaddComponentAppData,
   StackType: string,
@@ -182,12 +180,12 @@ export function createStackResources(
 
   for (const j in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = utlities.makeid(4);
+      const randomstr: string = helpers.makeid(4);
       resources["resources"][j]["name"] =
         resources["resources"][j]["name"] + randomstr;
     }
     const configs = resources["resources"][j]["config"];
-    const logic = resources["resources"][j]["logic"];
+    const haslogic = resources["resources"][j]["logic"];
 
     if (
       Object.prototype.hasOwnProperty.call(
@@ -234,7 +232,7 @@ export function createStackResources(
 
       utlities.copyLambdaLogic(path, path2);
       utlities.generateLambdafiles(
-        logic,
+        haslogic,
         app_data,
         resources,
         StackType,
@@ -285,7 +283,7 @@ export function createStackResources(
       resources["resources"][j]["type"],
       configs
     );
-    res[resources["resources"][j]["name"]] = <ISAMTemplateResource>resources1;
+    res[resources["resources"][j]["name"]] = resources1;
   }
   return res;
 }

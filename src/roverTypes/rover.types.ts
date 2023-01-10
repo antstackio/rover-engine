@@ -13,8 +13,8 @@ export interface IroverResources {
 
 export interface ItemplateparameterObject {
   Type: string;
-  Description: string;
-  Default: string;
+  Description?: string;
+  Default?: string;
 }
 
 export type Ttemplateparameter = Record<string, ItemplateparameterObject>;
@@ -31,7 +31,17 @@ export type TroverAppTypeObject = Record<string, IroverAppType>;
 
 export interface ISAMTemplateResource {
   Type: string;
-  Properties: Record<string, object | string | number | boolean>;
+  DependsOn: object;
+  Properties: Record<
+    string,
+    | Record<string, unknown>
+    | unknown
+    | string
+    | number
+    | boolean
+    | Array<string>
+    | Array<unknown>
+  >;
 }
 
 export type TSAMTemplateResources = Record<string, ISAMTemplateResource>;
@@ -40,6 +50,7 @@ export interface TSAMTemplate {
   AWSTemplateFormatVersion: string;
   Transform: string;
   Description: string;
+  Parameters?: Ttemplateparameter;
   Globals: {
     Function: {
       Timeout: 30;
@@ -117,4 +128,55 @@ export interface IroverDeploymentObject {
   deploymentregion: Record<string, string>;
   deploymentparameters: Record<string, string>;
   deploymentevents: Array<string>;
+}
+export interface IroverlangDetails {
+  version: string;
+  dependency: string;
+  extension: string;
+}
+export interface IroverConfigDefaultsObject
+  extends Omit<IroverConfigTagArrayValue, "Value"> {
+  Value: unknown;
+}
+export interface IroverGenerateResourceProperties {
+  Base: Array<string>;
+  Optional: Array<string>;
+  Default?: Record<string, IroverConfigDefaultsObject>;
+}
+export interface IroverGenerateResourceObject {
+  name: string;
+  attributes: Array<string>;
+  type: string;
+  Properties: IroverGenerateResourceProperties;
+}
+
+export interface ISAMPolicyObject {
+  PolicyDocument: ISAMPolicyDocumentObject;
+  PolicyName: string;
+}
+export interface ISAMPolicyDocumentObject {
+  Version: string;
+  Statement: Array<ISAMPolicyStatementObject>;
+}
+export interface ISAMPolicyStatementObject {
+  Effect: string;
+  Action: string | Array<string>;
+  Principal: Record<string, Array<string>>;
+  Resource: Record<string, string>;
+}
+
+export interface ISAMPolicyObject {
+  PolicyDocument: ISAMPolicyDocumentObject;
+  PolicyName: string;
+}
+
+export interface ISAMRolePolicyStatementObject {
+  Effect: string;
+  Action: string | Array<string>;
+  Resource: Record<string, string>;
+}
+
+export interface IconfigPolicy
+  extends Omit<ISAMRolePolicyStatementObject, "Effect"> {
+  name: string;
 }

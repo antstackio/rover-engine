@@ -9,7 +9,6 @@ import {
   TroverAppTypeObject,
   TroverResourcesArray,
 } from "../roverTypes/rover.types";
-
 import { IcurdComponentObject } from "../generateSAM/generatesam.types";
 import {
   IaddComponentResource,
@@ -25,6 +24,7 @@ import {
 } from "../addComponents/addComponents.types";
 
 const exec = child.execSync;
+/* eslint-disable no-useless-escape */
 const sub = new RegExp(
   /(!Sub|!Transform|!Split|!Join|!Select|!FindInMap|!GetAtt|!GetAZs|!ImportValue|!Ref)[a-zA-Z0-9 !@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]*\n/g
 );
@@ -39,7 +39,7 @@ export function installDependies(
   path: string,
   packages: Array<string>,
   dependency: string
-) {
+): void {
   if (dependency == "npm") {
     packages.forEach((ele) => {
       exec("npm --prefix " + pwd + path + " install " + ele + " --save");
@@ -50,7 +50,7 @@ export function setupTestEnv(
   path: string,
   dependency: string,
   appname: string
-) {
+): void {
   if (dependency == "npm") {
     exec("npm --prefix " + path + "/ install jest --save");
     exec("npm --prefix " + pwd + appname + "/ install jest --save");
@@ -66,7 +66,7 @@ export function setupTestEnv(
     );
   }
 }
-export function setupESLint(path: string, filename: string) {
+export function setupESLint(path: string, filename: string): void {
   exec(
     "cd " +
       path +
@@ -103,7 +103,7 @@ export function addResourceTemplate(
   }
   return template;
 }
-export function replaceYAML(doc: string) {
+export function replaceYAML(doc: string): string {
   const yamlArray: Record<string, string> = {
     OFF: "'OFF'",
   };
@@ -112,7 +112,9 @@ export function replaceYAML(doc: string) {
   });
   return doc;
 }
-export function initializeSAM(input: IroveraddComponentInput | IroverInput) {
+export function initializeSAM(
+  input: IroveraddComponentInput | IroverInput
+): void {
   const app_name = input.app_name;
   removeFolder(input.app_name);
   const language = config.LanguageSupport[input.language]["version"];
@@ -140,13 +142,13 @@ export function initializeSAM(input: IroveraddComponentInput | IroverInput) {
   if (!fs.existsSync(source)) source = pwd + input.app_name + "/hello_world";
   moveFolder(source + " ", pwd + input.app_name + "/" + "lambda_demo");
 }
-export function copyLambdaLogic(source: string, desti: string) {
+export function copyLambdaLogic(source: string, desti: string): void {
   exec("cp -r " + source + desti);
 }
-export function moveFolder(source: string, desti: string) {
+export function moveFolder(source: string, desti: string): void {
   exec("mv " + source + desti);
 }
-export function removeFolder(path: string) {
+export function removeFolder(path: string): void {
   exec(config.ForceRemove + path);
 }
 export function generateLambdafiles(
@@ -156,7 +158,7 @@ export function generateLambdafiles(
   stacktype: string,
   stackname: string,
   i: string
-) {
+): void {
   let code;
   const j = <number>(<unknown>i);
   if (logic) {
@@ -224,7 +226,7 @@ export function generateLambdafiles(
   }
 }
 
-export function replaceTempTag(yamlinput: string) {
+export function replaceTempTag(yamlinput: string): string {
   let result;
   do {
     result = sub.exec(yamlinput);
@@ -235,7 +237,7 @@ export function replaceTempTag(yamlinput: string) {
 
   return yamlinput;
 }
-function updatevalue(input: string, data: string) {
+function updatevalue(input: string, data: string): string {
   const result = input.trim().split(" ");
   const val: Record<string, string> = {};
   const resvalue = result.splice(1, result.length).join(" ");
@@ -250,8 +252,8 @@ function updatevalue(input: string, data: string) {
 }
 export function getAppdata(input: IroverInput): IroverAppData {
   const appDataArray: Array<string> = [];
-  Object.keys(input.stack_details).forEach((ele) => {
-    appDataArray.push(input.stack_details[ele].type);
+  Object.keys(input.stackDetails).forEach((ele) => {
+    appDataArray.push(input.stackDetails[ele].type);
   });
   const appData: IroverAppData = {
     app_name: input.app_name,
@@ -271,25 +273,25 @@ export function cliModuletoConfig(
     initializeSAM(input);
   }
   const app_types: TroverAppTypeObject = {};
-  Object.keys(input["stack_details"]).forEach((ele) => {
+  Object.keys(input["stackDetails"]).forEach((ele) => {
     let stackdata: TroverAppTypeObject = {};
-    if (input["stack_details"][ele]["type"] == "CRUDModule") {
+    if (input["stackDetails"][ele]["type"] == "CRUDModule") {
       const fundata = (<
         (
           apiname: string,
           config: Record<string, IcurdComponentObject>
         ) => Record<string, IaddComponentResource>
-      >modules.Modules[input["stack_details"][ele]["type"]]["resource"])(
+      >modules.Modules[input["stackDetails"][ele]["type"]]["resource"])(
         ele,
         <Record<string, IcurdComponentObject>>(
-          input["stack_details"][ele]["params"]
+          input["stackDetails"][ele]["params"]
         )
       );
       stackdata = <TroverAppTypeObject>fundata;
-    } else if (input["stack_details"][ele]["type"] == "Custom") {
+    } else if (input["stackDetails"][ele]["type"] == "Custom") {
       const resources: TroverResourcesArray = [];
       const customstackarray: Array<string> =
-        input.stack_details[ele]["componentlist"];
+        input.stackDetails[ele]["componentList"];
       customstackarray.map((ele) => {
         const componentarray: TroverResourcesArray = JSON.parse(
           JSON.stringify(components.Components[ele])
@@ -305,7 +307,7 @@ export function cliModuletoConfig(
     } else {
       stackdata = JSON.parse(
         JSON.stringify(
-          modules.Modules[input["stack_details"][ele]["type"]]["resource"]
+          modules.Modules[input["stackDetails"][ele]["type"]]["resource"]
         )
       );
     }

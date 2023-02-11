@@ -43,7 +43,7 @@ export function setupRepo(repoconfig: IroverDeploymentObject): void {
     exec(
       "python3 " +
         rover_config.npmroot +
-        "/@rover-tools/cli/node_modules/@rover-tools/engine/src/pipeline/pipelinegenerator.py " +
+        "/@rover-tools/cli/node_modules/@rover-tools/engine/src/deployment/pipeline/pipelinegenerator.py " +
         pipelinepath +
         "'" +
         repoconfigres +

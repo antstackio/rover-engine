@@ -247,6 +247,5 @@ export const resourceGeneration = function (
       swaggerGenerator(config);
     }
   }
-  console.log("template", JSON.stringify(template));
   return template;
 };

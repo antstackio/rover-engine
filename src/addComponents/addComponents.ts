@@ -179,11 +179,9 @@ function createStackResources(
   });
 
   for (const j in resources["resources"]) {
-    if (stack_names == "") {
-      const randomstr: string = helpers.makeid(4);
-      resources["resources"][j]["name"] =
-        resources["resources"][j]["name"] + randomstr;
-    }
+    const randomstr: string = helpers.makeid(4);
+    resources["resources"][j]["name"] =
+      resources["resources"][j]["name"] + randomstr;
     const configs = resources["resources"][j]["config"];
     const haslogic = resources["resources"][j]["logic"];
 
@@ -204,7 +202,7 @@ function createStackResources(
       let lambda_stack_names = stack_names;
       if (stack_names == "") {
         if (comp.demo_desti !== undefined) {
-          path = pwd + comp.demo_desti + "/" + "lambda_demo" + "/ ";
+          path = `${pwd}${comp.demo_desti}/lambda_demo/ `;
           path2 =
             pwd +
             app_data.app_name +
@@ -240,7 +238,6 @@ function createStackResources(
         j
       );
       utlities.setupTestEnv(path2, app_data.dependency, app_data.app_name);
-
       configs["CodeUri"] = resources["resources"][j]["name"] + "/";
       configs["Runtime"] = app_data.language;
     } else if (resources["resources"][j]["type"] == "apigateway") {
@@ -253,6 +250,19 @@ function createStackResources(
           configpath = resources["resources"][j]["name"] + "/swagger.yaml";
           filepath =
             comp.desti +
+            "/" +
+            resources["resources"][j]["name"] +
+            "/swagger.yaml";
+        } else {
+          path =
+            pwd + app_data.app_name + "/" + resources["resources"][j]["name"];
+          configpath =
+            app_data.app_name +
+            "/" +
+            resources["resources"][j]["name"] +
+            "/swagger.yaml";
+          filepath =
+            app_data.app_name +
             "/" +
             resources["resources"][j]["name"] +
             "/swagger.yaml";
@@ -275,6 +285,7 @@ function createStackResources(
           "/swagger.yaml";
       }
       if (fs.existsSync(path)) throw new Error(path + " file already exists");
+
       exec("mkdir " + path);
       configs["path"] = configpath;
       configs["filepath"] = filepath;

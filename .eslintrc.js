@@ -17,30 +17,6 @@ module.exports = {
     sourceType: "module",
     project: ["./tsconfig.json"],
   },
-  rules: {
-    //"@typescript-eslint/naming-convention": [
-    // "error",
-    // {
-    //   selector: "default",
-    //   format: [
-    //     "camelCase",
-    //     "UPPER_CASE",
-    //     "PascalCase",
-    //     "snake_case",
-    //     //"skewer-case",
-    //   ],
-    // },
-    // {
-    //   selector: "variable",
-    //   format: ["camelCase"],
-    //   types: ["boolean"],
-    //   prefix: ["is", "should", "has", "can", "did", "will"],
-    // },
-    // {
-    //   selector: "variableLike",
-    //   format: ["camelCase", "UPPER_CASE", "PascalCase"],
-    // },
-    // ],
-  },
+  rules: {},
   ignorePatterns: ["**/*.js", "**/*.d.ts"],
 };

@@ -61,10 +61,10 @@ export interface TSAMTemplate {
 export interface IroverInput {
   app_name: string;
   language: string;
-  stack_details: IstackDetails;
+  stackDetails: IstackDetails;
 }
 
-export interface IroverAppData extends Omit<IroverInput, "stack_details"> {
+export interface IroverAppData extends Omit<IroverInput, "stackDetails"> {
   dependency: string;
   extension: string;
   StackType: Array<string>;
@@ -91,7 +91,7 @@ export type regexmatchs = string | null;
 export type RegExpExecArray = Array<string>;
 
 export interface IroverCreateProject {
-  stack_details?: IstackDetails;
+  stackDetails?: IstackDetails;
 }
 
 export type TconfigFile =
@@ -106,11 +106,17 @@ export interface IroverConfigFileObject {
   app_name?: string;
   language?: string;
   rover_create_project?: object;
+  bucket?: string;
+  stack_name?: string;
+  region?: string;
+  profile?: string;
   //Array<IroverCreateProject>;
   rover_add_component?: object;
   //Array<IroveraddComponentInput>;
   rover_add_module?: object;
   //Array<IroveraddModule>;
+  rover_generate_pipeline?: object;
+  rover_deploy_cli?: object;
 }
 export interface IroverDeploymentObject {
   app_name?: string;

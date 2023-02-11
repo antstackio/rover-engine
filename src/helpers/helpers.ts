@@ -65,7 +65,7 @@ export function makeid(length: number) {
   return result;
 }
 
-export const langValue = async function () {
+export const langValue = function () {
   const pwd = (process.cwd() + "/").trim();
   if (!fs.existsSync(pwd + ".aws-sam/build.toml")) exec("sam build");
   const datas = fs.readFileSync(pwd + ".aws-sam/build.toml", {
@@ -100,7 +100,7 @@ export const langValue = async function () {
   else return "js";
 };
 
-export const samValidate = async function (filename: string) {
+export const samValidate = function (filename: string) {
   try {
     let path: string;
     if (filename !== "") {
@@ -206,3 +206,35 @@ export const npmrootTest = function () {
   });
   return packages.length > 0;
 };
+
+export function listSAMResources(
+  template: string,
+  stackName: string
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  const Data = <TSAMTemplate>Yaml.load(
+    utlities.replaceTempTag(
+      fs.readFileSync(utlities.pwd + "/" + template.trim(), {
+        encoding: "utf-8",
+      })
+    )
+  );
+  template = template.split("/").splice(0, 1).join("/");
+  const resourceTemplate = <TSAMTemplate>Yaml.load(
+    utlities.replaceTempTag(
+      fs.readFileSync(
+        utlities.pwd +
+          template.trim() +
+          "/" +
+          (<string>Data.Resources[stackName].Properties["TemplateURL"]).trim(),
+        {
+          encoding: "utf-8",
+        }
+      )
+    )
+  );
+  Object.keys(resourceTemplate.Resources).forEach((ele) => {
+    result[ele] = resourceTemplate.Resources[ele].Type;
+  });
+  return result;
+}

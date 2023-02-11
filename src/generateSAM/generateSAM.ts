@@ -115,22 +115,22 @@ function createStackResources(
     }
   });
 
-  for (const j in resources["resources"]) {
+  for (const resource in resources["resources"]) {
     if (stack_names == "") {
       const randomstr: string = helpers.makeid(4);
-      resources["resources"][j]["name"] =
-        resources["resources"][j]["name"] + randomstr;
+      resources["resources"][resource]["name"] =
+        resources["resources"][resource]["name"] + randomstr;
     }
-    const configs = resources["resources"][j]["config"];
-    const haslogic = resources["resources"][j]["logic"];
+    const configs = resources["resources"][resource]["config"];
+    const haslogic = resources["resources"][resource]["logic"];
 
-    if (config.AWSResources[resources["resources"][j]["type"]]["name"] !== "") {
-      let name = resources["resources"][j]["name"].replace(" ", "");
+    if (config.AWSResources[resources["resources"][resource]["type"]]["name"] !== "") {
+      let name = resources["resources"][resource]["name"].replace(" ", "");
       name = name.replace(/[^a-z0-9]/gi, "");
-      configs[config.AWSResources[resources["resources"][j]["type"]]["name"]] =
+      configs[config.AWSResources[resources["resources"][resource]["type"]]["name"]] =
         name;
     }
-    if (resources["resources"][j]["type"] == "lambda") {
+    if (resources["resources"][resource]["type"] == "lambda") {
       let path = "";
       let path2 = "";
       const lambda_stack_names = stack_names;
@@ -141,7 +141,7 @@ function createStackResources(
         "/" +
         stack_names +
         "/" +
-        resources["resources"][j]["name"] +
+        resources["resources"][resource]["name"] +
         "/";
 
       utlities.copyLambdaLogic(path, path2);
@@ -151,27 +151,27 @@ function createStackResources(
         resources,
         StackType,
         lambda_stack_names,
-        j
+        resource
       );
       utlities.setupTestEnv(path2, app_data.dependency, app_data.app_name);
 
-      configs["CodeUri"] = resources["resources"][j]["name"] + "/";
+      configs["CodeUri"] = resources["resources"][resource]["name"] + "/";
       configs["Runtime"] = app_data.language;
-    } else if (resources["resources"][j]["type"] == "apigateway") {
+    } else if (resources["resources"][resource]["type"] == "apigateway") {
       const path =
         pwd +
         app_data.app_name +
         "/" +
         stack_names +
         "/" +
-        resources["resources"][j]["name"];
-      const configpath = resources["resources"][j]["name"] + "/swagger.yaml";
+        resources["resources"][resource]["name"];
+      const configpath = resources["resources"][resource]["name"] + "/swagger.yaml";
       const filepath =
         app_data.app_name +
         "/" +
         stack_names +
         "/" +
-        resources["resources"][j]["name"] +
+        resources["resources"][resource]["name"] +
         "/swagger.yaml";
 
       if (fs.existsSync(path)) throw new Error(path + " file already exists");
@@ -180,10 +180,10 @@ function createStackResources(
       configs["filepath"] = filepath;
     }
     const resources1 = rover_resources.resourceGeneration(
-      resources["resources"][j]["type"],
+      resources["resources"][resource]["type"],
       configs
     );
-    res[resources["resources"][j]["name"]] = resources1;
+    res[resources["resources"][resource]["name"]] = resources1;
   }
 
   return res;

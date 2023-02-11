@@ -7,7 +7,8 @@ export type IcurdComponentObject = Omit<
 interface IstackDetailsObject {
   type: string;
   params: IcurdComponentObject | object;
-  componentlist: Array<string>;
+  componentList: Array<string>;
+  stackName: string;
 }
 export interface IstackDetails {
   [key: string]: IstackDetailsObject;

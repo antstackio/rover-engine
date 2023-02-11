@@ -124,11 +124,15 @@ function createStackResources(
     const configs = resources["resources"][resource]["config"];
     const haslogic = resources["resources"][resource]["logic"];
 
-    if (config.AWSResources[resources["resources"][resource]["type"]]["name"] !== "") {
+    if (
+      config.AWSResources[resources["resources"][resource]["type"]]["name"] !==
+      ""
+    ) {
       let name = resources["resources"][resource]["name"].replace(" ", "");
       name = name.replace(/[^a-z0-9]/gi, "");
-      configs[config.AWSResources[resources["resources"][resource]["type"]]["name"]] =
-        name;
+      configs[
+        config.AWSResources[resources["resources"][resource]["type"]]["name"]
+      ] = name;
     }
     if (resources["resources"][resource]["type"] == "lambda") {
       let path = "";
@@ -165,7 +169,8 @@ function createStackResources(
         stack_names +
         "/" +
         resources["resources"][resource]["name"];
-      const configpath = resources["resources"][resource]["name"] + "/swagger.yaml";
+      const configpath =
+        resources["resources"][resource]["name"] + "/swagger.yaml";
       const filepath =
         app_data.app_name +
         "/" +

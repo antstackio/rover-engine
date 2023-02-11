@@ -314,6 +314,5 @@ export function cliModuletoConfig(
       app_types[ele]["type"] = "module";
     });
   });
-
   return app_types;
 }

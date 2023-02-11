@@ -73,9 +73,9 @@ function policyAddition(
   );
   for (const configRoleObject in configRoleObjects) {
     role["PolicyDocument"]["Statement"][configRoleObject]["Action"] =
-    configRoleObjects[configRoleObject]["Action"];
+      configRoleObjects[configRoleObject]["Action"];
     role["PolicyDocument"]["Statement"][configRoleObject]["Resource"] =
-    configRoleObjects[configRoleObject]["Resource"];
+      configRoleObjects[configRoleObject]["Resource"];
   }
   template["Properties"]["PolicyDocument"] = role["PolicyDocument"];
 

@@ -5,12 +5,10 @@ import * as child from "child_process";
 import * as fs from "fs";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
+import { IcurdComponentObject } from "../generateSAM/generatesam.types";
 import {
   TroverAppTypeObject,
   TroverResourcesArray,
-} from "../roverTypes/rover.types";
-import { IcurdComponentObject } from "../generateSAM/generatesam.types";
-import {
   IaddComponentResource,
   IroverAppData,
   IroverAppType,

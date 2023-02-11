@@ -145,7 +145,7 @@ function createStackResources(
         "/";
 
       utlities.copyLambdaLogic(path, path2);
-      utlities.generateLambdafiles(
+      utlities.generateLambdaFiles(
         haslogic,
         app_data,
         resources,

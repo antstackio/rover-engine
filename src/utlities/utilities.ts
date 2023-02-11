@@ -35,7 +35,7 @@ export function writeFile(path: string, data: string) {
   path = (pwd + "/" + path).replace(/\/\/*/g, "/");
   fs.writeFileSync(path, data);
 }
-export function installDependies(
+export function installDependencies(
   path: string,
   packages: Array<string>,
   dependency: string
@@ -151,7 +151,7 @@ export function moveFolder(source: string, desti: string): void {
 export function removeFolder(path: string): void {
   exec(config.ForceRemove + path);
 }
-export function generateLambdafiles(
+export function generateLambdaFiles(
   logic: boolean,
   app_data: IroverAppData | IaddComponentAppData,
   resources: IroverAppType | IaddComponentResource,
@@ -192,7 +192,7 @@ export function generateLambdafiles(
             "package"
           )
         ) {
-          installDependies(
+          installDependencies(
             path,
             resources["resources"][j]["package"],
             app_data.dependency
@@ -213,7 +213,7 @@ export function generateLambdafiles(
             "package"
           )
         ) {
-          installDependies(
+          installDependencies(
             path,
             resources["resources"][j]["package"],
             app_data.dependency
@@ -231,13 +231,13 @@ export function replaceTempTag(yamlinput: string): string {
   do {
     result = sub.exec(yamlinput);
     if (result !== null) {
-      yamlinput = updatevalue(result[0], yamlinput);
+      yamlinput = updateValue(result[0], yamlinput);
     }
   } while (result !== null);
 
   return yamlinput;
 }
-function updatevalue(input: string, data: string): string {
+function updateValue(input: string, data: string): string {
   const result = input.trim().split(" ");
   const val: Record<string, string> = {};
   const resvalue = result.splice(1, result.length).join(" ");
@@ -292,11 +292,11 @@ export function cliModuletoConfig(
       const resources: TroverResourcesArray = [];
       const customstackarray: Array<string> =
         input.stackDetails[ele]["componentList"];
-      customstackarray.map((ele) => {
+      customstackarray.forEach((ele) => {
         const componentarray: TroverResourcesArray = JSON.parse(
           JSON.stringify(components.Components[ele])
         );
-        componentarray.map((ele) => {
+        componentarray.forEach((ele) => {
           resources.push(ele);
         });
       });

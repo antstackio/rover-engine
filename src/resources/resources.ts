@@ -48,15 +48,15 @@ function rolePolicyAddition(
   }
 
   const configPolicies = <Array<IconfigPolicy>>config["Policies"];
-  for (const k in configPolicies) {
+  for (const configPolicy in configPolicies) {
     const role: ISAMPolicyObject = JSON.parse(
       JSON.stringify(configs.PolicySkeleton)
     );
-    role["PolicyName"] = configPolicies[k]["name"];
+    role["PolicyName"] = configPolicies[configPolicy]["name"];
     role["PolicyDocument"]["Statement"][0]["Action"] =
-      configPolicies[k]["Action"];
+      configPolicies[configPolicy]["Action"];
     role["PolicyDocument"]["Statement"][0]["Resource"] =
-      configPolicies[k]["Resource"];
+      configPolicies[configPolicy]["Resource"];
     policies.push(role);
   }
   template["Properties"]["Policies"] = policies;
@@ -68,14 +68,14 @@ function policyAddition(
   config: Record<string, unknown>
 ) {
   const role = JSON.parse(JSON.stringify(configs.PolicySkeleton));
-  const configRoleObject = <Array<ISAMRolePolicyStatementObject>>(
+  const configRoleObjects = <Array<ISAMRolePolicyStatementObject>>(
     config["Statement"]
   );
-  for (const k in configRoleObject) {
-    role["PolicyDocument"]["Statement"][k]["Action"] =
-      configRoleObject[k]["Action"];
-    role["PolicyDocument"]["Statement"][k]["Resource"] =
-      configRoleObject[k]["Resource"];
+  for (const configRoleObject in configRoleObjects) {
+    role["PolicyDocument"]["Statement"][configRoleObject]["Action"] =
+    configRoleObjects[configRoleObject]["Action"];
+    role["PolicyDocument"]["Statement"][configRoleObject]["Resource"] =
+    configRoleObjects[configRoleObject]["Resource"];
   }
   template["Properties"]["PolicyDocument"] = role["PolicyDocument"];
 
@@ -123,7 +123,7 @@ function swaggerGenerator(config: Record<string, unknown>) {
   }
 
   const configObjects = <Array<IcurdObject>>config.objects;
-  configObjects.map((data: IcurdObject) => {
+  configObjects.forEach((data: IcurdObject) => {
     const pathName = data["path"];
     swaggerPaths[pathName] = attachMethods(data["methods"], data, security);
     return null;
@@ -142,7 +142,7 @@ const attachMethods = (
 ) => {
   const result: Record<string, object> = {};
   if (methodArray.length) {
-    methodArray.map((item: string) => {
+    methodArray.forEach((item: string) => {
       result[item] = JSON.parse(
         JSON.stringify(configs.SwaggerPathSkeleton[item])
       );

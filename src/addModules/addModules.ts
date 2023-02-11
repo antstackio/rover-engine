@@ -23,15 +23,15 @@ const exec = child.execSync;
 const pwd = utlities.pwd;
 export function addModules(input: IroveraddModule): void {
   try {
-    const input2 = JSON.parse(JSON.stringify(input));
-    input2.app_name = input.app_name + "_test";
-    utlities.initializeSAM(input2);
+    const inputJSON = JSON.parse(JSON.stringify(input));
+    inputJSON.app_name = input.app_name + "_test";
+    utlities.initializeSAM(inputJSON);
     exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
     utlities.moveFolder(
-      pwd + input2.app_name + "/" + "lambda_demo" + " ",
+      pwd + inputJSON.app_name + "/" + "lambda_demo" + " ",
       pwd + input.app_name + "/" + "lambda_demo"
     );
-    exec("rm -rf " + pwd + input2.app_name);
+    exec("rm -rf " + pwd + inputJSON.app_name);
 
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
@@ -182,7 +182,7 @@ function createStackResources(
       }
 
       utlities.copyLambdaLogic(path, path2);
-      utlities.generateLambdafiles(
+      utlities.generateLambdaFiles(
         haslogic,
         app_data,
         resources,

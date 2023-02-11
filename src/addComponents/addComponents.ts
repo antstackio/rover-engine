@@ -31,21 +31,21 @@ export function addComponents(input: IroveraddComponentInput): void {
     console.log("wrong template structure");
   }
   const app_data = getAppdata(input);
-  const input2 = JSON.parse(JSON.stringify(input));
-  input2.app_name = input.app_name + "_test";
-  utlities.initializeSAM(input2);
+  const inputJSON = JSON.parse(JSON.stringify(input));
+  inputJSON.app_name = input.app_name + "_test";
+  utlities.initializeSAM(inputJSON);
   if (input.nested) {
     const inputs: IroveraddComponentInputNestedType = <
       IroveraddComponentInputNestedType
     >input;
-    addComponentsNested(inputs, Data, input2, app_data);
+    addComponentsNested(inputs, Data, inputJSON, app_data);
   } else {
     const inputs: IroveraddComponentInputType = <IroveraddComponentInputType>(
       input
     );
-    addComponentsnonNested(inputs, Data, app_data, input2);
+    addComponentsnonNested(inputs, Data, app_data, inputJSON);
   }
-  utlities.removeFolder(input2.app_name);
+  utlities.removeFolder(inputJSON.app_name);
   helpers.generateRoverConfig(input.app_name, input, "rover_add_component");
 }
 
@@ -60,7 +60,7 @@ function getYamlData(file_name: string): TSAMTemplate {
 function addComponentsNested(
   input: IroveraddComponentInputNestedType,
   Data: TSAMTemplate,
-  input2: IroveraddComponentInputNestedType,
+  inputJSON: IroveraddComponentInputNestedType,
   app_data: IaddComponentAppData
 ): void {
   Object.keys(input.nestedComponents).forEach((ele) => {
@@ -89,7 +89,7 @@ function addComponentsNested(
     path.pop();
     const comp: IaddComponentComp = {
       desti: path.join("/"),
-      demo_desti: input2.app_name,
+      demo_desti: inputJSON.app_name,
     };
 
     const res1 = createStackResources(res, app_data, "", "", comp);
@@ -108,13 +108,13 @@ function addComponentsnonNested(
   input: IroveraddComponentInputType,
   Data: TSAMTemplate,
   app_data: IaddComponentAppData,
-  input2: IroveraddComponentInputType
+  inputJSON: IroveraddComponentInputType
 ): void {
   const res: IaddComponentResource = {
     resources: getComponents(input.components),
   };
   const comp: IaddComponentComp = {
-    demo_desti: input2.app_name,
+    demo_desti: inputJSON.app_name,
   };
 
   const res1 = createStackResources(res, app_data, "", "", comp);
@@ -229,7 +229,7 @@ function createStackResources(
       }
 
       utlities.copyLambdaLogic(path, path2);
-      utlities.generateLambdafiles(
+      utlities.generateLambdaFiles(
         haslogic,
         app_data,
         resources,

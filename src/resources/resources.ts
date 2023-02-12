@@ -31,19 +31,17 @@ function rolePolicyAddition(
   const policies: Array<ISAMPolicyObject> = [];
 
   const base = (<Array<string>>template["Properties"]["ManagedPolicyArns"])[0];
-  let j = "";
-  for (j in <Array<string>>config["managedarn"]) {
+  let arn = "";
+  for (arn in <Array<string>>config["managedarn"]) {
     (<Array<string>>template["Properties"]["ManagedPolicyArns"])[
-      <number>(<unknown>j)
-    ] = base + (<Array<string>>config["managedarn"])[j];
+      <number>(<unknown>arn)
+    ] = base + (<Array<string>>config["managedarn"])[arn];
   }
   if (Object.prototype.hasOwnProperty.call(config, "iamservice")) {
-    for (const j in <Array<string>>config["iamservice"]) {
+    for (const arn of <Array<string>>config["iamservice"]) {
       (<ISAMPolicyDocumentObject>(
         template["Properties"]["AssumeRolePolicyDocument"]
-      ))["Statement"][0]["Principal"]["Service"].push(
-        (<Array<string>>config["iamservice"])[j]
-      );
+      ))["Statement"][0]["Principal"]["Service"].push(arn);
     }
   }
 
@@ -193,43 +191,43 @@ export const resourceGeneration = function (
     JSON.stringify(configs.AWSResources[resource_name])
   );
   let template: ISAMTemplateResource = <ISAMTemplateResource>{};
-  for (const j in resource_properties.attributes) {
-    if (resource_properties.attributes[j] == "Type") {
-      template[<"Type">resource_properties.attributes[j]] = JSON.parse(
+  for (const attributes of resource_properties.attributes) {
+    if (attributes == "Type") {
+      template[<"Type">attributes] = JSON.parse(
         JSON.stringify(configs.AWSResources[resource_name].type)
       );
-    } else if (resource_properties.attributes[j] == "DependsOn") {
+    } else if (attributes == "DependsOn") {
       if (config["DependsOn"] !== undefined)
-        template[<"DependsOn">resource_properties.attributes[j]] = JSON.parse(
+        template[<"DependsOn">attributes] = JSON.parse(
           JSON.stringify(config["DependsOn"])
         );
     } else {
-      template[<"Properties">resource_properties.attributes[j]] = {};
+      template[<"Properties">attributes] = {};
 
       if (resource_properties.Properties.Base.length > 0) {
-        for (const k in resource_properties.Properties.Base) {
-          template[<"Properties">resource_properties.attributes[j]][
-            resource_properties.Properties.Base[k]
-          ] = config[resource_properties.Properties.Base[k]];
+        for (const baseProperties of resource_properties.Properties.Base) {
+          template[<"Properties">attributes][
+            baseProperties
+          ] = config[baseProperties];
         }
       }
 
       if (resource_properties.Properties.Optional.length > 0) {
-        for (const l in resource_properties.Properties.Optional) {
+        for (const optinalProperties of resource_properties.Properties.Optional) {
           if (
-            config[resource_properties.Properties.Optional[l]] !== undefined
+            config[optinalProperties] !== undefined
           ) {
-            template[<"Properties">resource_properties.attributes[j]][
-              resource_properties.Properties.Optional[l]
-            ] = config[resource_properties.Properties.Optional[l]];
+            template[<"Properties">attributes][
+              optinalProperties
+            ] = config[optinalProperties];
           }
         }
       }
 
-      for (const m in resource_properties.Properties.Default) {
-        template[<"Properties">resource_properties.attributes[j]][
-          resource_properties.Properties.Default[m]["Key"]
-        ] = resource_properties.Properties.Default[m]["Value"];
+      for (const defaultProperties of resource_properties.Properties.Default) {
+        template[<"Properties">attributes][
+          defaultProperties["Key"]
+        ] = defaultProperties["Value"];
       }
     }
   }

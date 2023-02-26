@@ -1,6 +1,4 @@
-import { AnyObject } from "immer/dist/internal";
-
-export const LambdaLogics: AnyObject = {
+export const LambdaLogics: Record<string, Record<string, string>> = {
   "nodejs14.x": {
     EmailAuthModule_PreSignUp: `exports.lambdaHandler = async event => {
                 event.response.autoConfirmUser = false;

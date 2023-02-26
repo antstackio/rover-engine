@@ -2,11 +2,10 @@ import * as child from "child_process";
 const exec = child.execSync;
 import * as fs from "fs";
 import * as process from "process";
-
-import { AnyArray, AnyObject } from "immer/dist/internal";
+import { IroverDeploymentObject } from "../roverTypes/rover.types";
 import * as rover_config from "../utlities/config";
 
-export function setupRepo(repoconfig: AnyObject) {
+export function setupRepo(repoconfig: IroverDeploymentObject): void {
   try {
     let piplibraries = "";
     try {
@@ -16,7 +15,7 @@ export function setupRepo(repoconfig: AnyObject) {
     }
     if (piplibraries === "")
       throw new Error("yaml,sys and json python modules are required.");
-    const piplibrarieslist: AnyArray = [];
+    const piplibrarieslist: Array<string> = [];
     piplibraries.split(" ").forEach((ele) => {
       if (ele !== "")
         piplibrarieslist.push(
@@ -44,7 +43,7 @@ export function setupRepo(repoconfig: AnyObject) {
     exec(
       "python3 " +
         rover_config.npmroot +
-        "/@rover-tools/cli/node_modules/@rover-tools/engine/pipeline/pipelinegenerator.py " +
+        "/@rover-tools/cli/node_modules/@rover-tools/engine/src/deployment/pipeline/pipelinegenerator.py " +
         pipelinepath +
         "'" +
         repoconfigres +

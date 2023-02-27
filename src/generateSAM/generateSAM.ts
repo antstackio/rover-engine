@@ -117,7 +117,7 @@ function createStackResources(
 
   for (const resource in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = helpers.makeid(4);
+      const randomstr: string = helpers.makeId(4);
       resources["resources"][resource]["name"] =
         resources["resources"][resource]["name"] + randomstr;
     }

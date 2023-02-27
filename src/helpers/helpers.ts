@@ -54,7 +54,7 @@ export function checkFile(path: string, type: string) {
   }
 }
 
-export function makeid(length: number) {
+export function makeId(length: number) {
   let result = "";
   const characters = "abcdefghijklmnopqrstuvwxyz";
   const charactersLength = characters.length;

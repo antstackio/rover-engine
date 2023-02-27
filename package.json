@@ -32,9 +32,9 @@
     "watch": "tsc --watch",
     "prepack": "npm run clean && npm run build ",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
+    "format:write": "prettier --write src/* bin/*",
     "lint:check": "eslint .",
-    "lint:fix": "eslint --fix --ignore-path ./.gitignore ."
+    "lint:fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",

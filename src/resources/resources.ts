@@ -89,7 +89,6 @@ function swaggerGenerator(config: Record<string, unknown>) {
     );
   }
   const security: Array<Record<string, Array<unknown>>> = [];
-
   if (
     config["security"] !== undefined &&
     Object.keys(<Record<string, unknown>>config.security).length > 0
@@ -97,7 +96,6 @@ function swaggerGenerator(config: Record<string, unknown>) {
     const apikeyObject = <Record<string, unknown>>config.security;
     if (Object.prototype.hasOwnProperty.call(config.security, "api_key")) {
       const apikey: Record<string, Array<unknown>> = {};
-
       apikey[
         JSON.parse(
           JSON.stringify(
@@ -119,14 +117,12 @@ function swaggerGenerator(config: Record<string, unknown>) {
       security.push(authorizer);
     }
   }
-
   const configObjects = <Array<IcurdObject>>config.objects;
   configObjects.forEach((data: IcurdObject) => {
     const pathName = data["path"];
     swaggerPaths[pathName] = attachMethods(data["methods"], data, security);
     return null;
   });
-
   swagger["paths"] = swaggerPaths;
   const doc = new yaml.Document();
   doc.contents = swagger;
@@ -177,7 +173,10 @@ const attachMethods = (
   return result;
 };
 
-export function apigatewaypath(template: ISAMTemplateResource, path: string) {
+export function getAPIGatewayPath(
+  template: ISAMTemplateResource,
+  path: string
+) {
   const definationbody = JSON.parse(JSON.stringify(configs.APIGatewaySkeleton));
   definationbody["Fn::Transform"]["Parameters"]["Location"] = path;
   template["Properties"]["DefinitionBody"] = definationbody;
@@ -206,28 +205,23 @@ export const resourceGeneration = function (
 
       if (resource_properties.Properties.Base.length > 0) {
         for (const baseProperties of resource_properties.Properties.Base) {
-          template[<"Properties">attributes][
-            baseProperties
-          ] = config[baseProperties];
+          template[<"Properties">attributes][baseProperties] =
+            config[baseProperties];
         }
       }
-
       if (resource_properties.Properties.Optional.length > 0) {
-        for (const optinalProperties of resource_properties.Properties.Optional) {
-          if (
-            config[optinalProperties] !== undefined
-          ) {
-            template[<"Properties">attributes][
-              optinalProperties
-            ] = config[optinalProperties];
+        for (const optinalProperties of resource_properties.Properties
+          .Optional) {
+          if (config[optinalProperties] !== undefined) {
+            template[<"Properties">attributes][optinalProperties] =
+              config[optinalProperties];
           }
         }
       }
-
-      for (const defaultProperties of resource_properties.Properties.Default) {
+      for (const defaultProperties in resource_properties.Properties.Default) {
         template[<"Properties">attributes][
-          defaultProperties["Key"]
-        ] = defaultProperties["Value"];
+          resource_properties.Properties.Default[defaultProperties]["Key"]
+        ] = resource_properties.Properties.Default[defaultProperties]["Value"];
       }
     }
   }
@@ -239,7 +233,7 @@ export const resourceGeneration = function (
   }
   if (resource_name == "apigateway") {
     if (Object.prototype.hasOwnProperty.call(config, "path")) {
-      template = apigatewaypath(template, <string>config["path"]);
+      template = getAPIGatewayPath(template, <string>config["path"]);
     }
     if (Object.prototype.hasOwnProperty.call(config, "objects")) {
       swaggerGenerator(config);

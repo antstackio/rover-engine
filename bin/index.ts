@@ -5,6 +5,7 @@ import * as components from "../src/resources/components/components";
 import * as generateSAM from "../src/generateSAM/generatesam";
 import * as addComponents from "../src/addComponents/addcomponents";
 import * as addModules from "../src/addModules/addModules";
+import * as addModulesToExisting from "../src/addModulesToexisting/addModulesToExisting";
 import * as generateSAMTypes from "../src/generateSAM/generatesam.types";
 export = {
   deployment: deployment,
@@ -15,4 +16,5 @@ export = {
   generateSAMTypes: generateSAMTypes,
   addComponents: addComponents,
   addModules: addModules,
+  addModulesToExisting: addModulesToExisting,
 };

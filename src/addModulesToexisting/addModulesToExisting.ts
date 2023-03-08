@@ -18,21 +18,17 @@ import {
 
 import { IaddComponentComp } from "../addComponents/addComponents.types";
 
-import { IroveraddModule } from "./addModulesToExisting.types";
+import {
+  IroveraddModule,
+  IroverCreateStackResponse,
+} from "./addModulesToExisting.types";
 const exec = child.execSync;
 const pwd = utlities.pwd;
 export function addModulesToExistingStack(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
     inputJSON.app_name = input.app_name + "_test";
-    // utlities.newInitializeSAM(inputJSON);
-    //exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
-    // utlities.moveFolder(
-    //   pwd + inputJSON.app_name + "/" + "lambda_demo" + " ",
-    //   pwd + input.app_name + "/" + "lambda_demo"
-    // );
-    //exec("rm -rf " + pwd + inputJSON.app_name);
-
+    console.log()
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
     createStack(app_data, app_types, input.file_name);
@@ -50,26 +46,27 @@ export function createStack(
   const stack_names: Array<string> = Object.keys(app_types);
   const resource = app_types;
   const stackes: TSAMTemplateResources = {};
-  let response:object={}
-  // let data: TSAMTemplate = <TSAMTemplate>{};
+  const response: IroverCreateStackResponse = <IroverCreateStackResponse>{};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
     stackes[stack_names[i]] = stacks;
-    exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
+    // exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
     const res = createStackResources(resources, app_data, stack_names[i]);
-    const template1 = utlities.addResourceTemplate(
+    const template = utlities.addResourceTemplate(
       res,
       Object.keys(res),
       undefined
     );
     if (Object.prototype.hasOwnProperty.call(resources, "parameter")) {
-      template1["Parameters"] = resources.parameter;
+      template["Parameters"] = resources.parameter;
     }
-    response["template"]=<TSAMTemplate>template1
-    console.log("template1", JSON.stringify(template1));
+    response["template"] = <TSAMTemplate>template;
+    response["fileName"] = filename;
+    response["appData"] = app_data;
+    console.log("template", JSON.stringify(response));
   }
 }
 

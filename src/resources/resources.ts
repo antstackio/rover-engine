@@ -1,6 +1,5 @@
 import * as configs from "../utlities/config";
-import * as utilities from "../utlities/utilities";
-import * as yaml from "yaml";
+
 import {
   TSAMTemplate,
   ISAMPolicyObject,
@@ -80,7 +79,10 @@ function policyAddition(
   return template;
 }
 
-function swaggerGenerator(config: Record<string, unknown>) {
+function swaggerGenerator(
+  config: Record<string, unknown>,
+  template: ISAMTemplateResource
+) {
   const swagger = JSON.parse(JSON.stringify(configs.SwaggerSkeleton));
   const swaggerPaths: Record<string, unknown> = {};
   if (Object.prototype.hasOwnProperty.call(config, "security")) {
@@ -124,9 +126,11 @@ function swaggerGenerator(config: Record<string, unknown>) {
     return null;
   });
   swagger["paths"] = swaggerPaths;
-  const doc = new yaml.Document();
-  doc.contents = swagger;
-  utilities.writeFile(<string>config["filepath"], doc.toString());
+  // const doc = new yaml.Document();
+  // doc.contents = swagger;
+  template.Properties["swagger"] = swagger;
+  return template;
+  //utilities.writeFile(<string>config["filepath"], doc.toString());
 }
 
 const attachMethods = (
@@ -236,7 +240,7 @@ export const resourceGeneration = function (
       template = getAPIGatewayPath(template, <string>config["path"]);
     }
     if (Object.prototype.hasOwnProperty.call(config, "objects")) {
-      swaggerGenerator(config);
+      template = swaggerGenerator(config, template);
     }
   }
   return template;

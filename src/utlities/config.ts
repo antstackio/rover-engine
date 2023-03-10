@@ -157,9 +157,17 @@ export const CognitoSupportedIdentityProviders = [
   "Google",
   "LoginWithAmazon",
 ];
-export const CognitoAllowedOAuthFlows = ["code", "implicit", "client_credentials"];
+export const CognitoAllowedOAuthFlows = [
+  "code",
+  "implicit",
+  "client_credentials",
+];
 export const CognitoAutoVerifiedAttributes = ["email", "phone_number"];
-export const CognitoAliasAttributes = ["email", "phone_number", "preferred_username"];
+export const CognitoAliasAttributes = [
+  "email",
+  "phone_number",
+  "preferred_username",
+];
 export const IAMRoleSkeleton = {
   ManagedPolicyArns: ["arn:aws:iam::aws:policy/service-role/"],
   AssumeRolePolicyDocument: {

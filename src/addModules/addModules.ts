@@ -13,7 +13,7 @@ import {
   TroverResourcesArray,
   TSAMTemplateResources,
   IroverAppType,
-  TSAMTemplate,
+  TSAMTemplate
 } from "../roverTypes/rover.types";
 
 import { IaddComponentComp } from "../addComponents/addComponents.types";
@@ -54,7 +54,7 @@ function createStack(
   let data: TSAMTemplate = <TSAMTemplate>{};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
-      TemplateURL: stack_names[i] + "/template.yaml",
+      TemplateURL: stack_names[i] + "/template.yaml"
     });
     stackes[stack_names[i]] = stacks;
     exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
@@ -85,7 +85,7 @@ function createStack(
   }
   if (filename !== "") {
     const datas: string = fs.readFileSync(pwd + "/" + filename.trim(), {
-      encoding: "utf-8",
+      encoding: "utf-8"
     });
     data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(datas));
     if (Object.prototype.hasOwnProperty.call(data, "AWSTemplateFormatVersion"))
@@ -116,15 +116,15 @@ function createStackResources(
     if (config.samabstract.includes(element.type)) {
       element.config["Tags"] = {
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.app_name
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
-        },
+          Value: app_data.app_name
+        }
       ];
     }
   });

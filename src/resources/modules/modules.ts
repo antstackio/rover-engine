@@ -10,8 +10,8 @@ export const Modules: Record<string, IroverResourceModule> = {
     description: {
       key: "BaseModule",
       value:
-        "Base Module : It’s a module with 2 stacks and 2 lambdas in each stack ",
-    },
+        "Base Module : It’s a module with 2 stacks and 2 lambdas in each stack "
+    }
   },
   TestModule: {
     resource: {
@@ -22,16 +22,16 @@ export const Modules: Record<string, IroverResourceModule> = {
             "lambda",
             {
               Environment: components.generateLambdaEnv({
-                userinfoTable: "UserTable",
+                userinfoTable: "UserTable"
               }),
               Policies: [
                 "AWSLambdaDynamoDBExecutionRole",
                 {
                   DynamoDBCrudPolicy: {
-                    TableName: { Ref: "UserTable" },
-                  },
-                },
-              ],
+                    TableName: { Ref: "UserTable" }
+                  }
+                }
+              ]
             },
             true
           ),
@@ -44,15 +44,15 @@ export const Modules: Record<string, IroverResourceModule> = {
               AttributeDefinitions: [
                 {
                   AttributeName: "email",
-                  AttributeType: "S",
-                },
+                  AttributeType: "S"
+                }
               ],
               KeySchema: [
                 {
                   AttributeName: "email",
-                  KeyType: "HASH",
-                },
-              ],
+                  KeyType: "HASH"
+                }
+              ]
             },
             false
           ),
@@ -62,7 +62,7 @@ export const Modules: Record<string, IroverResourceModule> = {
             {
               FunctionName: { "Fn::GetAtt": ["PostSignup", "Arn"] },
               Principal: "cognito-idp.amazonaws.com",
-              SourceArn: { "Fn::GetAtt": ["AuthUserPools", "Arn"] },
+              SourceArn: { "Fn::GetAtt": ["AuthUserPools", "Arn"] }
             },
             false
           ),
@@ -79,19 +79,19 @@ export const Modules: Record<string, IroverResourceModule> = {
                   RequireUppercase: true,
                   RequireLowercase: true,
                   RequireNumbers: true,
-                  RequireSymbols: true,
-                },
+                  RequireSymbols: true
+                }
               },
               Schema: [
                 {
                   AttributeDataType: "String",
                   Name: "email",
-                  Required: true,
-                },
+                  Required: true
+                }
               ],
               LambdaConfig: {
-                PostConfirmation: { "Fn::GetAtt": ["PostSignup", "Arn"] },
-              },
+                PostConfirmation: { "Fn::GetAtt": ["PostSignup", "Arn"] }
+              }
             },
             false
           ),
@@ -102,7 +102,7 @@ export const Modules: Record<string, IroverResourceModule> = {
               UserPoolId: { Ref: "AuthUserPools" },
               GenerateSecret: false,
               SupportedIdentityProviders: [
-                config.CognitoSupportedIdentityProviders[0],
+                config.CognitoSupportedIdentityProviders[0]
               ],
               AllowedOAuthFlows: [config.CognitoAllowedOAuthFlows[1]],
               AllowedOAuthScopes: [
@@ -110,14 +110,14 @@ export const Modules: Record<string, IroverResourceModule> = {
                 config.CognitoAllowedOAuthScopes[1],
                 config.CognitoAllowedOAuthScopes[2],
                 config.CognitoAllowedOAuthScopes[3],
-                config.CognitoAllowedOAuthScopes[4],
+                config.CognitoAllowedOAuthScopes[4]
               ],
               ExplicitAuthFlows: [
                 config.CognitoExplicitAuthFlows[2],
-                config.CognitoExplicitAuthFlows[4],
+                config.CognitoExplicitAuthFlows[4]
               ],
               AllowedOAuthFlowsUserPoolClient: true,
-              CallbackURLs: ["https://www.google.com"],
+              CallbackURLs: ["https://www.google.com"]
             },
             false
           ),
@@ -130,10 +130,10 @@ export const Modules: Record<string, IroverResourceModule> = {
                 {
                   Action: "lambda:InvokeFunction",
                   Resource: {
-                    "Fn::Sub": "arn:aws:lambda:*:${AWS::AccountId}:function:*",
-                  },
-                },
-              ],
+                    "Fn::Sub": "arn:aws:lambda:*:${AWS::AccountId}:function:*"
+                  }
+                }
+              ]
             },
             false
           ),
@@ -149,7 +149,7 @@ export const Modules: Record<string, IroverResourceModule> = {
                   "PostSignup",
                   "emailAuthRole",
                   "/books",
-                  "lambda",
+                  "lambda"
                 ],
                 [
                   "Authors",
@@ -157,28 +157,28 @@ export const Modules: Record<string, IroverResourceModule> = {
                   "PostSignup",
                   "emailAuthRole",
                   "/authors",
-                  "lambda",
-                ],
-              ]),
+                  "lambda"
+                ]
+              ])
             },
             false
-          ),
-        ],
-      },
+          )
+        ]
+      }
     },
     params: <IroverParamObjects>{},
     description: {
       key: "TestModule",
-      value: "Test Module : Module with all AWS services supported by rover",
-    },
+      value: "Test Module : Module with all AWS services supported by rover"
+    }
   },
   EmailAuthModule: {
     resource: EmailAuthModule,
     params: <IroverParamObjects>{},
     description: {
       key: "EmailAuthModule",
-      value: "Email Auth Module : Authentication module using Cognito",
-    },
+      value: "Email Auth Module : Authentication module using Cognito"
+    }
   },
   CRUDModule: {
     resource: components.generatecrud,
@@ -189,23 +189,23 @@ export const Modules: Record<string, IroverResourceModule> = {
         {
           key: "methods",
           value: "multichoice",
-          message: "Methods required for API :",
-        },
-      ],
+          message: "Methods required for API :"
+        }
+      ]
     },
-    description: { key: "CRUDModule", value: "CRUD Module : CRUD APIs" },
+    description: { key: "CRUDModule", value: "CRUD Module : CRUD APIs" }
   },
   RDSModule: {
     resource: RDS,
     params: <IroverParamObjects>{},
-    description: { key: "RDSModule", value: "RDS Module : RDS Data base" },
+    description: { key: "RDSModule", value: "RDS Module : RDS Data base" }
   },
   CustomizableModule: {
     resource: {},
     params: <IroverParamObjects>{},
     description: {
       key: "CustomizableModule",
-      value: "Customizable Module : Create your own Module",
-    },
-  },
+      value: "Customizable Module : Create your own Module"
+    }
+  }
 };

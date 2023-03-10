@@ -1,13 +1,13 @@
 module.exports = {
   env: {
     es2021: true,
-    node: true,
+    node: true
   },
   extends: [
     "eslint:recommended",
     "prettier",
     "plugin:eslint-plugin/recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
 
   overrides: [],
@@ -15,8 +15,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
-    project: ["./tsconfig.json"],
+    project: ["./tsconfig.json"]
   },
   rules: {},
-  ignorePatterns: ["**/*.js", "**/*.d.ts"],
+  ignorePatterns: ["**/*.js", "**/*.d.ts"]
 };

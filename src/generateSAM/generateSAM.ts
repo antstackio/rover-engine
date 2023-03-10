@@ -19,7 +19,7 @@ import {
   TSAMTemplateResources,
   IroverAppType,
   IroverConfigTag,
-  IroverConfigFileObject,
+  IroverConfigFileObject
 } from "../roverTypes/rover.types";
 
 export function generateSAM(input: IroverInput): void {
@@ -49,7 +49,7 @@ function createStack(
   const stackes: TSAMTemplateResources = {};
   for (let i = 0; i < stack_names.length; i++) {
     const stacks = rover_resources.resourceGeneration("stack", {
-      TemplateURL: stack_names[i] + "/template.yaml",
+      TemplateURL: stack_names[i] + "/template.yaml"
     });
     stackes[stack_names[i]] = stacks;
 
@@ -102,15 +102,15 @@ function createStackResources(
     if (config.samabstract.includes(element.type)) {
       element.config["Tags"] = <IroverConfigTag>{
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.app_name
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
-        },
+          Value: app_data.app_name
+        }
       ];
     }
   });

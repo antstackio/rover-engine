@@ -12,7 +12,7 @@ import {
   IroveraddComponentInputNestedType,
   IroveraddComponentInputType,
   IaddComponentAppData,
-  IaddComponentComp,
+  IaddComponentComp
 } from "./addComponents.types";
 import {
   TSAMTemplate,
@@ -20,7 +20,7 @@ import {
   TroverResourcesArray,
   IaddComponentResource,
   IroverResources,
-  IroverConfigTag,
+  IroverConfigTag
 } from "../roverTypes/rover.types";
 const exec = child.execSync;
 const pwd = utlities.pwd;
@@ -51,7 +51,7 @@ export function addComponents(input: IroveraddComponentInput): void {
 
 function getYamlData(file_name: string): TSAMTemplate {
   const Datas = fs.readFileSync(pwd + "/" + file_name.trim(), {
-    encoding: "utf-8",
+    encoding: "utf-8"
   });
   const Data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(Datas));
   return Data;
@@ -65,7 +65,7 @@ function addComponentsNested(
 ): void {
   Object.keys(input.nestedComponents).forEach((ele) => {
     const res: IaddComponentResource = {
-      resources: getComponents(input.nestedComponents[ele]["components"]),
+      resources: getComponents(input.nestedComponents[ele]["components"])
     };
     Data = <TSAMTemplate>(
       Yaml.load(
@@ -89,7 +89,7 @@ function addComponentsNested(
     path.pop();
     const comp: IaddComponentComp = {
       desti: path.join("/"),
-      demo_desti: inputJSON.app_name,
+      demo_desti: inputJSON.app_name
     };
 
     const res1 = createStackResources(res, app_data, "", "", comp);
@@ -111,10 +111,10 @@ function addComponentsnonNested(
   inputJSON: IroveraddComponentInputType
 ): void {
   const res: IaddComponentResource = {
-    resources: getComponents(input.components),
+    resources: getComponents(input.components)
   };
   const comp: IaddComponentComp = {
-    demo_desti: inputJSON.app_name,
+    demo_desti: inputJSON.app_name
   };
 
   const res1 = createStackResources(res, app_data, "", "", comp);
@@ -130,7 +130,7 @@ function getAppdata(input: IroveraddComponentInput): IaddComponentAppData {
     app_name: input.app_name,
     language: config.LanguageSupport[input.language]["version"],
     dependency: config.LanguageSupport[input.language]["dependency"],
-    extension: config.LanguageSupport[input.language]["extension"],
+    extension: config.LanguageSupport[input.language]["extension"]
   };
   return app_data;
 }
@@ -165,15 +165,15 @@ function createStackResources(
     if (config.samabstract.includes(element.type)) {
       element.config["Tags"] = <IroverConfigTag>{
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.app_name
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
-        },
+          Value: app_data.app_name
+        }
       ];
     }
   });

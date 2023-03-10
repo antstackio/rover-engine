@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 const secret = process.env.Secret;
 const clustername = process.env.Clustername;
 const region = process.env.Region;
@@ -8,7 +7,7 @@ const data = require("data-api-client")({
   secretArn: secret,
   resourceArn:
     "arn:aws:rds:" + region + ":" + accountid + ":cluster:" + clustername,
-  database: DBname // default database
+  database: DBname, // default database
 });
 
 async function createTable(TableName) {

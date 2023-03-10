@@ -8,7 +8,7 @@ import * as child from "child_process";
 import {
   TSAMTemplate,
   IroverConfigFileObject,
-  TconfigFile
+  TconfigFile,
 } from "../roverTypes/rover.types";
 const exec = child.execSync;
 const pythonpattern = new RegExp(/python[1-9]*\.[1-9]*/g);
@@ -19,7 +19,7 @@ export function checkNested(template: string) {
   const Data = <TSAMTemplate>Yaml.load(
     utlities.replaceTempTag(
       fs.readFileSync(utlities.pwd + "/" + template.trim(), {
-        encoding: "utf-8"
+        encoding: "utf-8",
       })
     )
   );
@@ -69,7 +69,7 @@ export const langValue = function () {
   const pwd = (process.cwd() + "/").trim();
   if (!fs.existsSync(pwd + ".aws-sam/build.toml")) exec("sam build");
   const datas = fs.readFileSync(pwd + ".aws-sam/build.toml", {
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
   const data: TsamBuildTOML = <TsamBuildTOML>(<unknown>TOML.parse(datas));
   const langarray: Array<string> = [];
@@ -153,7 +153,7 @@ export const generateRoverConfig = function (
   filename = filename + "/roverconfig.json";
   if (fs.existsSync(utlities.pwd + filename)) {
     const filedata = fs.readFileSync(utlities.pwd + filename, {
-      encoding: "utf-8"
+      encoding: "utf-8",
     });
     const dataobject = JSON.parse(filedata);
     const types = Object.keys(dataobject);
@@ -163,7 +163,7 @@ export const generateRoverConfig = function (
       types.includes("rover_create_project"),
       types.includes("rover_deploy_cli"),
       types.includes("rover_generate_pipeline"),
-      types.includes("rover_deploy_repo")
+      types.includes("rover_deploy_repo"),
     ];
     if (!typesarray.includes(true)) {
       console.log(
@@ -215,7 +215,7 @@ export function listSAMResources(
   const Data = <TSAMTemplate>Yaml.load(
     utlities.replaceTempTag(
       fs.readFileSync(utlities.pwd + "/" + template.trim(), {
-        encoding: "utf-8"
+        encoding: "utf-8",
       })
     )
   );
@@ -228,7 +228,7 @@ export function listSAMResources(
           "/" +
           (<string>Data.Resources[stackName].Properties["TemplateURL"]).trim(),
         {
-          encoding: "utf-8"
+          encoding: "utf-8",
         }
       )
     )

@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const UserPoolID = process.env.UserPoolID;
 const UserPoolClientID = process.env.UserPoolClientID;
@@ -13,20 +12,20 @@ exports.lambdaHandler = async (event, context) => {
       ClientId: UserPoolClientID,
       ConfirmationCode: event.Code,
       Username: event.emailId,
-      Password: event.password /* required */
+      Password: event.password /* required */,
     };
     const res = await cognito.confirmForgotPassword(params).promise();
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: res
-      })
+        message: res,
+      }),
     };
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

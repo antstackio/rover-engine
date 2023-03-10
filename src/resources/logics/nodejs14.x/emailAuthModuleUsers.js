@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const aws = require("aws-sdk");
 const dynamoDB = new aws.DynamoDB.DocumentClient();
@@ -9,7 +8,7 @@ async function getUserData(id) {
   try {
     const params = {
       TableName: UserTable,
-      Key: { email: id }
+      Key: { email: id },
     };
     let { Item } = await dynamoDB.get(params).promise();
     console.log("[INFO] getUserData output", Item);
@@ -22,7 +21,7 @@ async function deleteUserData(id) {
   try {
     const params = {
       TableName: UserTable,
-      Key: { email: id }
+      Key: { email: id },
     };
     let { Item } = await dynamoDB.delete(params).promise();
     console.log("[INFO] getUserData output", Item);
@@ -36,7 +35,7 @@ async function addUserData(userData) {
     console.log("[INFO] addUserData input", userData);
     const params = {
       TableName: UserTable,
-      Item: userData
+      Item: userData,
     };
     let Items = await dynamoDB.put(params).promise();
     console.log("[INFO] addUserData output", Items);
@@ -66,14 +65,14 @@ exports.lambdaHandler = async (event, context) => {
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        data: res
-      })
+        data: res,
+      }),
     };
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

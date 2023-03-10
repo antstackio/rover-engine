@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const aws = require("aws-sdk");
 const UserPoolID = process.env.UserPoolID;
@@ -17,25 +16,25 @@ exports.lambdaHandler = async (event) => {
       UserAttributes: [
         {
           Name: "email",
-          Value: event.emailId
+          Value: event.emailId,
         },
         {
           Name: "name",
-          Value: event.name
-        }
-      ]
+          Value: event.name,
+        },
+      ],
     };
     console.log(params);
     let res = await cognito.signUp(params).promise();
     response = {
       statusCode: 200,
-      body: JSON.stringify(res)
+      body: JSON.stringify(res),
     };
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

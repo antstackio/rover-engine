@@ -7,7 +7,7 @@ import {
   ISAMTemplateResource,
   ISAMPolicyDocumentObject,
   ISAMRolePolicyStatementObject,
-  IconfigPolicy
+  IconfigPolicy,
 } from "../roverTypes/rover.types";
 import { IcurdObject } from "./components/components.types";
 export function skeleton(): TSAMTemplate {
@@ -20,7 +20,7 @@ export function skeleton(): TSAMTemplate {
     ),
     Description: "SAM Template",
     Globals: { Function: { Timeout: 30 } },
-    Resources: {}
+    Resources: {},
   };
   return template_skeleton;
 }

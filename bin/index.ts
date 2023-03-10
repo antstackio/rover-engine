@@ -14,5 +14,5 @@ export = {
   generateSAM: generateSAM,
   generateSAMTypes: generateSAMTypes,
   addComponents: addComponents,
-  addModules: addModules
+  addModules: addModules,
 };

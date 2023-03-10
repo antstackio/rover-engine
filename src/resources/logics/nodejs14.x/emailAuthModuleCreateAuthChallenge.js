@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 exports.lambdaHandler = async (event) => {
   let password;
   if (!event.request.session || !event.request.session.length) {
@@ -12,7 +11,7 @@ exports.lambdaHandler = async (event) => {
   }
   // This is sent back to the client app
   event.response.publicChallengeParameters = {
-    username: event.request.userAttributes.email
+    username: event.request.userAttributes.email,
   };
 
   // Add the secret login code to the private challenge parameters

@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const aws = require("aws-sdk");
 const UserPoolID = process.env.UserPoolID;
@@ -12,21 +11,21 @@ exports.lambdaHandler = async (event) => {
 
     let params = {
       ClientId: UserPoolClientID,
-      Username: event.emailId
+      Username: event.emailId,
     };
     const res = await cognito.resendConfirmationCode(params).promise();
 
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: res
-      })
+        message: res,
+      }),
     };
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 import jwt from "jsonwebtoken";
 
 // By default, API Gateway authorizations are cached (TTL) for 300 seconds.
@@ -15,10 +14,10 @@ const generatePolicy = (principalId, methodArn) => {
         {
           Action: "execute-api:Invoke",
           Effect: "Allow",
-          Resource: apiGatewayWildcard
-        }
-      ]
-    }
+          Resource: apiGatewayWildcard,
+        },
+      ],
+    },
   };
 };
 
@@ -35,7 +34,7 @@ export async function handler(event, context) {
 
     return {
       ...policy,
-      context: claims
+      context: claims,
     };
   } catch (error) {
     console.log(error);

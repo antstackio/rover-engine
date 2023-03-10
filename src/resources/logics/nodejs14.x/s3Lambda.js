@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 exports.lambdaHandler = async (event) => {
   if (
     event.request.session &&

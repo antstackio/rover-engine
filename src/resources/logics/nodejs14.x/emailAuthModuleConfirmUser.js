@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const aws = require("aws-sdk");
 const dynamoDB = new aws.DynamoDB.DocumentClient();
@@ -10,7 +9,7 @@ async function addUserData(userData) {
     console.log("[INFO] addUserData input", userData);
     const params = {
       TableName: UserTable,
-      Item: userData
+      Item: userData,
     };
     let Items = await dynamoDB.put(params).promise();
     console.log("[INFO] addUserData output", Items);
@@ -28,13 +27,13 @@ exports.lambdaHandler = async (event, context) => {
     let params = {
       ClientId: UserPoolClientID,
       ConfirmationCode: event.Code,
-      Username: event.emailId
+      Username: event.emailId,
     };
     let res = await cognito.confirmSignUp(params).promise();
 
     params = {
       UserPoolId: UserPoolID,
-      AttributesToGet: ["email", "name", "sub"]
+      AttributesToGet: ["email", "name", "sub"],
     };
 
     res = await cognito.listUsers(params).promise();
@@ -55,15 +54,15 @@ exports.lambdaHandler = async (event, context) => {
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: res
-      })
+        message: res,
+      }),
     };
     // await addUserData()
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

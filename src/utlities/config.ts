@@ -4,7 +4,7 @@ SkeletonConfig["sam_transform_version"] = "AWS::Serverless-2016-10-31";
 import {
   IroverlangDetails,
   IroverConfigDefaultsObject,
-  IroverGenerateResourceObject
+  IroverGenerateResourceObject,
 } from "../roverTypes/rover.types";
 import * as child from "child_process";
 const exec = child.execSync;
@@ -48,7 +48,7 @@ export const prettierConfig = {
   trailingComma: "es5",
   tabWidth: 2,
   semi: false,
-  singleQuote: false
+  singleQuote: false,
 };
 export const StepfunctionStateTypes = [
   "Succeed",
@@ -58,13 +58,13 @@ export const StepfunctionStateTypes = [
   "Pass",
   "Wait",
   "Task",
-  "Choice"
+  "Choice",
 ];
 export const StepfunctionStates = {
   Type: "",
   Resource: "",
   Next: "",
-  Comment: ""
+  Comment: "",
 };
 export const StepfunctionStatesTypeSkeletons = {
   Task: {
@@ -73,37 +73,37 @@ export const StepfunctionStatesTypeSkeletons = {
     Resource: "arn:aws:states:us-east-1:123456789012:task:HelloWorld",
     Next: "NextState",
     TimeoutSeconds: 300,
-    HeartbeatSeconds: 60
+    HeartbeatSeconds: 60,
   },
   Pass: {
     Type: "Pass",
     Result: {},
     ResultPath: "$.coords",
-    Next: "End"
+    Next: "End",
   },
   Choice: {
     Type: "Choice",
     Choices: [],
-    Default: "RecordEvent"
+    Default: "RecordEvent",
   },
   Wait: {
     Type: "Wait",
     Seconds: 10,
     Timestamp: "",
-    Next: "NextState"
+    Next: "NextState",
   },
   SuccessState: {
-    Type: "Succeed"
+    Type: "Succeed",
   },
   FailState: {
     Type: "Fail",
     Error: "ErrorA",
-    Cause: "Kaiju attack"
+    Cause: "Kaiju attack",
   },
   Parallel: {
     Type: "Parallel",
     Branches: [],
-    Next: "NextState"
+    Next: "NextState",
   },
   Map: {
     Type: "Map",
@@ -112,12 +112,12 @@ export const StepfunctionStatesTypeSkeletons = {
     MaxConcurrency: 0,
     Parameters: {
       "parcel.$": "",
-      "courier.$": ""
+      "courier.$": "",
     },
     Iterator: {},
     ResultPath: "",
-    End: true
-  }
+    End: true,
+  },
 };
 export const PolicySkeleton = {
   PolicyDocument: {
@@ -126,48 +126,40 @@ export const PolicySkeleton = {
       {
         Effect: "Allow",
         Action: [],
-        Resource: []
-      }
-    ]
-  }
+        Resource: [],
+      },
+    ],
+  },
 };
 export const APIAuthorizerARN = {
   lambda:
     "arn:aws:apigateway:${Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:FunctionName/invocations",
-  cognito: "arn:aws:cognito-idp:{region}:{account_id}:userpool/{UserPoolID}"
+  cognito: "arn:aws:cognito-idp:{region}:{account_id}:userpool/{UserPoolID}",
 };
 export const CognitoAllowedOAuthScopes = [
   "phone",
   "email",
   "openid",
   "profile",
-  "aws.cognito.signin.user.admin"
+  "aws.cognito.signin.user.admin",
 ];
 export const CognitoExplicitAuthFlows = [
   "ALLOW_ADMIN_USER_PASSWORD_AUTH",
   "ALLOW_CUSTOM_AUTH",
   "ALLOW_USER_PASSWORD_AUTH",
   "ALLOW_USER_SRP_AUTH",
-  "ALLOW_REFRESH_TOKEN_AUTH"
+  "ALLOW_REFRESH_TOKEN_AUTH",
 ];
 export const CognitoSupportedIdentityProviders = [
   "COGNITO",
   "Facebook",
   "SignInWithApple",
   "Google",
-  "LoginWithAmazon"
+  "LoginWithAmazon",
 ];
-export const CognitoAllowedOAuthFlows = [
-  "code",
-  "implicit",
-  "client_credentials"
-];
+export const CognitoAllowedOAuthFlows = ["code", "implicit", "client_credentials"];
 export const CognitoAutoVerifiedAttributes = ["email", "phone_number"];
-export const CognitoAliasAttributes = [
-  "email",
-  "phone_number",
-  "preferred_username"
-];
+export const CognitoAliasAttributes = ["email", "phone_number", "preferred_username"];
 export const IAMRoleSkeleton = {
   ManagedPolicyArns: ["arn:aws:iam::aws:policy/service-role/"],
   AssumeRolePolicyDocument: {
@@ -176,35 +168,35 @@ export const IAMRoleSkeleton = {
       {
         Effect: "Allow",
         Principal: {
-          Service: ["apigateway.amazonaws.com"]
+          Service: ["apigateway.amazonaws.com"],
         },
-        Action: ["sts:AssumeRole"]
-      }
-    ]
+        Action: ["sts:AssumeRole"],
+      },
+    ],
   },
   Path: "/",
-  Policies: []
+  Policies: [],
 };
 
 export const APIGatewaySkeleton = {
   "Fn::Transform": {
     Name: "AWS::Include",
     Parameters: {
-      Location: ""
-    }
-  }
+      Location: "",
+    },
+  },
 };
 export const LanguageSupport: Record<string, IroverlangDetails> = {
   node: {
     version: "nodejs14.x",
     dependency: "npm",
-    extension: ".js"
+    extension: ".js",
   },
   python: {
     version: "python3.9",
     dependency: "pip",
-    extension: ".py"
-  }
+    extension: ".py",
+  },
 };
 export function generateAWSResource(
   name: string,
@@ -219,8 +211,8 @@ export function generateAWSResource(
     type: type,
     Properties: {
       Base: base,
-      Optional: optional
-    }
+      Optional: optional,
+    },
   };
   if (name !== "undefined") {
     resource["name"] = name;
@@ -237,7 +229,7 @@ const stackOptional = [
   "Parameters",
   "Tags",
   "TemplateURL",
-  "TimeoutInMinutes"
+  "TimeoutInMinutes",
 ];
 const stackResource = generateAWSResource(
   "undefined",
@@ -254,10 +246,10 @@ const lambdaOptional = [
   "Policies",
   "Role",
   "Tags",
-  "Description"
+  "Description",
 ];
 const lambdaDefault = {
-  Handler: { Key: "Handler", Value: "app.lambdaHandler" }
+  Handler: { Key: "Handler", Value: "app.lambdaHandler" },
 };
 const lambdaResource = generateAWSResource(
   "FunctionName",
@@ -281,7 +273,7 @@ const dynamoDBOptional = [
   "StreamSpecification",
   "TableClass",
   "Tags",
-  "TimeToLiveSpecification"
+  "TimeToLiveSpecification",
 ];
 const dynamoDBResource = generateAWSResource(
   "TableName",
@@ -313,7 +305,7 @@ const cognitoUserPoolOptional = [
   "UsernameConfiguration",
   "UserPoolAddOns",
   "UserPoolTags",
-  "VerificationMessageTemplate"
+  "VerificationMessageTemplate",
 ];
 const cognitoUserPoolResource = generateAWSResource(
   "UserPoolName",
@@ -343,7 +335,7 @@ const userPoolClientOptional = [
   "RefreshTokenValidity",
   "SupportedIdentityProviders",
   "TokenValidityUnits",
-  "WriteAttributes"
+  "WriteAttributes",
 ];
 const userPoolClientResource = generateAWSResource(
   "ClientName",
@@ -357,10 +349,10 @@ const lambdaPermissionBase = ["FunctionName", "Principal"];
 const lambdaPermissionOptional = [
   "EventSourceToken",
   "SourceAccount",
-  "SourceArn"
+  "SourceArn",
 ];
 const lambdaPermissionDefault = {
-  Action: { Key: "Action", Value: "lambda:InvokeFunction" }
+  Action: { Key: "Action", Value: "lambda:InvokeFunction" },
 };
 const lambdaPermissionResource = generateAWSResource(
   "Name",
@@ -406,7 +398,7 @@ const apigatewayOptional = [
   "OpenApiVersion",
   "Tags",
   "TracingEnabled",
-  "Variables"
+  "Variables",
 ];
 const apigatewayDefault = {};
 const apigatewayResource = generateAWSResource(
@@ -430,7 +422,7 @@ const stepfunctionOptional = [
   "Role",
   "Tags",
   "Tracing",
-  "Type"
+  "Type",
 ];
 const stepfunctionDefault = {};
 const stepfunctionResource = generateAWSResource(
@@ -461,7 +453,7 @@ const s3bucketOptional = [
   "ReplicationConfiguration",
   "Tags",
   "VersioningConfiguration",
-  "WebsiteConfiguration"
+  "WebsiteConfiguration",
 ];
 const s3bucketDefault = {};
 const s3bucketResource = generateAWSResource(
@@ -480,7 +472,7 @@ const apikeyOptional = [
   "GenerateDistinctId",
   "StageKeys",
   "Tags",
-  "Value"
+  "Value",
 ];
 const apikeyDefault = {};
 const apikeyResource = generateAWSResource(
@@ -497,7 +489,7 @@ const usageplanOptional = [
   "Description",
   "Quota",
   "Tags",
-  "Throttle"
+  "Throttle",
 ];
 const usageplanDefault = {};
 const usageplanResource = generateAWSResource(
@@ -527,7 +519,7 @@ const apiauthorizerOptional = [
   "AuthType",
   "IdentitySource",
   "IdentityValidationExpression",
-  "ProviderARNs"
+  "ProviderARNs",
 ];
 const apiauthorizerDefault = {};
 const apiauthorizerResource = generateAWSResource(
@@ -546,7 +538,7 @@ const vpcOptional = [
   "InstanceTenancy",
   "Ipv4IpamPoolId",
   "Ipv4NetmaskLength",
-  "Tags"
+  "Tags",
 ];
 const vpcResource = generateAWSResource(
   "",
@@ -588,7 +580,7 @@ const subnetOptional = [
   "MapPublicIpOnLaunch",
   "OutpostArn",
   "PrivateDnsNameOptionsOnLaunch",
-  "Tags"
+  "Tags",
 ];
 const subnetResource = generateAWSResource(
   "",
@@ -621,7 +613,7 @@ const routeOptional = [
   "NetworkInterfaceId",
   "TransitGatewayId",
   "VpcEndpointId",
-  "VpcPeeringConnectionId"
+  "VpcPeeringConnectionId",
 ];
 const routeResource = generateAWSResource(
   "",
@@ -647,7 +639,7 @@ const eipOptional = [
   "InstanceId",
   "NetworkBorderGroup",
   "PublicIpv4Pool",
-  "Tags"
+  "Tags",
 ];
 const eipResource = generateAWSResource(
   "",
@@ -673,7 +665,7 @@ const securitygroupOptional = [
   "SecurityGroupEgress",
   "SecurityGroupIngress",
   "Tags",
-  "VpcId"
+  "VpcId",
 ];
 const securitygroupResource = generateAWSResource(
   "",
@@ -726,7 +718,7 @@ const dbclusterOptional = [
   "StorageEncrypted",
   "Tags",
   "UseLatestRestorableTime",
-  "VpcSecurityGroupIds"
+  "VpcSecurityGroupIds",
 ];
 const dbclusterResource = generateAWSResource(
   "",
@@ -788,7 +780,7 @@ const dbinstanceOptional = [
   "Tags",
   "Timezone",
   "UseDefaultProcessorFeatures",
-  "VPCSecurityGroups"
+  "VPCSecurityGroups",
 ];
 const dbinstanceResource = generateAWSResource(
   "DBName",
@@ -805,7 +797,7 @@ const secretOptional = [
   "KmsKeyId",
   "ReplicaRegions",
   "SecretString",
-  "Tags"
+  "Tags",
 ];
 const secretResource = generateAWSResource(
   "Name",
@@ -819,7 +811,7 @@ const codebuildprojectBase = [
   "Artifacts",
   "ServiceRole",
   "Source",
-  "Environment"
+  "Environment",
 ];
 const codebuildprojectOptional = [
   "BadgeEnabled",
@@ -840,7 +832,7 @@ const codebuildprojectOptional = [
   "TimeoutInMinutes",
   "Triggers",
   "Visibility",
-  "VpcConfig"
+  "VpcConfig",
 ];
 const codebuildprojectResource = generateAWSResource(
   "Name",
@@ -859,17 +851,17 @@ const iamroleOptional = [
   "PermissionsBoundary",
   "Policies",
   "RoleName",
-  "Tags"
+  "Tags",
 ];
 const iamroleDefault = {
   AssumeRolePolicyDocument: {
     Key: "AssumeRolePolicyDocument",
-    Value: IAMRoleSkeleton["AssumeRolePolicyDocument"]
+    Value: IAMRoleSkeleton["AssumeRolePolicyDocument"],
   },
   ManagedPolicyArns: {
     Key: "ManagedPolicyArns",
-    Value: IAMRoleSkeleton["ManagedPolicyArns"]
-  }
+    Value: IAMRoleSkeleton["ManagedPolicyArns"],
+  },
 };
 const iamroleResource = generateAWSResource(
   "RoleName",
@@ -908,68 +900,68 @@ export const AWSResources: Record<string, IroverGenerateResourceObject> = {
   dbcluster: dbclusterResource,
   dbinstance: dbinstanceResource,
   secret: secretResource,
-  codebuildproject: codebuildprojectResource
+  codebuildproject: codebuildprojectResource,
 };
 export const APIGatewayURI: Record<string, string> = {
   lambda: "lambda:path/2015-03-31/functions/${lambda.Arn}/invocations",
-  stepfunction: "states:action/StartSyncExecution"
+  stepfunction: "states:action/StartSyncExecution",
 };
 export const SwaggerSkeleton = {
   openapi: "3.0.1",
   info: {
     title: "user-api",
-    version: "2021-11-22T07:01:12Z"
+    version: "2021-11-22T07:01:12Z",
   },
   paths: {},
   components: {
     schemas: {
       Empty: {
         title: "Empty Schema",
-        type: "object"
-      }
-    }
-  }
+        type: "object",
+      },
+    },
+  },
 };
 const swaggerparameter = {
   name: "email",
   in: "path",
   required: true,
   schema: {
-    type: "string"
-  }
+    type: "string",
+  },
 };
 const httpresponses = {
   description: "200 response",
   headers: {
     "Access-Control-Allow-Origin": {
       schema: {
-        type: "string"
-      }
+        type: "string",
+      },
     },
     "Access-Control-Allow-Methods": {
       schema: {
-        type: "string"
-      }
+        type: "string",
+      },
     },
     "Access-Control-Allow-Headers": {
       schema: {
-        type: "string"
-      }
-    }
+        type: "string",
+      },
+    },
   },
   content: {
     "application/json": {
       schema: {
-        $ref: "#/components/schemas/Empty"
-      }
-    }
-  }
+        $ref: "#/components/schemas/Empty",
+      },
+    },
+  },
 };
 
 const swaggerresponse = {
   "200": httpresponses,
   "400": httpresponses,
-  "500": httpresponses
+  "500": httpresponses,
 };
 const xamazonapigatewayintegrationresponse = {
   default: {
@@ -979,15 +971,15 @@ const xamazonapigatewayintegrationresponse = {
         "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       "method.response.header.Access-Control-Allow-Headers":
         "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-      "method.response.header.Access-Control-Allow-Origin": "'*'"
+      "method.response.header.Access-Control-Allow-Origin": "'*'",
     },
     responseTemplates: {
-      "application/json": "{}    \n"
-    }
-  }
+      "application/json": "{}    \n",
+    },
+  },
 };
 const xamazonapigatewayintegrationuri = {
-  "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:"
+  "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:",
 };
 const xamazonapigatewayintegration = {
   httpMethod: "POST",
@@ -995,11 +987,11 @@ const xamazonapigatewayintegration = {
   responses: xamazonapigatewayintegrationresponse,
   passthroughBehavior: "when_no_match",
   contentHandling: "CONVERT_TO_TEXT",
-  type: "aws_proxy"
+  type: "aws_proxy",
 };
 const swaggermethods = {
   responses: swaggerresponse,
-  "x-amazon-apigateway-integration": xamazonapigatewayintegration
+  "x-amazon-apigateway-integration": xamazonapigatewayintegration,
 };
 const swaggermethodswithparameter: Record<string, unknown> = swaggermethods;
 swaggermethodswithparameter["parameters"] = [swaggerparameter];
@@ -1013,10 +1005,10 @@ export const SwaggerPathSkeleton: Record<string, unknown> = {
     "x-amazon-apigateway-integration": {
       responses: xamazonapigatewayintegrationresponse,
       requestTemplates: {
-        "application/json": '{"statusCode": 200}'
+        "application/json": '{"statusCode": 200}',
       },
       passthroughBehavior: "when_no_match",
-      type: "mock"
-    }
-  }
+      type: "mock",
+    },
+  },
 };

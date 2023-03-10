@@ -1,10 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-export const LambdaLogicsFileMappings: Record<
-  string,
-  Record<string, string>
-> = {
+export const LambdaLogicsFileMappings: Record<string, Record<string, string>> = {
   "nodejs14.x": {
     EmailAuthModule_PreSignUp: "emailAuthModulePreSignUp.js",
     EmailAuthModule_DefineAuthChallenge:
@@ -23,9 +20,9 @@ export const LambdaLogicsFileMappings: Record<
     s3_lambda: "s3Lambda.js",
     EmailAuthModule_Users: "emailAuthModuleUsers.js",
     crud: "crud.js",
-    rdstable: "rdsTable.js"
+    rdstable: "rdsTable.js",
   },
-  "python3.9": {}
+  "python3.9": {},
 };
 
 export function generateLambdaLogics(filename: string, language: string) {

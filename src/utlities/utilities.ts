@@ -14,11 +14,11 @@ import {
   IroverAppType,
   IroverInput,
   TSAMTemplate,
-  TSAMTemplateResources
+  TSAMTemplateResources,
 } from "../roverTypes/rover.types";
 import {
   IaddComponentAppData,
-  IroveraddComponentInput
+  IroveraddComponentInput,
 } from "../addComponents/addComponents.types";
 
 const exec = child.execSync;
@@ -103,7 +103,7 @@ export function addResourceTemplate(
 }
 export function replaceYAML(doc: string): string {
   const yamlArray: Record<string, string> = {
-    OFF: "'OFF'"
+    OFF: "'OFF'",
   };
   Object.keys(yamlArray).forEach((key) => {
     doc = doc.replace(key, yamlArray[key]);
@@ -264,7 +264,7 @@ export function getAppdata(input: IroverInput): IroverAppData {
     language: config.LanguageSupport[input.language]["version"],
     dependency: config.LanguageSupport[input.language]["dependency"],
     extension: config.LanguageSupport[input.language]["extension"],
-    StackType: appDataArray
+    StackType: appDataArray,
   };
   return appData;
 }
@@ -306,7 +306,7 @@ export function cliModuletoConfig(
       });
       app_types[ele] = {
         resources: resources,
-        type: "components"
+        type: "components",
       };
     } else {
       stackdata = JSON.parse(

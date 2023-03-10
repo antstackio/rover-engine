@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 const md5 = require("md5");
 
 exports.lambdaHandler = async (event) => {

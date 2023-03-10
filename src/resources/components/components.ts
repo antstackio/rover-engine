@@ -1,12 +1,12 @@
 import {
   IroverResources,
-  IaddComponentResource
+  IaddComponentResource,
 } from "../../roverTypes/rover.types";
 import {
   IcurdObject,
   ICRUDiamresource,
   TLambdaENV,
-  TcrudMethods
+  TcrudMethods,
 } from "./components.types";
 import { IcurdComponentObject } from "../../generateSAM/generatesam.types";
 export const generateRoverResource = (
@@ -21,7 +21,7 @@ export const generateRoverResource = (
     config: {},
     logicpath: "",
     package: [""],
-    logic: logic
+    logic: logic,
   };
   if (config.length !== 0 || config !== undefined) {
     resource["config"] = config;
@@ -51,17 +51,17 @@ export const generatecrud = (
     const tableaccess = {
       Environment: {
         Variables: {
-          Table: { Ref: ele + "Table" }
-        }
+          Table: { Ref: ele + "Table" },
+        },
       },
       Policies: [
         "AWSLambdaDynamoDBExecutionRole",
         {
           DynamoDBCrudPolicy: {
-            TableName: { Ref: ele + "Table" }
-          }
-        }
-      ]
+            TableName: { Ref: ele + "Table" },
+          },
+        },
+      ],
     };
     const lambdafunc: IroverResources = generateRoverResource(
       ele + "Function",
@@ -75,15 +75,15 @@ export const generatecrud = (
       AttributeDefinitions: [
         {
           AttributeName: "id",
-          AttributeType: "S"
-        }
+          AttributeType: "S",
+        },
       ],
       KeySchema: [
         {
           AttributeName: "id",
-          KeyType: "HASH"
-        }
-      ]
+          KeyType: "HASH",
+        },
+      ],
     };
 
     const table = generateRoverResource(
@@ -98,13 +98,13 @@ export const generatecrud = (
       {
         "Fn::Sub":
           "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/" +
-          table["name"]
+          table["name"],
       },
       {
         "Fn::Sub":
           "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/" +
           table["name"] +
-          "/index/*"
+          "/index/*",
       }
     );
   });
@@ -115,7 +115,7 @@ export const generatecrud = (
       iamservice: ["lambda.amazonaws.com", "apigateway.amazonaws.com"],
       managedarn: [
         "AWSLambdaBasicExecutionRole",
-        "AmazonAPIGatewayPushToCloudWatchLogs"
+        "AmazonAPIGatewayPushToCloudWatchLogs",
       ],
       Path: "/",
       Policies: [
@@ -123,8 +123,8 @@ export const generatecrud = (
           name: "lambdainvoke",
           Action: "lambda:InvokeFunction",
           Resource: {
-            "Fn::Sub": "arn:aws:lambda:*:${AWS::AccountId}:function:*"
-          }
+            "Fn::Sub": "arn:aws:lambda:*:${AWS::AccountId}:function:*",
+          },
         },
         {
           name: "dynamodbcrud",
@@ -138,26 +138,26 @@ export const generatecrud = (
             "dynamodb:BatchWriteItem",
             "dynamodb:BatchGetItem",
             "dynamodb:DescribeTable",
-            "dynamodb:ConditionCheckItem"
+            "dynamodb:ConditionCheckItem",
           ],
-          Resource: iamresources
-        }
-      ]
+          Resource: iamresources,
+        },
+      ],
     },
     package: [""],
 
     logic: false,
-    logicpath: ""
+    logicpath: "",
   };
   const apis = {
     name: apiname + "APIs",
     type: "apigateway",
     config: {
       StageName: "dev",
-      objects: objects
+      objects: objects,
     },
     logic: false,
-    logicpath: ""
+    logicpath: "",
   };
   const res: Record<string, IaddComponentResource> = {};
   res[apiname] = { resources: [] };
@@ -193,7 +193,7 @@ export const generateAPIGatewayObject = (
       resource: <string>ele[2],
       role: <string>ele[3],
       path: <string>ele[4],
-      resourcetype: <string>ele[5]
+      resourcetype: <string>ele[5],
     };
     response.push(obj);
   });
@@ -203,8 +203,8 @@ const crudcomponentconfig = <Record<string, IcurdComponentObject>>{
   book: {
     path: "/book",
     methods: ["put", "get", "post", "delete", "options"],
-    resourcetype: "lambda"
-  }
+    resourcetype: "lambda",
+  },
 };
 const crudcomponent: Record<string, IaddComponentResource> = generatecrud(
   "Book",
@@ -217,11 +217,11 @@ export const Components: Record<string, Array<IroverResources>> = {
       name: "Lambdas",
       type: "lambda",
       config: {
-        Policies: ["AWSLambdaDynamoDBExecutionRole"]
+        Policies: ["AWSLambdaDynamoDBExecutionRole"],
       },
       logic: true,
       logicpath: "",
-      package: []
+      package: [],
     },
     {
       name: "Bucket",
@@ -232,25 +232,25 @@ export const Components: Record<string, Array<IroverResources>> = {
             {
               AllowedHeaders: ["*"],
               AllowedMethods: ["GET", "PUT", "POST", "DELETE"],
-              AllowedOrigins: ["*"]
-            }
-          ]
-        }
+              AllowedOrigins: ["*"],
+            },
+          ],
+        },
       },
       logic: false,
       logicpath: "",
-      package: []
-    }
+      package: [],
+    },
   ],
   "CRUD API": crudcomponent["Book"]["resources"],
   "S3 Bucket": [generateRoverResource("Bucket", "s3bucket", {}, false)],
   Lambda: [generateRoverResource("Lambda", "lambda", {}, true)],
-  DynamoDB: [generateRoverResource("Dynamodb", "dynamoDB", {}, false)]
+  DynamoDB: [generateRoverResource("Dynamodb", "dynamoDB", {}, false)],
 };
 export const ModuleDescription = {
   "S3 Lambda": "lambda with S3 as trigger",
   "CRUD API": "basic book CRUD API's ",
   "S3 Bucket": "Simple Storage Service Bucket ",
   Lambda: "one Lambda function",
-  DynamoDB: "One DynamoDB table"
+  DynamoDB: "One DynamoDB table",
 };

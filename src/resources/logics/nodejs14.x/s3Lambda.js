@@ -3,7 +3,7 @@ const aws = require("aws-sdk");
 const s3 = new aws.S3({ apiVersion: "2006-03-01" });
 
 exports.handler = async (event) => {
-  //console.log('Received event:', JSON.stringify(event, null, 2));
+  console.log("Received event:", JSON.stringify(event, null, 2));
 
   // Get the object from the event and show its content type
   const bucket = event.Records[0].s3.bucket.name;

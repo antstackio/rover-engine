@@ -23,7 +23,7 @@ const generatePolicy = (principalId, methodArn) => {
 
 export async function handler(event, context) {
   if (!event.authorizationToken) {
-    throw "Unauthorized";
+    throw new Error("Unauthorized");
   }
 
   const token = event.authorizationToken.replace("Bearer ", "");
@@ -38,6 +38,6 @@ export async function handler(event, context) {
     };
   } catch (error) {
     console.log(error);
-    throw "Unauthorized";
+    throw new Error("Unauthorized");
   }
 }

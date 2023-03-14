@@ -2,8 +2,9 @@ exports.lambdaHandler = async (event) => {
   let password;
   if (!event.request.session || !event.request.session.length) {
     // new session, so fetch password from the db
-    const username = event.request.userAttributes.email;
-    const user = event.request.userAttributes.username;
+    // Developer can fetch username and email from the event object -
+    // const username = event.request.userAttributes.email;
+    // const user = event.request.userAttributes.username;
     password = event.request.userAttributes.password;
   } else {
     const previousChallenge = event.request.session.slice(-1)[0];

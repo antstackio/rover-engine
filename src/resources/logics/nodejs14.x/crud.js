@@ -5,46 +5,34 @@ const dynamoDB = new aws.DynamoDB.DocumentClient();
 const Table = process.env.Table;
 
 async function getData(id) {
-  try {
-    const params = {
-      TableName: Table,
-      Key: { id: id }
-    };
-    let { Item } = await dynamoDB.get(params).promise();
-    console.log("[INFO] getData output", Item);
-    return Item;
-  } catch (err) {
-    throw err;
-  }
+  const params = {
+    TableName: Table,
+    Key: { id: id },
+  };
+  let { Item } = await dynamoDB.get(params).promise();
+  console.log("[INFO] getData output", Item);
+  return Item;
 }
 async function deleteData(id) {
-  try {
-    const params = {
-      TableName: Table,
-      Key: { id: id }
-    };
-    let { Item } = await dynamoDB.delete(params).promise();
-    console.log("[INFO] getData output", Item);
-    return Item;
-  } catch (err) {
-    throw err;
-  }
+  const params = {
+    TableName: Table,
+    Key: { id: id },
+  };
+  let { Item } = await dynamoDB.delete(params).promise();
+  console.log("[INFO] getData output", Item);
+  return Item;
 }
 async function addupdateData(userData) {
-  try {
-    console.log("[INFO] addupdateData input", userData);
-    const params = {
-      TableName: Table,
-      Item: userData
-    };
-    let Items = await dynamoDB.put(params).promise();
-    console.log("[INFO] addupdateData output", Items);
-    return Items;
-  } catch (err) {
-    throw err;
-  }
+  console.log("[INFO] addupdateData input", userData);
+  const params = {
+    TableName: Table,
+    Item: userData,
+  };
+  let Items = await dynamoDB.put(params).promise();
+  console.log("[INFO] addupdateData output", Items);
+  return Items;
 }
-exports.lambdaHandler = async (event, context) => {
+exports.lambdaHandler = async (event) => {
   try {
     let res;
     console.log("events ");
@@ -52,7 +40,7 @@ exports.lambdaHandler = async (event, context) => {
       if (event.body !== undefined) {
         event = JSON.parse(event.body);
       }
-      res = await addupdateData(event);
+      await addupdateData(event);
       res = { message: "data updated" };
     }
     if (event.httpMethod == "GET") {
@@ -62,24 +50,24 @@ exports.lambdaHandler = async (event, context) => {
       if (event.body !== undefined) {
         event = JSON.parse(event.body);
       }
-      res = await addupdateData(event);
+      await addupdateData(event);
       res = { message: "data updated" };
     }
     if (event.httpMethod == "DELETE") {
-      res = await deleteData(event.pathParameters["id"]);
+      await deleteData(event.pathParameters["id"]);
       res = { message: "data deleted" };
     }
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        data: res
-      })
+        data: res,
+      }),
     };
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 200,
-      body: JSON.stringify(err)
+      body: JSON.stringify(err),
     };
   }
 

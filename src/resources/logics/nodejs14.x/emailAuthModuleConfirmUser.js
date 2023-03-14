@@ -5,18 +5,14 @@ const UserTable = process.env.userinfoTable;
 const UserPoolID = process.env.UserPoolID;
 const UserPoolClientID = process.env.UserPoolClientID;
 async function addUserData(userData) {
-  try {
-    console.log("[INFO] addUserData input", userData);
-    const params = {
-      TableName: UserTable,
-      Item: userData,
-    };
-    let Items = await dynamoDB.put(params).promise();
-    console.log("[INFO] addUserData output", Items);
-    return Items;
-  } catch (err) {
-    throw err;
-  }
+  console.log("[INFO] addUserData input", userData);
+  const params = {
+    TableName: UserTable,
+    Item: userData,
+  };
+  let Items = await dynamoDB.put(params).promise();
+  console.log("[INFO] addUserData output", Items);
+  return Items;
 }
 exports.lambdaHandler = async (event, context) => {
   try {
@@ -29,14 +25,14 @@ exports.lambdaHandler = async (event, context) => {
       ConfirmationCode: event.Code,
       Username: event.emailId,
     };
-    let res = await cognito.confirmSignUp(params).promise();
+    await cognito.confirmSignUp(params).promise();
 
     params = {
       UserPoolId: UserPoolID,
       AttributesToGet: ["email", "name", "sub"],
     };
 
-    res = await cognito.listUsers(params).promise();
+    let res = await cognito.listUsers(params).promise();
     let user = {};
     let Attributes = {};
     res["Users"].map((ele) => {

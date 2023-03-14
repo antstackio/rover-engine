@@ -6,46 +6,35 @@ const UserTable = process.env.userinfoTable;
 // const UserPoolID = process.env.UserPoolID;
 // const UserPoolClientID = process.env.UserPoolClientID;
 async function getUserData(id) {
-  try {
-    const params = {
-      TableName: UserTable,
-      Key: { email: id },
-    };
-    let { Item } = await dynamoDB.get(params).promise();
-    console.log("[INFO] getUserData output", Item);
-    return Item;
-  } catch (err) {
-    throw err;
-  }
+  const params = {
+    TableName: UserTable,
+    Key: { email: id },
+  };
+  let { Item } = await dynamoDB.get(params).promise();
+  console.log("[INFO] getUserData output", Item);
+  return Item;
 }
 async function deleteUserData(id) {
-  try {
-    const params = {
-      TableName: UserTable,
-      Key: { email: id },
-    };
-    let { Item } = await dynamoDB.delete(params).promise();
-    console.log("[INFO] getUserData output", Item);
-    return Item;
-  } catch (err) {
-    throw err;
-  }
+  const params = {
+    TableName: UserTable,
+    Key: { email: id },
+  };
+  let { Item } = await dynamoDB.delete(params).promise();
+  console.log("[INFO] getUserData output", Item);
+  return Item;
 }
 async function addUserData(userData) {
-  try {
-    console.log("[INFO] addUserData input", userData);
-    const params = {
-      TableName: UserTable,
-      Item: userData,
-    };
-    let Items = await dynamoDB.put(params).promise();
-    console.log("[INFO] addUserData output", Items);
-    return Items;
-  } catch (err) {
-    throw err;
-  }
+  console.log("[INFO] addUserData input", userData);
+  const params = {
+    TableName: UserTable,
+    Item: userData,
+  };
+  let Items = await dynamoDB.put(params).promise();
+  console.log("[INFO] addUserData output", Items);
+  return Items;
 }
-exports.lambdaHandler = async (event, context) => {
+
+exports.lambdaHandler = async (event) => {
   try {
     let res;
     console.log("events ", event.pathParameters["email"]);

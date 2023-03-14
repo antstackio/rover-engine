@@ -8,7 +8,6 @@ exports.lambdaHandler = async (event) => {
     if (event.body !== undefined) {
       event = JSON.parse(event.body);
     }
-    // const ret = await axios(url);
     const cognito = new aws.CognitoIdentityServiceProvider();
     const params = {
       ClientId: UserPoolClientID,

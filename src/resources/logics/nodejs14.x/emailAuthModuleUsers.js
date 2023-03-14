@@ -2,8 +2,9 @@ let response;
 const aws = require("aws-sdk");
 const dynamoDB = new aws.DynamoDB.DocumentClient();
 const UserTable = process.env.userinfoTable;
-const UserPoolID = process.env.UserPoolID;
-const UserPoolClientID = process.env.UserPoolClientID;
+// User pool ID & User pool client ID is available via this method -
+// const UserPoolID = process.env.UserPoolID;
+// const UserPoolClientID = process.env.UserPoolClientID;
 async function getUserData(id) {
   try {
     const params = {

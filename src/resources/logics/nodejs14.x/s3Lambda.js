@@ -1,26 +1,27 @@
-exports.lambdaHandler = async (event) => {
-  if (
-    event.request.session &&
-    event.request.session.length >= 3 &&
-    event.request.session.slice(-1)[0].challengeResult === false
-  ) {
-    // The user provided a wrong answer 3 times; fail auth
-    event.response.issueTokens = false;
-    event.response.failAuthentication = true;
-  } else if (
-    event.request.session &&
-    event.request.session.length &&
-    event.request.session.slice(-1)[0].challengeResult === true
-  ) {
-    // The user provided the right answer; succeed auth
-    event.response.issueTokens = true;
-    event.response.failAuthentication = false;
-  } else {
-    // The user did not provide a correct answer yet; present challenge
-    event.response.issueTokens = false;
-    event.response.failAuthentication = false;
-    event.response.challengeName = "CUSTOM_CHALLENGE";
-  }
+const aws = require("aws-sdk");
 
-  return event;
+const s3 = new aws.S3({ apiVersion: "2006-03-01" });
+
+exports.handler = async (event) => {
+  //console.log('Received event:', JSON.stringify(event, null, 2));
+
+  // Get the object from the event and show its content type
+  const bucket = event.Records[0].s3.bucket.name;
+  const key = decodeURIComponent(
+    event.Records[0].s3.object.key.replace(/\+/g, " ")
+  );
+  const params = {
+    Bucket: bucket,
+    Key: key,
+  };
+  try {
+    const { ContentType } = await s3.getObject(params).promise();
+    console.log("CONTENT TYPE:", ContentType);
+    return ContentType;
+  } catch (err) {
+    console.log(err);
+    const message = `Error getting object ${key} from bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
+    console.log(message);
+    throw new Error(message);
+  }
 };

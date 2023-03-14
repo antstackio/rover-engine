@@ -1,5 +1,6 @@
 let response;
-const UserPoolID = process.env.UserPoolID;
+// User pool ID is available via this method -
+// const UserPoolID = process.env.UserPoolID;
 const UserPoolClientID = process.env.UserPoolClientID;
 const aws = require("aws-sdk");
 exports.lambdaHandler = async (event, context) => {

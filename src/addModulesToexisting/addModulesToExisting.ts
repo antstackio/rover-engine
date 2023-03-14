@@ -15,7 +15,7 @@ import {
   IroverAppType,
   TSAMTemplate,
 } from "../roverTypes/rover.types";
-
+import { IstackDetails } from "../generateSAM/generatesam.types";
 import { IaddComponentComp } from "../addComponents/addComponents.types";
 
 import {
@@ -28,10 +28,17 @@ export function addModulesToExistingStack(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
     inputJSON.app_name = input.app_name + "_test";
-    console.log()
+    console.log();
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
-    createStack(app_data, app_types, input.file_name);
+    const stackMap = stackMapping(Object.keys(app_types), input.stackDetails);
+    const stackData = createStack(
+      app_data,
+      app_types,
+      input.file_name,
+      stackMap
+    );
+    createStackFolders(stackData);
     //exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
     // helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
   } catch (error) {
@@ -41,13 +48,18 @@ export function addModulesToExistingStack(input: IroveraddModule): void {
 export function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject,
-  filename: string
-): void {
+  filename: string,
+  stackMap: Record<string, string>
+): Record<string, IroverCreateStackResponse> {
   const stack_names: Array<string> = Object.keys(app_types);
   const resource = app_types;
   const stackes: TSAMTemplateResources = {};
-  const response: IroverCreateStackResponse = <IroverCreateStackResponse>{};
+
+  const responses: Record<string, IroverCreateStackResponse> = <
+    Record<string, IroverCreateStackResponse>
+  >{};
   for (let i = 0; i < stack_names.length; i++) {
+    const response: IroverCreateStackResponse = <IroverCreateStackResponse>{};
     const stacks = rover_resources.resourceGeneration("stack", {
       TemplateURL: stack_names[i] + "/template.yaml",
     });
@@ -66,8 +78,10 @@ export function createStack(
     response["template"] = <TSAMTemplate>template;
     response["fileName"] = filename;
     response["appData"] = app_data;
-    console.log("template", JSON.stringify(response));
+    //console.log("template", JSON.stringify(response));
+    responses[stackMap[stack_names[i]]] = response;
   }
+  return responses;
 }
 
 function createStackResources(
@@ -132,4 +146,22 @@ function createStackResources(
     res[resources["resources"][j]["name"]] = resources1;
   }
   return res;
+}
+
+function createStackFolders(inputs: Record<string, IroverCreateStackResponse>) {
+  for (const input of Object.keys(inputs)) {
+    //console.log(input, JSON.stringify(inputs[input]));
+    console.log(pwd + inputs[input].appData.app_name + "/" + input);
+  }
+}
+
+function stackMapping(
+  newStackNames: Array<string>,
+  stackDetails: IstackDetails
+) {
+  const response: Record<string, string> = {};
+  for (const stackes of newStackNames) {
+    response[stackes] = stackDetails[stackes].stackName;
+  }
+  return response;
 }

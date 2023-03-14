@@ -45,11 +45,11 @@ exports.lambdaHandler = async (event) => {
       if (event.body !== undefined) {
         event = JSON.parse(event.body);
       }
-      res = await addUserData(event);
+      await addUserData(event);
       res = { message: "data updated" };
     }
     if (event.httpMethod == "DELETE") {
-      res = await deleteUserData(event.pathParameters["email"]);
+      await deleteUserData(event.pathParameters["email"]);
       res = { message: "data deleted" };
     }
     response = {

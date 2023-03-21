@@ -1,4 +1,3 @@
-// WE GOT THIS FROM THE LOGICS DIRECTORY
 let response;
 const aws = require("aws-sdk");
 const dynamoDB = new aws.DynamoDB.DocumentClient();

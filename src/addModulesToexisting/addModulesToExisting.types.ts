@@ -11,5 +11,9 @@ export interface IroveraddModule extends IroverInput {
 export interface IroverCreateStackResponse {
   fileName: string;
   template: TSAMTemplate;
+  stackType: string;
   appData: IroverAppData;
+  lambdaDetails:
+    | Record<string, Record<string, string | boolean | Array<string>>>
+    | never;
 }

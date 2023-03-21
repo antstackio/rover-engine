@@ -2,7 +2,6 @@ import * as utlities from "../utlities/utilities";
 import * as config from "../utlities/config";
 import * as helpers from "../helpers/helpers";
 import * as rover_resources from "../resources/resources";
-import * as child from "child_process";
 import * as yaml from "yaml";
 import * as fs from "fs";
 import * as Yaml from "js-yaml";
@@ -16,14 +15,13 @@ import {
   TSAMTemplate,
 } from "../roverTypes/rover.types";
 import { IstackDetails } from "../generateSAM/generatesam.types";
-import { IaddComponentComp } from "../addComponents/addComponents.types";
-
 import {
   IroveraddModule,
   IroverCreateStackResponse,
 } from "./addModulesToExisting.types";
-const exec = child.execSync;
+
 const pwd = utlities.pwd;
+
 export function addModulesToExistingStack(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
@@ -39,7 +37,6 @@ export function addModulesToExistingStack(input: IroveraddModule): void {
       stackMap
     );
     createStackFolders(stackData);
-    //exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
     // helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);
@@ -49,7 +46,7 @@ export function createStack(
   app_data: IroverAppData,
   app_types: TroverAppTypeObject,
   filename: string,
-  stackMap: Record<string, string>
+  stackMap: Record<string, Record<string, string>>
 ): Record<string, IroverCreateStackResponse> {
   const stack_names: Array<string> = Object.keys(app_types);
   const resource = app_types;
@@ -68,7 +65,7 @@ export function createStack(
     const resources = resource[stack_names[i]];
     const res = createStackResources(resources, app_data, stack_names[i]);
     const template = utlities.addResourceTemplate(
-      res,
+      <TSAMTemplateResources>res["response"],
       Object.keys(res),
       undefined
     );
@@ -79,7 +76,11 @@ export function createStack(
     response["fileName"] = filename;
     response["appData"] = app_data;
     //console.log("template", JSON.stringify(response));
-    responses[stackMap[stack_names[i]]] = response;
+    response["stackType"] = stackMap[stack_names[i]]["stackType"];
+    response["lambdaDetails"] = <
+      Record<string, Record<string, string | boolean | Array<string>>>
+    >res["lambdaDetails"];
+    responses[stackMap[stack_names[i]]["stackName"]] = response;
   }
   return responses;
 }
@@ -88,9 +89,17 @@ function createStackResources(
   resources: IroverAppType,
   app_data: IroverAppData,
   stack_names: string
-): TSAMTemplateResources {
+): Record<
+  string,
+  | TSAMTemplateResources
+  | Record<string, Record<string, string | boolean | Array<string>>>
+  | never
+> {
   const res: TSAMTemplateResources = {};
   const resourceobject: TroverResourcesArray = resources["resources"];
+  const lambdaDetails:
+    | Record<string, Record<string, string | boolean | Array<string>>>
+    | never = {};
   resourceobject.forEach(function (element: IroverResources) {
     element.config[
       "Description"
@@ -132,7 +141,13 @@ function createStackResources(
     if (resources["resources"][j]["type"] == "lambda") {
       configs["CodeUri"] = resources["resources"][j]["name"] + "/";
       configs["Runtime"] = app_data.language;
-      configs["haslogic"] = resources["resources"][j]["logic"];
+      lambdaDetails[resources["resources"][j]["name"]] = {};
+      lambdaDetails[resources["resources"][j]["name"]]["logic"] =
+        resources["resources"][j].logic;
+      lambdaDetails[resources["resources"][j]["name"]]["logicpath"] =
+        resources["resources"][j].logicpath;
+      lambdaDetails[resources["resources"][j]["name"]]["package"] =
+        resources["resources"][j].package;
     } else if (resources["resources"][j]["type"] == "apigateway") {
       configs["path"] = `${resources["resources"][j]["name"]}/swagger.yaml`;
       configs[
@@ -145,23 +160,74 @@ function createStackResources(
     );
     res[resources["resources"][j]["name"]] = resources1;
   }
-  return res;
-}
-
-function createStackFolders(inputs: Record<string, IroverCreateStackResponse>) {
-  for (const input of Object.keys(inputs)) {
-    //console.log(input, JSON.stringify(inputs[input]));
-    console.log(pwd + inputs[input].appData.app_name + "/" + input);
-  }
+  return { response: res, lambdaDetails: lambdaDetails };
 }
 
 function stackMapping(
   newStackNames: Array<string>,
   stackDetails: IstackDetails
 ) {
-  const response: Record<string, string> = {};
+  const response: Record<string, Record<string, string>> = {};
   for (const stackes of newStackNames) {
-    response[stackes] = stackDetails[stackes].stackName;
+    response[stackes] = {};
+    response[stackes]["stackName"] = stackDetails[stackes].stackName;
+    response[stackes]["stackType"] = stackDetails[stackes].type;
   }
+  console.log("stackMapping", JSON.stringify(response));
   return response;
+}
+
+function createStackFolders(inputs: Record<string, IroverCreateStackResponse>) {
+  for (const input of Object.keys(inputs)) {
+    // console.log("createStackFolders", input, JSON.stringify(inputs[input]));
+    const path = `${inputs[input].appData.app_name}/${input}`;
+    createResourceTemplate(path, inputs[input]);
+    createResourceFiles(path, inputs[input]);
+  }
+}
+
+function createResourceTemplate(path: string, data: IroverCreateStackResponse) {
+  const template = fs.readFileSync(`${pwd}${path}/template.yaml`, {
+    encoding: "utf8",
+    flag: "r",
+  });
+  const JSONTemplate: TSAMTemplate = <TSAMTemplate>(
+    Yaml.load(utlities.replaceTempTag(template))
+  );
+  JSONTemplate.Resources = {
+    ...JSONTemplate.Resources,
+    ...data.template.Resources,
+  };
+  const doc = new yaml.Document();
+  doc.contents = JSONTemplate;
+  const temp = utlities.replaceYAML(doc.toString());
+  //utlities.writeFile(`${path}/template.yaml`, temp);
+}
+function createResourceFiles(path: string, data: IroverCreateStackResponse) {
+  for (const logicalID of Object.keys(data.template.Resources)) {
+    if (
+      data.template.Resources[logicalID].Type ===
+      config.AWSResources["lambda"]["type"]
+    ) {
+      // copyRecursiveSync(
+      //   `${config.npmroot}/@rover-tools/cli/node_modules/@rover-tools/engine/assets/hello-world_node`,
+      //   `${pwd}${path}/${logicalID}`
+      // );
+      data.appData.StackType;
+    }
+  }
+}
+async function copyRecursiveSync(src: string, dest: string) {
+  const stats = fs.statSync(src);
+  const isDirectory = stats.isDirectory();
+  if (isDirectory) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest);
+    }
+    fs.readdirSync(src).forEach(function (childItemName) {
+      copyRecursiveSync(`${src}/${childItemName}`, `${dest}/${childItemName}`);
+    });
+  } else {
+    fs.copyFileSync(src, dest);
+  }
 }

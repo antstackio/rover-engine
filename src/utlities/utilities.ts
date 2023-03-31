@@ -1,7 +1,6 @@
 import * as config from "./config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
-import * as child from "child_process";
 import * as fs from "fs";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
@@ -20,7 +19,7 @@ import {
   IaddComponentAppData,
   IroveraddComponentInput,
 } from "../addComponents/addComponents.types";
-
+import * as child from "child_process";
 const exec = child.execSync;
 /* eslint-disable no-useless-escape */
 const sub = new RegExp(

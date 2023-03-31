@@ -99,7 +99,7 @@ function createStackResources(
     element.config[
       "Description"
     ] = `Rover-tools created ${element.name}  named ${element.type} resource`;
-    if (config.samabstract.includes(element.type)) {
+    if (config.samAbstract.includes(element.type)) {
       element.config["Tags"] = <IroverConfigTag>{
         createdBy: "rover",
         applicationName: app_data.app_name,
@@ -117,9 +117,9 @@ function createStackResources(
 
   for (const resource in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = helpers.makeId(4);
+      const randomString: string = helpers.makeId(4);
       resources["resources"][resource]["name"] =
-        resources["resources"][resource]["name"] + randomstr;
+        resources["resources"][resource]["name"] + randomString;
     }
     const configs = resources["resources"][resource]["config"];
     const haslogic = resources["resources"][resource]["logic"];

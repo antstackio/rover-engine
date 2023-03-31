@@ -244,7 +244,6 @@ export function createResourceFiles(
         `${config.npmroot}/@rover-tools/cli/node_modules/@rover-tools/engine/assets/hello-world_${langCode}`,
         `${pwd}${path}/${logicalID}`
       );
-      data.appData.StackType;
     } else if (
       data.template.Resources[logicalID].Type ===
       config.AWSResources["apigateway"]["type"]

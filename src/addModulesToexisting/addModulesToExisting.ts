@@ -42,7 +42,7 @@ export function addModulesToExistingStack(input: IroveraddModule): void {
     );
     createStackFolders(stackData);
     exec(`cd ${input.app_name} && npm run format:write`);
-    // helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
+    helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);
   }
@@ -66,7 +66,6 @@ export function createStack(
       TemplateURL: stack_names[i] + "/template.yaml",
     });
     stacks[stack_names[i]] = stack;
-    // exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
     const res = createStackResources(resources, app_data, stack_names[i]);
     const template = utlities.addResourceTemplate(
@@ -314,7 +313,7 @@ function getLambdaLogic(
       response = logics.LambdaLogics[<string>lambdaDetail["language"]][logicID];
     }
   }
-  let extension = ".js";
+  let extension 
   if ((<string>lambdaDetail["language"]).includes("node")) {
     extension = config.LanguageSupport["node"].extension;
   } else if ((<string>lambdaDetail["language"]).includes("python")) {

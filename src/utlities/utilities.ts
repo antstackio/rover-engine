@@ -315,34 +315,3 @@ export function cliModuletoConfig(
   });
   return app_types;
 }
-
-export function newInitializeSAM(
-  input: IroveraddComponentInput | IroverInput
-): void {
-  const app_name = input.app_name;
-  removeFolder(input.app_name);
-  const language = config.LanguageSupport[input.language]["version"];
-  const dependency = config.LanguageSupport[input.language]["dependency"];
-  exec(
-    config.SAMInitBase +
-      config.SAMLanguage +
-      language +
-      config.SAMDependency +
-      dependency +
-      config.SAMAppName +
-      app_name +
-      config.SAMAppTemplate
-  );
-  let source = pwd + input.app_name + "/hello-world";
-  if (dependency == "npm") {
-    exec(
-      "cd " +
-        pwd +
-        input.app_name +
-        " && npm init -y && npm  pkg set scripts.test='npm test' "
-    );
-    setupESLint(pwd + input.app_name, input.app_name);
-  }
-  if (!fs.existsSync(source)) source = pwd + input.app_name + "/hello_world";
-  moveFolder(source + " ", pwd + input.app_name + "/" + "lambda_demo");
-}

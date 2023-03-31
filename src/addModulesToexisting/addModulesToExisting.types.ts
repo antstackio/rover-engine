@@ -17,3 +17,4 @@ export interface IroverCreateStackResponse {
     | Record<string, Record<string, string | boolean | Array<string>>>
     | never;
 }
+export type TlambdaProperties = string | boolean | Array<string>

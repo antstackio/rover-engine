@@ -16,11 +16,13 @@ import {
   TSAMTemplateResources,
   IroverAppType,
   TSAMTemplate,
+  
 } from "../roverTypes/rover.types";
 import { IstackDetails } from "../generateSAM/generatesam.types";
 import {
   IroveraddModule,
   IroverCreateStackResponse,
+  TlambdaProperties
 } from "./addModulesToExisting.types";
 
 const pwd = utlities.pwd;
@@ -78,10 +80,9 @@ export function createStack(
     response["template"] = <TSAMTemplate>template;
     response["fileName"] = filename;
     response["appData"] = app_data;
-    //console.log("template", JSON.stringify(response));
     response["stackType"] = stackMap[stack_names[i]]["stackType"];
     response["lambdaDetails"] = <
-      Record<string, Record<string, string | boolean | Array<string>>>
+      Record<string, Record<string, TlambdaProperties>>
     >res["lambdaDetails"];
     responses[stackMap[stack_names[i]]["stackName"]] = response;
   }
@@ -95,13 +96,13 @@ function createStackResources(
 ): Record<
   string,
   | TSAMTemplateResources
-  | Record<string, Record<string, string | boolean | Array<string>>>
+  | Record<string, Record<string, TlambdaProperties>>
   | never
 > {
   const res: TSAMTemplateResources = {};
   const resourceObject: TroverResourcesArray = resources["resources"];
   const lambdaDetails:
-    | Record<string, Record<string, string | boolean | Array<string>>>
+    | Record<string, Record<string, TlambdaProperties>>
     | never = {};
   resourceObject.forEach(function (element: IroverResources) {
     element.config[
@@ -278,7 +279,7 @@ export function copyRecursiveSync(src: string, dest: string) {
 function copyLambdaLogic(
   path: string,
   lambdaDetails:
-    | Record<string, Record<string, string | boolean | Array<string>>>
+    | Record<string, Record<string, TlambdaProperties>>
     | never
 ) {
   if (typeof lambdaDetails === "object") {
@@ -290,7 +291,7 @@ function copyLambdaLogic(
 function getLambdaLogic(
   path: string,
   lambdaName: string,
-  lambdaDetail: Record<string, string | boolean | Array<string>>
+  lambdaDetail: Record<string, TlambdaProperties>
 ) {
   let response;
   if (

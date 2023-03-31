@@ -126,11 +126,8 @@ function swaggerGenerator(
     return null;
   });
   swagger["paths"] = swaggerPaths;
-  // const doc = new yaml.Document();
-  // doc.contents = swagger;
   template.Properties["swagger"] = swagger;
   return template;
-  //utilities.writeFile(<string>config["filepath"], doc.toString());
 }
 
 const attachMethods = (

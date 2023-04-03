@@ -24,7 +24,7 @@ class TestApiGateway:
         try:
             response = client.describe_stacks(StackName=stack_name)
         except Exception as e:
-            raise Exception(
+            raise ConfigurationError(
                 f"Cannot find stack {stack_name} \n" f'Please make sure a stack with the name "{stack_name}" exists'
             ) from e
 

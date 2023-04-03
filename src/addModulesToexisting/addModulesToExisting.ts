@@ -60,14 +60,14 @@ export function createStack(
   const responses: Record<string, IroverCreateStackResponse> = <
     Record<string, IroverCreateStackResponse>
   >{};
-  for (let i = 0; i < stack_names.length; i++) {
+  for (const stack_name of stack_names) {
     const response: IroverCreateStackResponse = <IroverCreateStackResponse>{};
     const stack = rover_resources.resourceGeneration("stack", {
-      TemplateURL: stack_names[i] + "/template.yaml",
+      TemplateURL: stack_name + "/template.yaml",
     });
-    stacks[stack_names[i]] = stack;
-    const resources = resource[stack_names[i]];
-    const res = createStackResources(resources, app_data, stack_names[i]);
+    stacks[stack_name] = stack;
+    const resources = resource[stack_name];
+    const res = createStackResources(resources, app_data, stack_name);
     const template = utlities.addResourceTemplate(
       <TSAMTemplateResources>res["response"],
       Object.keys(res["response"]),
@@ -76,14 +76,14 @@ export function createStack(
     if (Object.prototype.hasOwnProperty.call(resources, "parameter")) {
       template["Parameters"] = resources.parameter;
     }
-    response["template"] = <TSAMTemplate>template;
+    response["template"] = template;
     response["fileName"] = filename;
     response["appData"] = app_data;
-    response["stackType"] = stackMap[stack_names[i]]["stackType"];
+    response["stackType"] = stackMap[stack_name]["stackType"];
     response["lambdaDetails"] = <
       Record<string, Record<string, TlambdaProperties>>
     >res["lambdaDetails"];
-    responses[stackMap[stack_names[i]]["stackName"]] = response;
+    responses[stackMap[stack_name]["stackName"]] = response;
   }
   return responses;
 }

@@ -59,7 +59,7 @@ export interface TSAMTemplate {
   Resources: TSAMTemplateResources;
 }
 export interface IroverInput {
-  app_name: string;
+  appName: string;
   language: string;
   stackDetails: IstackDetails;
 }
@@ -103,7 +103,7 @@ export type TconfigFileTypes =
   | Array<IroveraddComponentInput>
   | Array<IroveraddModule>;
 export interface IroverConfigFileObject {
-  app_name?: string;
+  appName?: string;
   language?: string;
   rover_create_project?: object;
   bucket?: string;
@@ -119,7 +119,7 @@ export interface IroverConfigFileObject {
   rover_deploy_cli?: object;
 }
 export interface IroverDeploymentObject {
-  app_name?: string;
+  appName?: string;
   name?: string;
   repoType: string;
   tool: string;

@@ -24,20 +24,20 @@ const pwd = utlities.pwd;
 export function addModules(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
-    inputJSON.app_name = input.app_name + "_test";
+    inputJSON.appName = input.appName + "_test";
     utlities.initializeSAM(inputJSON);
-    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
+    exec("rm -rf " + pwd + input.appName + "/" + "lambda_demo");
     utlities.moveFolder(
-      pwd + inputJSON.app_name + "/" + "lambda_demo" + " ",
-      pwd + input.app_name + "/" + "lambda_demo"
+      pwd + inputJSON.appName + "/" + "lambda_demo" + " ",
+      pwd + input.appName + "/" + "lambda_demo"
     );
-    exec("rm -rf " + pwd + inputJSON.app_name);
+    exec("rm -rf " + pwd + inputJSON.appName);
 
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
-    createStack(app_data, app_types, input.file_name);
-    exec("rm -rf " + pwd + input.app_name + "/" + "lambda_demo");
-    helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
+    createStack(app_data, app_types, input.fileName);
+    exec("rm -rf " + pwd + input.appName + "/" + "lambda_demo");
+    helpers.generateRoverConfig(input.appName, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);
   }
@@ -57,7 +57,7 @@ function createStack(
       TemplateURL: stack_names[i] + "/template.yaml",
     });
     stackes[stack_names[i]] = stacks;
-    exec("mkdir " + pwd + app_data.app_name + "/" + stack_names[i]);
+    exec("mkdir " + pwd + app_data.appName + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
     const comp: IaddComponentComp = <IaddComponentComp>{};
     const res = createStackResources(
@@ -79,7 +79,7 @@ function createStack(
     doc.contents = template1;
     const temp = utlities.replaceYAML(doc.toString());
     utlities.writeFile(
-      app_data.app_name + "/" + stack_names[i] + "/template.yaml",
+      app_data.appName + "/" + stack_names[i] + "/template.yaml",
       temp
     );
   }
@@ -97,7 +97,7 @@ function createStack(
   const template = utlities.addResourceTemplate(stackes, stack_names, data);
   const doc = new yaml.Document();
   doc.contents = template;
-  utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
+  utlities.writeFile(app_data.appName + "/template.yaml", doc.toString());
 }
 
 function createStackResources(
@@ -116,14 +116,14 @@ function createStackResources(
     if (config.samAbstract.includes(element.type)) {
       element.config["Tags"] = {
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.appName,
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
+          Value: app_data.appName,
         },
       ];
     }
@@ -158,7 +158,7 @@ function createStackResources(
           path = pwd + comp.demo_desti + "/" + "lambda_demo" + "/ ";
           path2 =
             pwd +
-            app_data.app_name +
+            app_data.appName +
             "/" +
             resources["resources"][j]["name"] +
             "/";
@@ -170,10 +170,10 @@ function createStackResources(
           lambda_stack_names = comp.desti.split("/")[1].replace("_Stack", "");
         }
       } else {
-        path = pwd + app_data.app_name + "/" + "lambda_demo" + "/ ";
+        path = pwd + app_data.appName + "/" + "lambda_demo" + "/ ";
         path2 =
           pwd +
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +
@@ -190,7 +190,7 @@ function createStackResources(
         lambda_stack_names,
         j
       );
-      utlities.setupTestEnv(path2, app_data.dependency, app_data.app_name);
+      utlities.setupTestEnv(path2, app_data.dependency, app_data.appName);
 
       configs["CodeUri"] = resources["resources"][j]["name"] + "/";
       configs["Runtime"] = app_data.language;
@@ -211,14 +211,14 @@ function createStackResources(
       } else {
         path =
           pwd +
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +
           resources["resources"][j]["name"];
         configpath = resources["resources"][j]["name"] + "/swagger.yaml";
         filepath =
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +

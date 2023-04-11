@@ -16,13 +16,12 @@ import {
   TSAMTemplateResources,
   IroverAppType,
   TSAMTemplate,
-  
 } from "../roverTypes/rover.types";
 import { IstackDetails } from "../generateSAM/generatesam.types";
 import {
   IroveraddModule,
   IroverCreateStackResponse,
-  TlambdaProperties
+  TlambdaProperties,
 } from "./addModulesToExisting.types";
 
 const pwd = utlities.pwd;
@@ -30,19 +29,19 @@ const pwd = utlities.pwd;
 export function addModulesToExistingStack(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
-    inputJSON.app_name = input.app_name + "_test";
+    inputJSON.appName = input.appName + "_test";
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
     const stackMap = stackMapping(Object.keys(app_types), input.stackDetails);
     const stackData = createStack(
       app_data,
       app_types,
-      input.file_name,
+      input.fileName,
       stackMap
     );
     createStackFolders(stackData);
-    exec(`cd ${input.app_name} && npm run format:write`);
-    helpers.generateRoverConfig(input.app_name, input, "rover_add_module");
+    exec(`cd ${input.appName} && npm run format:write`);
+    helpers.generateRoverConfig(input.appName, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);
   }
@@ -110,14 +109,14 @@ function createStackResources(
     if (config.samAbstract.includes(element.type)) {
       element.config["Tags"] = {
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.appName,
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
+          Value: app_data.appName,
         },
       ];
     }
@@ -159,7 +158,7 @@ function createStackResources(
       configs["path"] = `${resources["resources"][j]["name"]}/swagger.yaml`;
       configs[
         "filepath"
-      ] = `${app_data.app_name}/${stack_names}/${resources["resources"][j]["name"]}/swagger.yaml`;
+      ] = `${app_data.appName}/${stack_names}/${resources["resources"][j]["name"]}/swagger.yaml`;
     }
     const resources1 = rover_resources.resourceGeneration(
       resources["resources"][j]["type"],
@@ -185,7 +184,7 @@ function stackMapping(
 
 function createStackFolders(inputs: Record<string, IroverCreateStackResponse>) {
   for (const input of Object.keys(inputs)) {
-    const path = `${inputs[input].appData.app_name}/${input}`;
+    const path = `${inputs[input].appData.appName}/${input}`;
     const templateJSON: IroverCreateStackResponse = createResourceFiles(
       path,
       inputs[input]
@@ -277,9 +276,7 @@ export function copyRecursiveSync(src: string, dest: string) {
 }
 function copyLambdaLogic(
   path: string,
-  lambdaDetails:
-    | Record<string, Record<string, TlambdaProperties>>
-    | never
+  lambdaDetails: Record<string, Record<string, TlambdaProperties>> | never
 ) {
   if (typeof lambdaDetails === "object") {
     Object.keys(lambdaDetails).forEach((element) => {
@@ -313,7 +310,7 @@ function getLambdaLogic(
       response = logics.LambdaLogics[<string>lambdaDetail["language"]][logicID];
     }
   }
-  let extension 
+  let extension;
   if ((<string>lambdaDetail["language"]).includes("node")) {
     extension = config.LanguageSupport["node"].extension;
   } else if ((<string>lambdaDetail["language"]).includes("python")) {

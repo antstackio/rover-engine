@@ -175,16 +175,16 @@ export const generateRoverConfig = function (
     }
     if (!Object.prototype.hasOwnProperty.call(dataobject, type))
       dataobject[typess] = [];
-    if (dataobject.app_name == data.app_name) delete data.app_name;
+    if (dataobject.appName == data.appName) delete data.appName;
     if (dataobject.language == data.language) delete data.language;
     dataobject[typess].push(data);
     data = dataobject;
   } else {
     if (!fs.existsSync(utlities.pwd + originalfilename))
       throw new Error(`Wrong file path ${utlities.pwd + originalfilename} `);
-    response["app_name"] = data.app_name;
+    response["appName"] = data.appName;
     response["language"] = data.language;
-    delete data.app_name;
+    delete data.appName;
     delete data.language;
     response[typess] = [data];
     data = response;

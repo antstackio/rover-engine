@@ -26,13 +26,13 @@ const exec = child.execSync;
 const pwd = utlities.pwd;
 
 export function addComponents(input: IroveraddComponentInput): void {
-  const Data: TSAMTemplate = getYamlData(input.file_name);
+  const Data: TSAMTemplate = getYamlData(input.fileName);
   if (!Object.prototype.hasOwnProperty.call(Data, "Resources")) {
     console.log("wrong template structure");
   }
   const app_data = getAppdata(input);
   const inputJSON = JSON.parse(JSON.stringify(input));
-  inputJSON.app_name = input.app_name + "_test";
+  inputJSON.appName = input.appName + "_test";
   utlities.initializeSAM(inputJSON);
   if (input.nested) {
     const inputs: IroveraddComponentInputNestedType = <
@@ -45,12 +45,12 @@ export function addComponents(input: IroveraddComponentInput): void {
     );
     addComponentsnonNested(inputs, Data, app_data, inputJSON);
   }
-  utlities.removeFolder(inputJSON.app_name);
-  helpers.generateRoverConfig(input.app_name, input, "rover_add_component");
+  utlities.removeFolder(inputJSON.appName);
+  helpers.generateRoverConfig(input.appName, input, "rover_add_component");
 }
 
-function getYamlData(file_name: string): TSAMTemplate {
-  const Datas = fs.readFileSync(pwd + "/" + file_name.trim(), {
+function getYamlData(fileName: string): TSAMTemplate {
+  const Datas = fs.readFileSync(pwd + "/" + fileName.trim(), {
     encoding: "utf-8",
   });
   const Data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(Datas));
@@ -73,7 +73,7 @@ function addComponentsNested(
           fs.readFileSync(
             pwd +
               "/" +
-              input.app_name +
+              input.appName +
               "/" +
               input.nestedComponents[ele]["path"].trim(),
             { encoding: "utf-8" }
@@ -82,14 +82,14 @@ function addComponentsNested(
       )
     );
     const path: Array<string> = (
-      input.app_name +
+      input.appName +
       "/" +
       input.nestedComponents[ele]["path"]
     ).split("/");
     path.pop();
     const comp: IaddComponentComp = {
       desti: path.join("/"),
-      demo_desti: inputJSON.app_name,
+      demo_desti: inputJSON.appName,
     };
 
     const res1 = createStackResources(res, app_data, "", "", comp);
@@ -98,7 +98,7 @@ function addComponentsNested(
     doc.contents = res3;
     const temp = utlities.replaceYAML(doc.toString());
     utlities.writeFile(
-      input.app_name + "/" + input.nestedComponents[ele]["path"].trim(),
+      input.appName + "/" + input.nestedComponents[ele]["path"].trim(),
       temp
     );
   });
@@ -114,7 +114,7 @@ function addComponentsnonNested(
     resources: getComponents(input.components),
   };
   const comp: IaddComponentComp = {
-    demo_desti: inputJSON.app_name,
+    demo_desti: inputJSON.appName,
   };
 
   const res1 = createStackResources(res, app_data, "", "", comp);
@@ -122,12 +122,12 @@ function addComponentsnonNested(
   const doc = new yaml.Document();
   doc.contents = res2;
   const temp = utlities.replaceYAML(doc.toString());
-  utlities.writeFile(input.file_name.trim(), temp);
+  utlities.writeFile(input.fileName.trim(), temp);
 }
 
 function getAppdata(input: IroveraddComponentInput): IaddComponentAppData {
   const app_data: IaddComponentAppData = {
-    app_name: input.app_name,
+    appName: input.appName,
     language: config.LanguageSupport[input.language]["version"],
     dependency: config.LanguageSupport[input.language]["dependency"],
     extension: config.LanguageSupport[input.language]["extension"],
@@ -165,14 +165,14 @@ function createStackResources(
     if (config.samAbstract.includes(element.type)) {
       element.config["Tags"] = <IroverConfigTag>{
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.appName,
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
+          Value: app_data.appName,
         },
       ];
     }
@@ -205,7 +205,7 @@ function createStackResources(
           path = `${pwd}${comp.demo_desti}/lambda_demo/ `;
           path2 =
             pwd +
-            app_data.app_name +
+            app_data.appName +
             "/" +
             resources["resources"][j]["name"] +
             "/";
@@ -217,10 +217,10 @@ function createStackResources(
           lambda_stack_names = comp.desti.split("/")[1].replace("_Stack", "");
         }
       } else {
-        path = pwd + app_data.app_name + "/" + "lambda_demo" + "/ ";
+        path = pwd + app_data.appName + "/" + "lambda_demo" + "/ ";
         path2 =
           pwd +
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +
@@ -237,7 +237,7 @@ function createStackResources(
         lambda_stack_names,
         j
       );
-      utlities.setupTestEnv(path2, app_data.dependency, app_data.app_name);
+      utlities.setupTestEnv(path2, app_data.dependency, app_data.appName);
       configs["CodeUri"] = resources["resources"][j]["name"] + "/";
       configs["Runtime"] = app_data.language;
     } else if (resources["resources"][j]["type"] == "apigateway") {
@@ -255,14 +255,14 @@ function createStackResources(
             "/swagger.yaml";
         } else {
           path =
-            pwd + app_data.app_name + "/" + resources["resources"][j]["name"];
+            pwd + app_data.appName + "/" + resources["resources"][j]["name"];
           configpath =
-            app_data.app_name +
+            app_data.appName +
             "/" +
             resources["resources"][j]["name"] +
             "/swagger.yaml";
           filepath =
-            app_data.app_name +
+            app_data.appName +
             "/" +
             resources["resources"][j]["name"] +
             "/swagger.yaml";
@@ -270,14 +270,14 @@ function createStackResources(
       } else {
         path =
           pwd +
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +
           resources["resources"][j]["name"];
         configpath = resources["resources"][j]["name"] + "/swagger.yaml";
         filepath =
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stack_names +
           "/" +

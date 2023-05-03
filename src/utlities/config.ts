@@ -11,7 +11,7 @@ const exec = child.execSync;
 export const npmroot = exec(" npm root -g").toString().trim();
 
 export const stacktype = "AWS::CloudFormation::Stack";
-export const samabstract = ["apigateway", "lambda", "stepfunction"];
+export const samAbstract = ["apigateway", "lambda", "stepfunction"];
 
 export const SAMInitBase = "sam init --no-interactive ";
 export const SAMLanguage = " -r ";

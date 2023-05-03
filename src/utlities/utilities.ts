@@ -1,7 +1,6 @@
 import * as config from "./config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
-import * as child from "child_process";
 import * as fs from "fs";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
@@ -20,7 +19,7 @@ import {
   IaddComponentAppData,
   IroveraddComponentInput,
 } from "../addComponents/addComponents.types";
-
+import * as child from "child_process";
 const exec = child.execSync;
 /* eslint-disable no-useless-escape */
 const sub = new RegExp(
@@ -113,8 +112,8 @@ export function replaceYAML(doc: string): string {
 export function initializeSAM(
   input: IroveraddComponentInput | IroverInput
 ): void {
-  const app_name = input.app_name;
-  removeFolder(input.app_name);
+  const appName = input.appName;
+  removeFolder(input.appName);
   const language = config.LanguageSupport[input.language]["version"];
   const dependency = config.LanguageSupport[input.language]["dependency"];
   exec(
@@ -124,21 +123,21 @@ export function initializeSAM(
       config.SAMDependency +
       dependency +
       config.SAMAppName +
-      app_name +
+      appName +
       config.SAMAppTemplate
   );
-  let source = pwd + input.app_name + "/hello-world";
+  let source = pwd + input.appName + "/hello-world";
   if (dependency == "npm") {
     exec(
       "cd " +
         pwd +
-        input.app_name +
+        input.appName +
         " && npm init -y && npm  pkg set scripts.test='npm test' "
     );
-    setupESLint(pwd + input.app_name, input.app_name);
+    setupESLint(pwd + input.appName, input.appName);
   }
-  if (!fs.existsSync(source)) source = pwd + input.app_name + "/hello_world";
-  moveFolder(source + " ", pwd + input.app_name + "/" + "lambda_demo");
+  if (!fs.existsSync(source)) source = pwd + input.appName + "/hello_world";
+  moveFolder(source + " ", pwd + input.appName + "/" + "lambda_demo");
 }
 export function copyLambdaLogic(source: string, desti: string): void {
   exec("cp -r " + source + desti);
@@ -182,8 +181,7 @@ export function generateLambdaFiles(
     if (code !== undefined) {
       let path;
       if (stackname == "") {
-        path =
-          app_data.app_name + "/" + resources["resources"][j]["name"] + "/";
+        path = app_data.appName + "/" + resources["resources"][j]["name"] + "/";
         if (
           Object.prototype.hasOwnProperty.call(
             resources["resources"][j],
@@ -199,7 +197,7 @@ export function generateLambdaFiles(
         path = path + "app" + app_data.extension;
       } else {
         path =
-          app_data.app_name +
+          app_data.appName +
           "/" +
           stackname +
           "/" +
@@ -254,7 +252,7 @@ export function getAppdata(input: IroverInput): IroverAppData {
     appDataArray.push(input.stackDetails[ele].type);
   });
   const appData: IroverAppData = {
-    app_name: input.app_name,
+    appName: input.appName,
     language: config.LanguageSupport[input.language]["version"],
     dependency: config.LanguageSupport[input.language]["dependency"],
     extension: config.LanguageSupport[input.language]["extension"],

@@ -26,10 +26,10 @@ export function setupRepo(repoconfig: IroverDeploymentObject): void {
       throw new Error("install yaml library (pip3 install pyyaml)");
     if (piplibrarieslist.includes("sys"))
       throw new Error("install sys library (pip3 install sys)");
-    repoconfig.app_name = exec("pwd").toString().replace("\n", "");
-    const filenamearray = repoconfig.app_name.split("/");
+    repoconfig.appName = exec("pwd").toString().replace("\n", "");
+    const filenamearray = repoconfig.appName.split("/");
     repoconfig.name = filenamearray[filenamearray.length - 1].replace("\n", "");
-    const appname = repoconfig.app_name;
+    const appname = repoconfig.appName;
     const repoconfigres: string = JSON.stringify(repoconfig);
     let pipelinepath = appname + "/pipeline.yml ";
     if (repoconfig.tool == "GitHub") {

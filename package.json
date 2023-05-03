@@ -15,8 +15,10 @@
     "@iarna/toml": "^2.2.5",
     "@types/inquirer": "^8.2.1",
     "@types/js-yaml": "^4.0.5",
+    "dotenv": "^16.0.3",
     "eslint-config-prettier": "^8.5.0",
     "inquirer": "^8.2.4",
+    "openai": "^3.2.1",
     "prettier": "^2.8.0",
     "shx": "^0.3.4",
     "yaml": "^1.10.2"
@@ -32,9 +34,9 @@
     "watch": "tsc --watch",
     "prepack": "npm run clean && npm run build ",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
+    "format:write": "prettier --write src/* bin/*",
     "lint:check": "eslint .",
-    "lint:fix": "eslint --fix --ignore-path ./.gitignore ."
+    "lint:fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",

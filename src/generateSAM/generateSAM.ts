@@ -28,11 +28,11 @@ export function generateSAM(input: IroverInput): void {
     input,
     false
   );
-  const appname: string = input.app_name;
+  const appname: string = input.appName;
   createStack(app_data, app_types);
-  exec(config.ForceRemove + input.app_name + config.LambdaDemo);
+  exec(config.ForceRemove + input.appName + config.LambdaDemo);
   helpers.generateRoverConfig(
-    input.app_name,
+    input.appName,
     <IroverConfigFileObject>input,
     "rover_create_project"
   );
@@ -53,7 +53,7 @@ function createStack(
     });
     stackes[stack_names[i]] = stacks;
 
-    exec("mkdir " + utlities.pwd + app_data.app_name + "/" + stack_names[i]);
+    exec("mkdir " + utlities.pwd + app_data.appName + "/" + stack_names[i]);
     const resources = resource[stack_names[i]];
     const res = createStackResources(
       resources,
@@ -73,7 +73,7 @@ function createStack(
     doc.contents = template1;
     const temp = utlities.replaceYAML(doc.toString());
     utlities.writeFile(
-      app_data.app_name + "/" + stack_names[i] + "/template.yaml",
+      app_data.appName + "/" + stack_names[i] + "/template.yaml",
       temp
     );
   }
@@ -84,7 +84,7 @@ function createStack(
   );
   const doc = new yaml.Document();
   doc.contents = template;
-  utlities.writeFile(app_data.app_name + "/template.yaml", doc.toString());
+  utlities.writeFile(app_data.appName + "/template.yaml", doc.toString());
 }
 
 function createStackResources(
@@ -99,17 +99,17 @@ function createStackResources(
     element.config[
       "Description"
     ] = `Rover-tools created ${element.name}  named ${element.type} resource`;
-    if (config.samabstract.includes(element.type)) {
+    if (config.samAbstract.includes(element.type)) {
       element.config["Tags"] = <IroverConfigTag>{
         createdBy: "rover",
-        applicationName: app_data.app_name,
+        applicationName: app_data.appName,
       };
     } else {
       element.config["Tags"] = [
         { Key: "createdBy", Value: "rover" },
         {
           Key: "applicationName",
-          Value: app_data.app_name,
+          Value: app_data.appName,
         },
       ];
     }
@@ -117,9 +117,9 @@ function createStackResources(
 
   for (const resource in resources["resources"]) {
     if (stack_names == "") {
-      const randomstr: string = helpers.makeid(4);
+      const randomString: string = helpers.makeId(4);
       resources["resources"][resource]["name"] =
-        resources["resources"][resource]["name"] + randomstr;
+        resources["resources"][resource]["name"] + randomString;
     }
     const configs = resources["resources"][resource]["config"];
     const haslogic = resources["resources"][resource]["logic"];
@@ -138,10 +138,10 @@ function createStackResources(
       let path = "";
       let path2 = "";
       const lambda_stack_names = stack_names;
-      path = pwd + app_data.app_name + "/" + "lambda_demo" + "/ ";
+      path = pwd + app_data.appName + "/" + "lambda_demo" + "/ ";
       path2 =
         pwd +
-        app_data.app_name +
+        app_data.appName +
         "/" +
         stack_names +
         "/" +
@@ -157,14 +157,14 @@ function createStackResources(
         lambda_stack_names,
         resource
       );
-      utlities.setupTestEnv(path2, app_data.dependency, app_data.app_name);
+      utlities.setupTestEnv(path2, app_data.dependency, app_data.appName);
 
       configs["CodeUri"] = resources["resources"][resource]["name"] + "/";
       configs["Runtime"] = app_data.language;
     } else if (resources["resources"][resource]["type"] == "apigateway") {
       const path =
         pwd +
-        app_data.app_name +
+        app_data.appName +
         "/" +
         stack_names +
         "/" +
@@ -172,7 +172,7 @@ function createStackResources(
       const configpath =
         resources["resources"][resource]["name"] + "/swagger.yaml";
       const filepath =
-        app_data.app_name +
+        app_data.appName +
         "/" +
         stack_names +
         "/" +

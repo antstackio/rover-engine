@@ -3,13 +3,13 @@ import { IroverInput, IroverAppData } from "../roverTypes/rover.types";
 export interface IroveraddComponentInputNestedType
   extends Omit<IroverInput, "stackDetails"> {
   nested: boolean;
-  file_name: string;
+  fileName: string;
   nestedComponents: TnestedComponentsObject;
 }
 export interface IroveraddComponentInputType
   extends Omit<IroverInput, "stackDetails"> {
   nested: boolean;
-  file_name: string;
+  fileName: string;
   components: Array<string>;
 }
 

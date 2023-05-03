@@ -15,8 +15,10 @@
     "@iarna/toml": "^2.2.5",
     "@types/inquirer": "^8.2.1",
     "@types/js-yaml": "^4.0.5",
+    "dotenv": "^16.0.3",
     "eslint-config-prettier": "^8.5.0",
     "inquirer": "^8.2.4",
+    "openai": "^3.2.1",
     "prettier": "^2.8.0",
     "shx": "^0.3.4",
     "yaml": "^1.10.2"

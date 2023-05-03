@@ -40,7 +40,6 @@ export function addModulesToExistingStack(input: IroveraddModule): void {
       stackMap
     );
     createStackFolders(stackData);
-    exec(`cd ${input.appName} && npm run format:write`);
     helpers.generateRoverConfig(input.appName, input, "rover_add_module");
   } catch (error) {
     throw new Error((error as Error).message);

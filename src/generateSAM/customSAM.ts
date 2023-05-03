@@ -87,7 +87,7 @@ export async function generateCustomSAM(appName: string, description: string) {
       `serverless aws sam yaml template for ${description} . Just the template, no explanation`
     );
     text = text.replace("```yaml", "").replace("```", "");
-    const replacedText = await utlities.replaceTempTag(text);
+    const replacedText = utlities.replaceTempTag(text);
     const JSONTemplate = <TSAMTemplate>Yaml.load(replacedText);
     const lambdaDetails = await getLambdaDetails(JSONTemplate);
     await generateSAM(lambdaDetails, text, appName);

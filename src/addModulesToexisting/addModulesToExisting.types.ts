@@ -13,8 +13,9 @@ export interface IroverCreateStackResponse {
   template: TSAMTemplate;
   stackType: string;
   appData: IroverAppData;
-  lambdaDetails:
-    | Record<string, Record<string, string | boolean | Array<string>>>
-    | never;
+  lambdaDetails: Record<
+    string,
+    Record<string, string | boolean | Array<string>>
+  >;
 }
 export type TlambdaProperties = string | boolean | Array<string>;

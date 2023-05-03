@@ -73,7 +73,7 @@ async function generateSAM(
       }
     }
     const path2 = `${pwd}/${appName}/${path}`;
-    await copyRecursiveSync(
+    copyRecursiveSync(
       `${npmroot}/@rover-tools/cli/node_modules/@rover-tools/engine/assets/hello-world_node`,
       path2
     );

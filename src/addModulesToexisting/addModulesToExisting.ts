@@ -6,8 +6,6 @@ import * as yaml from "yaml";
 import * as fs from "fs";
 import * as Yaml from "js-yaml";
 import * as logics from "../resources/logics";
-import * as child from "child_process";
-const exec = child.execSync;
 import {
   IroverAppData,
   IroverResources,
@@ -92,15 +90,11 @@ function createStackResources(
   stack_names: string
 ): Record<
   string,
-  | TSAMTemplateResources
-  | Record<string, Record<string, TlambdaProperties>>
-  | never
+  TSAMTemplateResources | Record<string, Record<string, TlambdaProperties>>
 > {
   const res: TSAMTemplateResources = {};
   const resourceObject: TroverResourcesArray = resources["resources"];
-  const lambdaDetails:
-    | Record<string, Record<string, TlambdaProperties>>
-    | never = {};
+  const lambdaDetails: Record<string, Record<string, TlambdaProperties>> = {};
   resourceObject.forEach(function (element: IroverResources) {
     element.config[
       "Description"
@@ -275,7 +269,7 @@ export function copyRecursiveSync(src: string, dest: string) {
 }
 function copyLambdaLogic(
   path: string,
-  lambdaDetails: Record<string, Record<string, TlambdaProperties>> | never
+  lambdaDetails: Record<string, Record<string, TlambdaProperties>>
 ) {
   if (typeof lambdaDetails === "object") {
     Object.keys(lambdaDetails).forEach((element) => {

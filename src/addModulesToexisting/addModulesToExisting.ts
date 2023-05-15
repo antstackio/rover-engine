@@ -14,7 +14,7 @@ import {
 export function addModulesToExistingStack(input: IroveraddModule): void {
   try {
     const inputJSON = JSON.parse(JSON.stringify(input));
-    inputJSON.appName = input.appName + "_test";
+    inputJSON.appName = input.appName;
     const app_types = utlities.cliModuletoConfig(input, true);
     const app_data = utlities.getAppdata(input);
     const stackMap = stackMapping(Object.keys(app_types), input.stackDetails);

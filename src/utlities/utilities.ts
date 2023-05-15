@@ -6,6 +6,7 @@ import * as yaml from "yaml";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
 import { IcurdComponentObject } from "../generateSAM/generatesam.types";
+import * as Yaml from "js-yaml";
 import {
   TroverAppTypeObject,
   TroverResourcesArray,
@@ -144,7 +145,7 @@ export function initializeSAMtest(
   input: IroveraddComponentInput | IroverInput
 ): void {
   const appName = input.appName;
-  removeFolder(input.appName);
+  // removeFolder(input.appName);
   const dependency = config.LanguageSupport[input.language]["dependency"];
   fs.mkdirSync(`${pwd}${appName}`);
   if (dependency == "npm") {
@@ -335,4 +336,11 @@ export async function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
   doc.contents = finalTemplate;
   const temp = replaceYAML(doc.toString());
   writeFile(`${path}/template.yaml`, temp);
+}
+export function getYamlData(fileName: string): TSAMTemplate {
+  const Datas = fs.readFileSync(pwd + "/" + fileName.trim(), {
+    encoding: "utf-8",
+  });
+  const Data = <TSAMTemplate>Yaml.load(replaceTempTag(Datas));
+  return Data;
 }

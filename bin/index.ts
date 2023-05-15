@@ -5,7 +5,7 @@ import * as components from "../src/resources/components/components";
 import * as generateSAM from "../src/generateSAM/generatesam";
 import * as generateCustomSAM from "../src/generateSAM/customSAM";
 import * as addComponent from "../src/addComponents/addComponent";
-import * as addModules from "../src/addModules/addModules";
+import * as addModules from "../src/addModules/addModule";
 import * as addModulesToExisting from "../src/addModulesToexisting/addModulesToExisting";
 import * as generateSAMTypes from "../src/generateSAM/generatesam.types";
 export = {

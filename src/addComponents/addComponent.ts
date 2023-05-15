@@ -1,9 +1,8 @@
 import * as config from "../utlities/config";
 import * as components from "../resources/components/components";
 import * as utlities from "../utlities/utilities";
-import * as fs from "fs";
 import * as helpers from "../helpers/helpers";
-import * as Yaml from "js-yaml";
+
 import {
   IroveraddComponentInput,
   IroveraddComponentInputNestedType,
@@ -28,7 +27,7 @@ const pwd = utlities.pwd;
 export async function addComponents(
   input: IroveraddComponentInput
 ): Promise<void> {
-  const Data: TSAMTemplate = getYamlData(input.fileName);
+  const Data: TSAMTemplate = utlities.getYamlData(input.fileName);
   if (!Object.prototype.hasOwnProperty.call(Data, "Resources")) {
     console.log("wrong template structure");
   }
@@ -38,9 +37,9 @@ export async function addComponents(
       IroveraddComponentInputNestedType
     >input;
     const addComponentData = addComponentsNested(inputs, app_data);
-    Object.keys(addComponentData).forEach(async (Element) => {
+    await Object.keys(addComponentData).forEach(async (Element) => {
       const templatePath = `${input.appName}/${Element}`;
-      const templetData = getYamlData(`${templatePath}/template.yaml`);
+      const templetData = utlities.getYamlData(`${templatePath}/template.yaml`);
       genrateResourceFiles(
         templatePath,
         <TSAMTemplateResources>addComponentData[Element]["response"]
@@ -63,7 +62,7 @@ export async function addComponents(
     );
     const addComponentData = addComponentsnonNested(inputs, app_data);
     const templatePath = `${input.appName}`;
-    const templetData = getYamlData(`${templatePath}/template.yaml`);
+    const templetData = utlities.getYamlData(`${templatePath}/template.yaml`);
     genrateResourceFiles(
       templatePath,
       <TSAMTemplateResources>addComponentData["response"]
@@ -82,13 +81,7 @@ export async function addComponents(
   }
   helpers.generateRoverConfig(input.appName, input, "rover_add_component");
 }
-function getYamlData(fileName: string): TSAMTemplate {
-  const Datas = fs.readFileSync(pwd + "/" + fileName.trim(), {
-    encoding: "utf-8",
-  });
-  const Data = <TSAMTemplate>Yaml.load(utlities.replaceTempTag(Datas));
-  return Data;
-}
+
 function addComponentsNested(
   input: IroveraddComponentInputNestedType,
   app_data: IaddComponentAppData

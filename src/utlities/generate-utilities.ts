@@ -211,7 +211,7 @@ export function copyRecursiveSync(src: string, dest: string) {
     fs.copyFileSync(src, dest);
   }
 }
-export async function copyLambdaLogic(
+export function copyLambdaLogic(
   path: string,
   lambdaDetails: Record<string, Record<string, TlambdaProperties>>
 ) {

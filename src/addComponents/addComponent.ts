@@ -37,7 +37,7 @@ export async function addComponents(
       IroveraddComponentInputNestedType
     >input;
     const addComponentData = addComponentsNested(inputs, app_data);
-    await Object.keys(addComponentData).forEach(async (Element) => {
+    await Object.keys(addComponentData).forEach((Element) => {
       const templatePath = `${input.appName}/${Element}`;
       const templetData = utlities.getYamlData(`${templatePath}/template.yaml`);
       genrateResourceFiles(
@@ -48,8 +48,8 @@ export async function addComponents(
         ...templetData.Resources,
         ...(<TSAMTemplateResources>addComponentData[Element]["response"]),
       };
-      await utlities.JSONtoYAML(templatePath, templetData);
-      await copyLambdaLogic(
+      utlities.JSONtoYAML(templatePath, templetData);
+      copyLambdaLogic(
         `${pwd}${input.appName}/${Element}`,
         <Record<string, Record<string, TlambdaProperties>>>(
           addComponentData[Element]["lambdaDetails"]
@@ -71,8 +71,8 @@ export async function addComponents(
       ...templetData.Resources,
       ...(<TSAMTemplateResources>addComponentData["response"]),
     };
-    await utlities.JSONtoYAML(templatePath, templetData);
-    await copyLambdaLogic(
+     utlities.JSONtoYAML(templatePath, templetData);
+     copyLambdaLogic(
       `${pwd}${input.appName}`,
       <Record<string, Record<string, TlambdaProperties>>>(
         addComponentData["lambdaDetails"]
@@ -132,12 +132,12 @@ function getAppdata(input: IroveraddComponentInput): IaddComponentAppData {
 }
 function getComponents(component: Array<string>): TroverResourcesArray {
   const resources: TroverResourcesArray = [];
-  Object.entries(component).map((ele) => {
+  Object.entries(component).forEach((ele) => {
     const componentstype: string = ele[1];
     const componentstypeobj: TroverResourcesArray = JSON.parse(
       JSON.stringify(components.Components[componentstype])
     );
-    componentstypeobj.map(function (ele: IroverResources) {
+    componentstypeobj.forEach(function (ele: IroverResources) {
       resources.push(ele);
     });
   });

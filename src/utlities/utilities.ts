@@ -301,7 +301,7 @@ export function cliModuletoConfig(
   return app_types;
 }
 
-export async function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
+export  function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
   const doc = new yaml.Document();
   doc.contents = finalTemplate;
   const temp = replaceYAML(doc.toString());

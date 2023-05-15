@@ -37,7 +37,7 @@ export async function addComponents(
       IroveraddComponentInputNestedType
     >input;
     const addComponentData = addComponentsNested(inputs, app_data);
-    await Object.keys(addComponentData).forEach((Element) => {
+     Object.keys(addComponentData).forEach((Element) => {
       const templatePath = `${input.appName}/${Element}`;
       const templetData = utlities.getYamlData(`${templatePath}/template.yaml`);
       genrateResourceFiles(

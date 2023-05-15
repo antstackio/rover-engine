@@ -115,7 +115,6 @@ export function initializeSAM(
   input: IroveraddComponentInput | IroverInput
 ): void {
   const appName = input.appName;
-  // removeFolder(input.appName);
   const dependency = config.LanguageSupport[input.language]["dependency"];
   fs.mkdirSync(`${pwd}${appName}`);
   if (dependency == "npm") {

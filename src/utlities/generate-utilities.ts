@@ -168,7 +168,7 @@ export function createResourceTemplate(
   data: IroverCreateStackResponse,
   modify: boolean
 ) {
-  let finalTemplate: TSAMTemplate = <TSAMTemplate>{};
+  let finalTemplate: TSAMTemplate
   if (modify) {
     const template = fs.readFileSync(`${pwd}${path}/template.yaml`, {
       encoding: "utf8",

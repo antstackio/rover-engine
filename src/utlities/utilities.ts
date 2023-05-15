@@ -115,36 +115,6 @@ export function initializeSAM(
   input: IroveraddComponentInput | IroverInput
 ): void {
   const appName = input.appName;
-  removeFolder(input.appName);
-  const language = config.LanguageSupport[input.language]["version"];
-  const dependency = config.LanguageSupport[input.language]["dependency"];
-  exec(
-    config.SAMInitBase +
-      config.SAMLanguage +
-      language +
-      config.SAMDependency +
-      dependency +
-      config.SAMAppName +
-      appName +
-      config.SAMAppTemplate
-  );
-  let source = pwd + input.appName + "/hello-world";
-  if (dependency == "npm") {
-    exec(
-      "cd " +
-        pwd +
-        input.appName +
-        " && npm init -y && npm  pkg set scripts.test='npm test' "
-    );
-    setupESLint(pwd + input.appName, input.appName);
-  }
-  if (!fs.existsSync(source)) source = pwd + input.appName + "/hello_world";
-  moveFolder(source + " ", pwd + input.appName + "/" + "lambda_demo");
-}
-export function initializeSAMtest(
-  input: IroveraddComponentInput | IroverInput
-): void {
-  const appName = input.appName;
   // removeFolder(input.appName);
   const dependency = config.LanguageSupport[input.language]["dependency"];
   fs.mkdirSync(`${pwd}${appName}`);
@@ -282,7 +252,7 @@ export function cliModuletoConfig(
   modify: boolean
 ): TroverAppTypeObject {
   if (!modify) {
-    initializeSAMtest(input);
+    initializeSAM(input);
   }
   const app_types: TroverAppTypeObject = {};
   Object.keys(input["stackDetails"]).forEach((ele) => {

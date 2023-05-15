@@ -245,7 +245,14 @@ export const Components: Record<string, Array<IroverResources>> = {
   "CRUD API": crudcomponent["Book"]["resources"],
   "S3 Bucket": [generateRoverResource("Bucket", "s3bucket", {}, false)],
   Lambda: [generateRoverResource("Lambda", "lambda", {}, true)],
-  DynamoDB: [generateRoverResource("Dynamodb", "dynamoDB", {}, false)],
+  DynamoDB: [
+    generateRoverResource(
+      "Dynamodb",
+      "dynamoDB",
+      { KeySchema: [{ AttributeName: "id", KeyType: "HASH" }] },
+      false
+    ),
+  ],
 };
 export const ModuleDescription = {
   "S3 Lambda": "lambda with S3 as trigger",

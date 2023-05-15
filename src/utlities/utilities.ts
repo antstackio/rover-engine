@@ -2,6 +2,7 @@ import * as config from "./config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
 import * as fs from "fs";
+import * as yaml from "yaml";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
 import { IcurdComponentObject } from "../generateSAM/generatesam.types";
@@ -139,6 +140,20 @@ export function initializeSAM(
   if (!fs.existsSync(source)) source = pwd + input.appName + "/hello_world";
   moveFolder(source + " ", pwd + input.appName + "/" + "lambda_demo");
 }
+export function initializeSAMtest(
+  input: IroveraddComponentInput | IroverInput
+): void {
+  const appName = input.appName;
+  removeFolder(input.appName);
+  const dependency = config.LanguageSupport[input.language]["dependency"];
+  fs.mkdirSync(`${pwd}${appName}`);
+  if (dependency == "npm") {
+    exec(
+      `cd ${pwd}${input.appName}  && npm init -y && npm  pkg set scripts.test='npm test' `
+    );
+    setupESLint(pwd + input.appName, input.appName);
+  }
+}
 export function copyLambdaLogic(source: string, desti: string): void {
   exec("cp -r " + source + desti);
 }
@@ -266,7 +281,7 @@ export function cliModuletoConfig(
   modify: boolean
 ): TroverAppTypeObject {
   if (!modify) {
-    initializeSAM(input);
+    initializeSAMtest(input);
   }
   const app_types: TroverAppTypeObject = {};
   Object.keys(input["stackDetails"]).forEach((ele) => {
@@ -313,4 +328,11 @@ export function cliModuletoConfig(
     });
   });
   return app_types;
+}
+
+export async function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
+  const doc = new yaml.Document();
+  doc.contents = finalTemplate;
+  const temp = replaceYAML(doc.toString());
+  writeFile(`${path}/template.yaml`, temp);
 }

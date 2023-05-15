@@ -81,7 +81,8 @@ function policyAddition(
 
 function swaggerGenerator(
   config: Record<string, unknown>,
-  template: ISAMTemplateResource
+  template: ISAMTemplateResource,
+  filepath: string
 ) {
   const swagger = JSON.parse(JSON.stringify(configs.SwaggerSkeleton));
   const swaggerPaths: Record<string, unknown> = {};
@@ -127,6 +128,7 @@ function swaggerGenerator(
   });
   swagger["paths"] = swaggerPaths;
   template.Properties["swagger"] = swagger;
+  template.Properties["filepath"] = filepath;
   return template;
 }
 
@@ -237,8 +239,9 @@ export const resourceGeneration = function (
       template = getAPIGatewayPath(template, <string>config["path"]);
     }
     if (Object.prototype.hasOwnProperty.call(config, "objects")) {
-      template = swaggerGenerator(config, template);
+      template = swaggerGenerator(config, template, <string>config["filepath"]);
     }
   }
+
   return template;
 };

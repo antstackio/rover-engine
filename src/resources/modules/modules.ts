@@ -128,6 +128,7 @@ export const Modules: Record<string, IroverResourceModule> = {
               Path: "/",
               Policies: [
                 {
+                  name: "Authpolicy",
                   Action: "lambda:InvokeFunction",
                   Resource: {
                     "Fn::Sub": "arn:aws:lambda:*:${AWS::AccountId}:function:*",

@@ -2,9 +2,11 @@ import * as config from "./config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
 import * as fs from "fs";
+import * as yaml from "yaml";
 import * as modules from "../resources/modules/modules";
 import * as components from "../resources/components/components";
 import { IcurdComponentObject } from "../generateSAM/generatesam.types";
+import * as Yaml from "js-yaml";
 import {
   TroverAppTypeObject,
   TroverResourcesArray,
@@ -113,31 +115,14 @@ export function initializeSAM(
   input: IroveraddComponentInput | IroverInput
 ): void {
   const appName = input.appName;
-  removeFolder(input.appName);
-  const language = config.LanguageSupport[input.language]["version"];
   const dependency = config.LanguageSupport[input.language]["dependency"];
-  exec(
-    config.SAMInitBase +
-      config.SAMLanguage +
-      language +
-      config.SAMDependency +
-      dependency +
-      config.SAMAppName +
-      appName +
-      config.SAMAppTemplate
-  );
-  let source = pwd + input.appName + "/hello-world";
+  fs.mkdirSync(`${pwd}${appName}`);
   if (dependency == "npm") {
     exec(
-      "cd " +
-        pwd +
-        input.appName +
-        " && npm init -y && npm  pkg set scripts.test='npm test' "
+      `cd ${pwd}${input.appName}  && npm init -y && npm  pkg set scripts.test='npm test' `
     );
     setupESLint(pwd + input.appName, input.appName);
   }
-  if (!fs.existsSync(source)) source = pwd + input.appName + "/hello_world";
-  moveFolder(source + " ", pwd + input.appName + "/" + "lambda_demo");
 }
 export function copyLambdaLogic(source: string, desti: string): void {
   exec("cp -r " + source + desti);
@@ -313,4 +298,18 @@ export function cliModuletoConfig(
     });
   });
   return app_types;
+}
+
+export  function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
+  const doc = new yaml.Document();
+  doc.contents = finalTemplate;
+  const temp = replaceYAML(doc.toString());
+  writeFile(`${path}/template.yaml`, temp);
+}
+export function getYamlData(fileName: string): TSAMTemplate {
+  const Datas = fs.readFileSync(pwd + "/" + fileName.trim(), {
+    encoding: "utf-8",
+  });
+  const Data = <TSAMTemplate>Yaml.load(replaceTempTag(Datas));
+  return Data;
 }

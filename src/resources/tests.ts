@@ -42,11 +42,11 @@ export const TestCases: Record<string, Record<string, string>> = {
         const expectedResponse = {
           statusCode: 200,
           body: JSON.stringify({
-            data: { message: 'data updated' },
+            data: { message: 'data added' },
           }),
         };
     
-        dynamoDB.put().promise.mockReturnValueOnce({ message: 'data updated' } )
+        dynamoDB.put().promise.mockReturnValueOnce({ message: 'data added' } )
     
         const response = await lambdaHandler(event, context);
         console.log(JSON.stringify(response))

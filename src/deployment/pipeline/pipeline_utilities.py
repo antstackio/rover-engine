@@ -39,6 +39,7 @@ def git(input):
         step=steps(input["framework"],input["tool"])
         k["steps"].append(step[input["language"]]["language_setup"])
         k["steps"].append(step[input["language"]]["install"])
+        print(input["steps"],i)
         for j in input["steps"][i]:
             if j=="deploy" and input["framework"]=="sam":
                 step[j]["run"]=append_deployment_options(input,i,step[j]["run"])

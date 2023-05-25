@@ -145,21 +145,27 @@ export function generateLambdaFiles(
   const j = <number>(<unknown>i);
   if (logic) {
     if (resources["resources"][j]["logicpath"] !== "") {
-      code =
-        logics.LambdaLogics[app_data.language][
+      code = logics.generateLambdaLogics(
+        logics.LambdaLogicsFileMappings[app_data.language][
           resources["resources"][j]["logicpath"]
-        ];
+        ],
+        app_data.language
+      );
     } else {
       if (resources["type"] == "components" || stacktype == "") {
-        code =
-          logics.LambdaLogics[app_data.language][
+        code = logics.generateLambdaLogics(
+          logics.LambdaLogicsFileMappings[app_data.language][
             resources["resources"][j]["name"]
-          ];
+          ],
+          app_data.language
+        );
       } else {
-        code =
-          logics.LambdaLogics[app_data.language][
+        code = logics.generateLambdaLogics(
+          logics.LambdaLogicsFileMappings[app_data.language][
             stacktype + "_" + resources["resources"][j]["name"]
-          ];
+          ],
+          app_data.language
+        );
       }
     }
 

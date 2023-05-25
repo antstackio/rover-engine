@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@types/node": "^12.12.7",
+    "@types/node": "^12.20.55",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "eslint": "^8.28.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
@@ -9,8 +9,12 @@
     "eslint-plugin-n": "^15.5.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
+    "ncp": "^2.0.0",
     "typescript": "^4.9.3"
   },
+  "files": [
+    "logics"
+  ],
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "@types/inquirer": "^8.2.1",
@@ -30,7 +34,8 @@
   "main": "dist/bin/init.js",
   "scripts": {
     "clean": "shx rm -rf dist/*",
-    "build": "tsc && npm run format:write && npm run lint:fix",
+    "build": "tsc && npm run format:write && npm run lint:fix && npm run build:logics",
+    "build:logics": "ncp src/resources/logics dist/src/resources/logics",
     "watch": "tsc --watch",
     "prepack": "npm run clean && npm run build ",
     "format:check": "prettier --check .",

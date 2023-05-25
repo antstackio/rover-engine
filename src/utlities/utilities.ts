@@ -45,24 +45,11 @@ export function installDependencies(
     });
   }
 }
-export function setupTestEnv(
-  path: string,
-  dependency: string,
-  appname: string
-): void {
+export function setupTestEnv(dependency: string, appname: string): void {
   if (dependency == "npm") {
-    exec("npm --prefix " + path + "/ install jest --save");
+    // exec("npm --prefix " + path + "/ install jest --save");
+    exec("npm --prefix " + pwd + appname + "/ install aws-sdk --save");
     exec("npm --prefix " + pwd + appname + "/ install jest --save");
-    exec(
-      "npm --prefix " + pwd + appname + "/ pkg set scripts.test='npm test' "
-    );
-    exec(
-      "mv " +
-        path +
-        "tests/unit/test-handler.js " +
-        path +
-        "tests/unit/test.test.js"
-    );
   }
 }
 export function setupESLint(path: string, filename: string): void {
@@ -76,6 +63,7 @@ export function setupESLint(path: string, filename: string): void {
     JSON.stringify(config.prettierConfig)
   );
   writeFile(filename + "/.eslintrc.js", config.eslintconfig);
+  writeFile(filename + "/.jest.config.js", config.jestconfig);
   exec(
     "cd " + path + "&& npm  pkg set scripts.format:check='prettier --check .'"
   );
@@ -119,9 +107,10 @@ export function initializeSAM(
   fs.mkdirSync(`${pwd}${appName}`);
   if (dependency == "npm") {
     exec(
-      `cd ${pwd}${input.appName}  && npm init -y && npm  pkg set scripts.test='npm test' `
+      `cd ${pwd}${input.appName}  && npm init -y && npm  pkg set scripts.test='jest --coverage' `
     );
     setupESLint(pwd + input.appName, input.appName);
+    setupTestEnv(dependency, input.appName);
   }
 }
 export function copyLambdaLogic(source: string, desti: string): void {
@@ -300,7 +289,7 @@ export function cliModuletoConfig(
   return app_types;
 }
 
-export  function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
+export function JSONtoYAML(path: string, finalTemplate: TSAMTemplate) {
   const doc = new yaml.Document();
   doc.contents = finalTemplate;
   const temp = replaceYAML(doc.toString());

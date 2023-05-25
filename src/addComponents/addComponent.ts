@@ -37,7 +37,7 @@ export async function addComponents(
       IroveraddComponentInputNestedType
     >input;
     const addComponentData = addComponentsNested(inputs, app_data);
-     Object.keys(addComponentData).forEach((Element) => {
+    Object.keys(addComponentData).forEach((Element) => {
       const templatePath = `${input.appName}/${Element}`;
       const templetData = utlities.getYamlData(`${templatePath}/template.yaml`);
       genrateResourceFiles(
@@ -71,8 +71,8 @@ export async function addComponents(
       ...templetData.Resources,
       ...(<TSAMTemplateResources>addComponentData["response"]),
     };
-     utlities.JSONtoYAML(templatePath, templetData);
-     copyLambdaLogic(
+    utlities.JSONtoYAML(templatePath, templetData);
+    copyLambdaLogic(
       `${pwd}${input.appName}`,
       <Record<string, Record<string, TlambdaProperties>>>(
         addComponentData["lambdaDetails"]

@@ -44,6 +44,17 @@ export const eslintconfig = `module.exports ={
     
   }
 }`;
+export const jestconfig = `module.exports ={
+  collectCoverage: true,
+  coverageReporters:['clover', 'json', 'html'],
+  coverageThreshold: {
+    global: {
+      functions: 90,
+      lines: 90,
+      statements: 90
+    }
+  },
+}`;
 export const prettierConfig = {
   trailingComma: "es5",
   tabWidth: 2,

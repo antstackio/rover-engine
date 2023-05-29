@@ -32,7 +32,7 @@ export function setupRepo(repoconfig: IroverDeploymentObject): void {
     const appname = repoconfig.appName;
     const repoconfigres: string = JSON.stringify(repoconfig);
     let pipelinepath = appname + "/pipeline.yml ";
-    if (repoconfig.tool == "GitHub") {
+    if (repoconfig["tool"] == "GitHub") {
       if (!fs.existsSync(appname + "/.github"))
         exec("mkdir " + appname + "/.github");
       if (!fs.existsSync(appname + "/.github/workflows"))

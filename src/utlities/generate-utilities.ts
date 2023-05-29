@@ -1,6 +1,7 @@
 import * as config from "../utlities/config";
 import * as rover_resources from "../resources/resources";
 import * as logics from "../resources/logics";
+import * as tests from "../resources/tests";
 import * as Yaml from "js-yaml";
 import * as utlities from "../utlities/utilities";
 import * as yaml from "yaml";
@@ -168,7 +169,7 @@ export function createResourceTemplate(
   data: IroverCreateStackResponse,
   modify: boolean
 ) {
-  let finalTemplate: TSAMTemplate
+  let finalTemplate: TSAMTemplate;
   if (modify) {
     const template = fs.readFileSync(`${pwd}${path}/template.yaml`, {
       encoding: "utf8",
@@ -218,6 +219,7 @@ export function copyLambdaLogic(
   if (typeof lambdaDetails === "object") {
     Object.keys(lambdaDetails).forEach((element) => {
       getLambdaLogic(path, element, lambdaDetails[element]);
+      getTestCases(path, element, lambdaDetails[element]);
     });
   }
 }
@@ -257,6 +259,53 @@ export function getLambdaLogic(
   }
   if (response != undefined)
     utlities.writeFile(`${path}/${lambdaName}/app${extension}`, response);
+  return response;
+}
+export function getTestCases(
+  path: string,
+  lambdaName: string,
+  lambdaDetail: Record<string, TlambdaProperties>
+) {
+  let response;
+  let extension;
+  if ((<string>lambdaDetail["language"]).includes("node")) {
+    extension = config.LanguageSupport["node"].extension;
+  } else if ((<string>lambdaDetail["language"]).includes("python")) {
+    extension = config.LanguageSupport["python"].extension;
+  } else {
+    throw new Error("RoverError:language not found");
+  }
+
+  const logicID = `${(<string>lambdaDetail["stack_names"]).replace(
+    (<string>lambdaDetail["stack_names"]).slice(-5),
+    ""
+  )}_${lambdaName}`;
+  if (
+    Object.prototype.hasOwnProperty.call(
+      tests.TestCases[<string>lambdaDetail["language"]],
+      logicID
+    )
+  ) {
+    response = tests.TestCases[<string>lambdaDetail["language"]][logicID];
+  } else if (
+    Object.prototype.hasOwnProperty.call(
+      tests.TestCases[<string>lambdaDetail["language"]],
+      <string>lambdaDetail["logicpath"]
+    )
+  ) {
+    response =
+      tests.TestCases[<string>lambdaDetail["language"]][
+        <string>lambdaDetail["logicpath"]
+      ];
+  } else {
+    response = tests.TestCases[<string>lambdaDetail["language"]]["default"];
+  }
+
+  if (response != undefined)
+    utlities.writeFile(
+      `${path}/${lambdaName}/tests/unit/test.test${extension}`,
+      response
+    );
   return response;
 }
 

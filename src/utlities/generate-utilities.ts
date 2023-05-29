@@ -219,7 +219,7 @@ export function copyLambdaLogic(
   if (typeof lambdaDetails === "object") {
     Object.keys(lambdaDetails).forEach((element) => {
       getLambdaLogic(path, element, lambdaDetails[element]);
-      getTestCases(path, element, lambdaDetails[element]);
+      //getTestCases(path, element, lambdaDetails[element]);
     });
   }
 }

@@ -47,7 +47,6 @@ export function installDependencies(
 }
 export function setupTestEnv(dependency: string, appname: string): void {
   if (dependency == "npm") {
-
     exec("npm --prefix " + pwd + appname + "/ install aws-sdk --save");
     exec("npm --prefix " + pwd + appname + "/ install jest --save");
   }

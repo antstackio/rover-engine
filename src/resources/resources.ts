@@ -124,6 +124,11 @@ function swaggerGenerator(
   configObjects.forEach((data: IcurdObject) => {
     const pathName = data["path"];
     swaggerPaths[pathName] = attachMethods(data["methods"], data, security);
+    swaggerPaths[`${pathName}/{id}`] = attachMethods(
+      data["methods"],
+      data,
+      security
+    );
     return null;
   });
   swagger["paths"] = swaggerPaths;

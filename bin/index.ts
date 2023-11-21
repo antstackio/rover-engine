@@ -8,6 +8,7 @@ import * as addComponent from "../src/addComponents/addComponent";
 import * as addModules from "../src/addModules/addModule";
 import * as addModulesToExisting from "../src/addModulesToexisting/addModulesToExisting";
 import * as generateSAMTypes from "../src/generateSAM/generatesam.types";
+import * as defineRoverModules from "../src/defineRoverModule/defineRoverModule";
 export = {
   deployment: deployment,
   helpers: helpers,
@@ -19,4 +20,5 @@ export = {
   addComponent: addComponent,
   addModules: addModules,
   addModulesToExisting: addModulesToExisting,
+  defineRoverModules: defineRoverModules,
 };
